@@ -1,4 +1,4 @@
-package app;
+package com.husker.editor.app.xml;
 
 public class XMLParameter {
 

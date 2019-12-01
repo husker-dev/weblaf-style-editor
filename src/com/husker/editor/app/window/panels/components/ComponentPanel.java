@@ -1,12 +1,12 @@
-package app.window.panels.components;
+package com.husker.editor.app.window.panels.components;
 
 
-import app.StyleComponent;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.button.WebToggleButton;
 import com.alee.laf.grouping.GroupPane;
 import com.alee.laf.grouping.GroupPaneConstraints;
 import com.alee.laf.panel.WebPanel;
+import com.husker.editor.app.project.StyleComponent;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;

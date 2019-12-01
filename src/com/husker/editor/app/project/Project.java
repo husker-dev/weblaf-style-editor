@@ -1,7 +1,7 @@
-package app;
+package com.husker.editor.app.project;
 
-import app.window.Frame;
 import com.alee.laf.optionpane.WebOptionPane;
+import com.husker.editor.app.window.Frame;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class Project {
 
     public String name = "Unnamed";
 
-    public Components Components = new Components();
+    public com.husker.editor.app.project.Components Components = new Components();
 
     public void setName(String name){
         this.name = name;

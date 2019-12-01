@@ -1,9 +1,10 @@
-package app.components;
+package com.husker.editor.app.components;
 
-import app.*;
-import app.parameters.IntegerParameter;
-import app.parameters.TextParameter;
 import com.alee.laf.button.WebButton;
+import com.husker.editor.app.Parameter;
+import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.parameters.*;
+import com.husker.editor.app.xml.XMLHead;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -1,8 +1,10 @@
-package app.parameters;
+package com.husker.editor.app.parameters;
 
-import app.*;
 import com.alee.extended.image.WebImage;
 import com.alee.laf.text.WebTextField;
+import com.husker.editor.app.Constants;
+import com.husker.editor.app.Parameter;
+import com.husker.editor.app.project.Project;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;

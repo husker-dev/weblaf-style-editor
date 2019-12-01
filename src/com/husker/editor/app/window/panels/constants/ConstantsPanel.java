@@ -1,12 +1,5 @@
-package app.window.panels.constants;
+package com.husker.editor.app.window.panels.constants;
 
-import app.Components;
-import app.Constants;
-import app.Project;
-import app.StyleComponent;
-import app.window.components.MovableComponentList;
-import app.window.panels.components.ComponentPanel;
-import app.window.panels.components.ComponentsPanel;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.grouping.GroupPane;
@@ -14,13 +7,12 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.Constants;
+import com.husker.editor.app.window.components.MovableComponentList;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-import static app.Components.ComponentEvent.New_Component;
-import static app.Components.ComponentEvent.Removed_Component;
-import static app.Project.ProjectEvent.Current_Project_Changed;
 
 public class ConstantsPanel extends WebPanel {
 

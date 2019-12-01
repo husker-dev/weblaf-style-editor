@@ -1,13 +1,13 @@
-package app.window.panels.preview;
+package com.husker.editor.app.window.panels.preview;
 
-import app.Project;
-import app.skin.CustomSkin;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.button.WebToggleButton;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.progressbar.WebProgressBar;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.project.Project;
+import com.husker.editor.app.skin.CustomSkin;
 
 import java.awt.*;
 

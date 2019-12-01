@@ -1,4 +1,4 @@
-package app;
+package com.husker.editor.app.xml;
 
 import java.util.ArrayList;
 import java.util.HashMap;

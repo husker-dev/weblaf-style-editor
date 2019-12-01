@@ -1,4 +1,4 @@
-package app;
+package com.husker.editor.app.project;
 
 import java.util.ArrayList;
 

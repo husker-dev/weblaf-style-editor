@@ -1,7 +1,9 @@
-package app.parameters;
+package com.husker.editor.app.parameters;
 
-import app.*;
 import com.alee.laf.spinner.WebSpinner;
+import com.husker.editor.app.Constants;
+import com.husker.editor.app.Parameter;
+import com.husker.editor.app.project.Project;
 
 import javax.swing.*;
 import java.awt.*;

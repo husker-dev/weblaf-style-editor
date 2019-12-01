@@ -1,15 +1,15 @@
-package app.window.panels.parameters;
+package com.husker.editor.app.window.panels.parameters;
 
-import app.Components;
-import app.Parameter;
-import app.Project;
-import app.StyleComponent;
-import app.window.components.MovableComponentList;
-import com.alee.extended.panel.WebComponentPane;
+
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.separator.WebSeparator;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.project.Components;
+import com.husker.editor.app.Parameter;
+import com.husker.editor.app.project.Project;
+import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.window.components.MovableComponentList;
 
 
 public class ParameterPanel extends WebPanel {

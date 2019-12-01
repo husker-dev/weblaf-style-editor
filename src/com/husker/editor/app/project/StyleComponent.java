@@ -1,7 +1,9 @@
-package app;
+package com.husker.editor.app.project;
 
-import app.components.Styled_Button;
-import app.components.Styled_Label;
+import com.husker.editor.app.Parameter;
+import com.husker.editor.app.components.Styled_Button;
+import com.husker.editor.app.components.Styled_Label;
+import com.husker.editor.app.xml.XMLHead;
 
 import java.awt.*;
 import java.util.ArrayList;

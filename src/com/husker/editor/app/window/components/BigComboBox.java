@@ -1,4 +1,4 @@
-package app.window.components;
+package com.husker.editor.app.window.components;
 
 import com.alee.laf.combobox.WebComboBox;
 

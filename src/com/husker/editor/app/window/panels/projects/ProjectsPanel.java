@@ -1,10 +1,11 @@
-package app.window.panels.projects;
+package com.husker.editor.app.window.panels.projects;
 
 import app.Project;
 import app.window.panels.WrapLayout;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.window.panels.projects.ProjectPanel;
 
 import java.awt.*;
 

@@ -1,18 +1,15 @@
-package app.window.panels.preview;
+package com.husker.editor.app.window.panels.preview;
 
-import app.Components;
-import app.Project;
-import app.skin.CustomSkin;
-import com.alee.laf.button.WebButton;
+
 import com.alee.laf.panel.WebPanel;
-import com.alee.managers.style.Skin;
 import com.alee.managers.style.StyleId;
-import com.alee.managers.style.StyleManager;
+import com.husker.editor.app.project.Components;
+import com.husker.editor.app.project.Project;
+import com.husker.editor.app.skin.CustomSkin;
 
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.File;
 import java.lang.reflect.Method;
 
 public class PaintingPanel extends WebPanel {

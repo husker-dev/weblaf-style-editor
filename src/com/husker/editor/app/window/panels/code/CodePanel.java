@@ -1,17 +1,17 @@
-package app.window.panels.code;
+package com.husker.editor.app.window.panels.code;
 
-import app.Components;
-import app.Project;
-import app.StyleComponent;
 import com.alee.extended.syntax.SyntaxPreset;
 import com.alee.extended.syntax.WebSyntaxArea;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.project.Components;
+import com.husker.editor.app.project.Project;
+import com.husker.editor.app.project.StyleComponent;
 
 import java.awt.*;
 
-import static app.Components.ComponentEvent.Selected_Component_Changed;
-import static app.Components.ComponentEvent.Style_Parameters_Changed;
+import static com.husker.editor.app.project.Components.ComponentEvent.*;
+
 
 public class CodePanel extends WebPanel {
 

@@ -1,4 +1,4 @@
-package app.window.panels.constants;
+package com.husker.editor.app.window.panels.constants;
 
 import com.alee.laf.panel.WebPanel;
 

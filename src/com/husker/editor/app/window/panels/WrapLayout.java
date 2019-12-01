@@ -1,4 +1,4 @@
-package app.window.panels;
+package com.husker.editor.app.window.panels;
 
 import java.awt.*;
 import javax.swing.JScrollPane;

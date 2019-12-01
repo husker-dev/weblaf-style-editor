@@ -1,4 +1,4 @@
-package app.window.panels.projects;
+package com.husker.editor.app.window.panels.projects;
 
 import app.Project;
 import com.alee.laf.button.WebToggleButton;

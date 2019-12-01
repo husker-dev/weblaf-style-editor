@@ -1,9 +1,5 @@
-package app.window.panels.components;
+package com.husker.editor.app.window.panels.components;
 
-import app.Components;
-import app.Project;
-import app.StyleComponent;
-import app.window.components.MovableComponentList;
 import com.alee.extended.statusbar.WebStatusBar;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
@@ -13,6 +9,10 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.project.Components;
+import com.husker.editor.app.project.Project;
+import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.window.components.MovableComponentList;
 
 
 import java.awt.*;
@@ -21,9 +21,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static app.Components.ComponentEvent.New_Component;
-import static app.Components.ComponentEvent.Removed_Component;
-import static app.Project.ProjectEvent.Current_Project_Changed;
+import static com.husker.editor.app.project.Components.ComponentEvent.New_Component;
+import static com.husker.editor.app.project.Components.ComponentEvent.Removed_Component;
+import static com.husker.editor.app.project.Project.ProjectEvent.Current_Project_Changed;
 
 public class ComponentsPanel extends WebPanel {
 

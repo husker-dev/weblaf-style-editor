@@ -1,4 +1,4 @@
-package app;
+package com.husker.editor.app;
 
 import java.util.ArrayList;
 import java.util.Collections;

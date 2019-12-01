@@ -1,13 +1,6 @@
-package app.window;
+package com.husker.editor.app.window;
 
-import app.Project;
-import app.window.panels.code.CodePanel;
-import app.window.panels.components.ComponentsPanel;
-import app.window.panels.constants.ConstantsPanel;
-import app.window.panels.parameters.ParameterPanel;
-import app.window.panels.preview.PreviewPanel;
-import app.window.panels.projects.ProjectsPanel;
-import com.alee.api.data.CompassDirection;
+
 import com.alee.api.data.Orientation;
 import com.alee.extended.dock.WebDockableFrame;
 import com.alee.extended.dock.WebDockablePane;
@@ -17,8 +10,14 @@ import com.alee.extended.dock.data.DockableListContainer;
 import com.alee.laf.menu.WebMenu;
 import com.alee.laf.menu.WebMenuBar;
 import com.alee.laf.menu.WebMenuItem;
-import com.alee.laf.panel.WebPanel;
 import com.alee.managers.hotkey.Hotkey;
+import com.husker.editor.app.project.Project;
+import com.husker.editor.app.window.panels.code.CodePanel;
+import com.husker.editor.app.window.panels.components.ComponentsPanel;
+import com.husker.editor.app.window.panels.constants.ConstantsPanel;
+import com.husker.editor.app.window.panels.parameters.ParameterPanel;
+import com.husker.editor.app.window.panels.preview.PreviewPanel;
+import com.husker.editor.app.window.panels.projects.ProjectsPanel;
 
 import javax.swing.*;
 import java.awt.*;

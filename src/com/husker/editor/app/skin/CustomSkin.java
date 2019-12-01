@@ -1,4 +1,4 @@
-package app.skin;
+package com.husker.editor.app.skin;
 
 import app.window.panels.preview.PreviewPanel;
 import com.alee.laf.button.WebButton;

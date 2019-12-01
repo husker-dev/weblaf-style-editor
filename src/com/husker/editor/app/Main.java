@@ -1,7 +1,9 @@
-package app;
+package com.husker.editor.app;
 
-import app.window.Frame;
 import com.alee.laf.WebLookAndFeel;
+import com.husker.editor.app.project.Project;
+import com.husker.editor.app.window.Frame;
+
 
 public class Main {
 
