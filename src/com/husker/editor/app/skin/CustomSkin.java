@@ -1,8 +1,5 @@
 package com.husker.editor.app.skin;
 
-import com.alee.laf.button.WebButton;
-import com.alee.managers.style.Skin;
-import com.alee.managers.style.StyleId;
 import com.alee.managers.style.StyleManager;
 import com.alee.managers.style.XmlSkin;
 import com.alee.managers.style.data.SkinInfo;
@@ -11,7 +8,6 @@ import com.husker.editor.app.window.panels.preview.PreviewPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.Method;
 
 public class CustomSkin extends XmlSkin {
 
