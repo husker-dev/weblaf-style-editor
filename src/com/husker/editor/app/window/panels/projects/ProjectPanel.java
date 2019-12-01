@@ -1,12 +1,12 @@
 package com.husker.editor.app.window.panels.projects;
 
-import app.Project;
 import com.alee.laf.button.WebToggleButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.menu.PopupMenuWay;
 import com.alee.laf.menu.WebMenuItem;
 import com.alee.laf.menu.WebPopupMenu;
 import com.alee.managers.hotkey.Hotkey;
+import com.husker.editor.app.project.Project;
 
 
 import javax.swing.*;
