@@ -13,7 +13,7 @@ public class CustomSkin extends XmlSkin {
 
     static String pattern = "<skin xmlns=\"http://weblookandfeel.com/XmlSkin\">\n" +
             "<id>husker.editor.skin</id>\n" +
-            "<class>app.skin.CustomSkin</class>\n" +
+            "<class>com.husker.editor.app.skin.CustomSkin</class>\n" +
             "<supportedSystems>all</supportedSystems>\n" +
             "<title>Custom skin</title>\n" +
             "<description>WebLaF Editor Skin</description>\n" +
@@ -47,7 +47,7 @@ public class CustomSkin extends XmlSkin {
 
                 StyleManager.setSkin((JComponent)component, new XmlSkin(skinInfo));
             } catch (Exception e) {
-                //e.printStackTrace();
+                e.printStackTrace();
             }finally {
                 applying = false;
                 if(thread_id == (int)Thread.currentThread().getId())

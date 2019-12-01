@@ -1,0 +1,10 @@
+<skin xmlns="http://weblookandfeel.com/XmlSkin\">
+        <id>husker.editor.skin</id>
+        <class>com.husker.editor.app.skin.CustomSkin</class>
+        <supportedSystems>all</supportedSystems>
+        <title>Custom skin</title>
+        <description>WebLaF Editor Skin</description>
+        <author>Husker</author>
+        <include nearClass="com.alee.skin.web.WebSkin\">resources/skin.xml</include>
+        <!-- CODE -->
+        </skin>
