@@ -7,7 +7,7 @@ import com.husker.editor.app.window.Frame;
 
 public class Main {
 
-    static Frame frame;
+    public static Frame frame;
 
     public static void main(String[] args){
 

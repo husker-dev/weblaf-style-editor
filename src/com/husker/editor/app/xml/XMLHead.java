@@ -2,12 +2,13 @@ package com.husker.editor.app.xml;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class XMLHead {
 
     ArrayList<XMLHead> heads = new ArrayList<>();
-    HashMap<String, XMLParameter> parameters = new HashMap<>();
+    LinkedHashMap<String, XMLParameter> parameters = new LinkedHashMap<>();
     String name;
 
     public XMLHead(String name){
@@ -19,6 +20,8 @@ public class XMLHead {
     }
 
     public void addXMLHead(XMLHead head){
+        if(head == null)
+            return;
         heads.add(head);
     }
 

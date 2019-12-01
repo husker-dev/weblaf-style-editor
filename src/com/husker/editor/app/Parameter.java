@@ -6,7 +6,6 @@ import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
 
 import java.awt.*;
 

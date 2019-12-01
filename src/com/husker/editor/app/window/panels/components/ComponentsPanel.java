@@ -11,7 +11,7 @@ import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.StyleComponent;
 import com.husker.editor.app.window.components.MovableComponentList;
 
 

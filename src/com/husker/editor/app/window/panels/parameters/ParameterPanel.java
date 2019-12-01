@@ -8,15 +8,21 @@ import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Components;
 import com.husker.editor.app.Parameter;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.StyleComponent;
 import com.husker.editor.app.window.components.MovableComponentList;
 
 
 public class ParameterPanel extends WebPanel {
+    WebScrollPane scroll;
 
     public ParameterPanel(){
         setPreferredWidth(230);
-        add(new WebScrollPane(new MovableComponentList(){{
+
+        Components.addListener((event, objects) -> {
+            scroll.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
+        });
+
+        add(scroll = new WebScrollPane(new MovableComponentList(){{
             setShowReorderGrippers(false);
             Components.addListener((event, objects) -> {
                 if(event.oneOf(Components.ComponentEvent.Selected_Component_Changed)) {
@@ -27,11 +33,21 @@ public class ParameterPanel extends WebPanel {
                             this.removeElement(getElement(i));
                     }
 
-                    if(component != null && component.getParameters() != null) {
-                        for (Parameter parameter : component.getParameters()) {
-                            parameter.apply(component);
-                            addElement(parameter.getPanel());
-                            addElement(WebSeparator.createHorizontal());
+
+                    if(component != null) {
+                        if(component.getDefaultParameters() != null) {
+                            for (Parameter parameter : component.getDefaultParameters()) {
+                                parameter.apply(component);
+                                addElement(parameter.getPanel());
+                                addElement(WebSeparator.createHorizontal());
+                            }
+                        }
+                        if(component.getParameters() != null) {
+                            for (Parameter parameter : component.getParameters()) {
+                                parameter.apply(component);
+                                addElement(parameter.getPanel());
+                                addElement(WebSeparator.createHorizontal());
+                            }
                         }
                     }
                     updateUI();
@@ -39,6 +55,7 @@ public class ParameterPanel extends WebPanel {
             });
 
         }}){{
+            setVisible(false);
             setStyleId(StyleId.scrollpaneUndecorated);
         }});
     }

@@ -6,32 +6,36 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.progressbar.WebProgressBar;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.skin.CustomSkin;
 
 import java.awt.*;
 
 
 public class PreviewPanel extends WebPanel {
 
-    PaintingPanel content = new PaintingPanel();
+    public PaintingPanel painting = new PaintingPanel();
     public static WebProgressBar progressBar;
 
     public PreviewPanel(){
         setLayout(new BorderLayout());
         setStyleId(StyleId.panelDecorated);
 
-        add(content, BorderLayout.CENTER);
+        Components.addListener((event, objects) -> {
+            painting.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
+        });
+
+        add(painting, BorderLayout.CENTER);
         add(new WebToolBar(){{
             add(new WebButton("Update"){{
                 addActionListener(e -> {
-                    CustomSkin.applySkin(content, Project.getCurrentProject().Components.getSelectedComponent().getCode(true).toString());
+                    painting.updateSkin();
                 });
             }});
             add(new WebToggleButton("Shape"){{
                 addActionListener(e -> {
-                    content.drawBorder = isSelected();
-                    content.repaint();
+                    painting.drawBorder = isSelected();
+                    painting.repaint();
                 });
             }});
 

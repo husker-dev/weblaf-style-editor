@@ -7,10 +7,13 @@ import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.skin.CustomSkin;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.lang.reflect.Method;
+
+import static com.husker.editor.app.project.Components.ComponentEvent.*;
 
 public class PaintingPanel extends WebPanel {
 
@@ -21,11 +24,10 @@ public class PaintingPanel extends WebPanel {
         setLayout(null);
 
         Components.addListener((event, objects) -> {
-            if(event.oneOf(Components.ComponentEvent.Selected_Component_Changed)){
+            if(event.oneOf(Selected_Component_Changed, Style_Parameters_Changed)){
                 removeAll();
                 if(Project.getCurrentProject().Components.getSelectedComponent() != null) {
                     content = Project.getCurrentProject().Components.getSelectedComponent().createPreviewComponent();
-
                     // setting style id
                     try{
                         Method method = content.getClass().getDeclaredMethod("setStyleId", StyleId.class);
@@ -38,9 +40,8 @@ public class PaintingPanel extends WebPanel {
                     add(content);
                 }
                 updateContent();
-            }
-            if(event.oneOf(Components.ComponentEvent.Style_Parameters_Changed)){
-                CustomSkin.applySkin(content, Project.getCurrentProject().Components.getSelectedComponent().getCode(true).toString());
+                if(Project.getCurrentProject().Components.getSelectedComponent() != null)
+                    updateSkin();
             }
         });
 
@@ -60,7 +61,7 @@ public class PaintingPanel extends WebPanel {
     }
 
     public void paint(Graphics gr){
-        gr.setColor(Color.white);
+        gr.setColor(new Color(237, 237 ,237));
         gr.fillRect(0, 0, getWidth(), getHeight());
         if(content != null) {
             if(drawBorder) {
@@ -69,6 +70,10 @@ public class PaintingPanel extends WebPanel {
             }
         }
         super.paintComponents(gr);
+    }
 
+    public void updateSkin(){
+        CustomSkin.applySkin(content, Project.getCurrentProject().Components.getSelectedComponent().getXMLStyle(true));
+        ((JComponent)content).updateUI();
     }
 }

@@ -26,6 +26,13 @@ public class Frame extends JFrame {
 
     public static Frame context;
 
+    public CustomDockablePanel projects;
+    public CustomDockablePanel parameters;
+    public CustomDockablePanel components;
+    public CustomDockablePanel code;
+    public CustomDockablePanel constants;
+    public PreviewPanel preview;
+
     public Frame(){
         context = this;
 
@@ -37,14 +44,15 @@ public class Frame extends JFrame {
         setJMenuBar(setupMenu(new WebMenuBar()));
 
         add(new WebDockablePane(){{
-            setContent(new PreviewPanel());
 
-            CustomDockablePanel projects = new CustomDockablePanel("Projects", new ProjectsPanel());
-            CustomDockablePanel parameters = new CustomDockablePanel("Parameters", new ParameterPanel());
-            CustomDockablePanel components = new CustomDockablePanel("Components", new ComponentsPanel());
-            CustomDockablePanel code = new CustomDockablePanel("Code", new CodePanel());
-            CustomDockablePanel constants = new CustomDockablePanel("Constants", new ConstantsPanel());
+            preview = new PreviewPanel();
+            projects = new CustomDockablePanel("Projects", new ProjectsPanel());
+            parameters = new CustomDockablePanel("Parameters", new ParameterPanel());
+            components = new CustomDockablePanel("Components", new ComponentsPanel());
+            code = new CustomDockablePanel("Code", new CodePanel());
+            constants = new CustomDockablePanel("Constants", new ConstantsPanel());
 
+            setContent(preview);
             addFrame(projects);
             addFrame(parameters);
             addFrame(components);
