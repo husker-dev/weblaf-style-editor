@@ -24,6 +24,9 @@ public class PreviewPanel extends WebPanel {
         Components.addListener((event, objects) -> {
             painting.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
         });
+        Project.addListener((event, objects) -> {
+            painting.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
+        });
 
         add(painting, BorderLayout.CENTER);
         add(new WebToolBar(){{

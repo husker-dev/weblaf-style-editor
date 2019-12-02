@@ -1,17 +1,18 @@
 package com.husker.editor.app.project;
 
-import com.husker.editor.app.StyleComponent;
-
 import java.util.ArrayList;
 
 public class Components {
 
     public static ArrayList<IComponentListener> listeners = new ArrayList<>();
     public enum ComponentEvent {
-        New_Component,
-        Removed_Component,
-        Selected_Component_Changed,
-        Style_Parameters_Changed
+        New,
+        Removed,
+        Selected_Changed,
+        Style_Changed,
+        New_Child,
+        Removed_Child,
+        Moved_Child
         ;
         public boolean oneOf(ComponentEvent... events){
             for (ComponentEvent e : events)
@@ -35,13 +36,13 @@ public class Components {
 
     public void addComponent(StyleComponent component){
         components.add(component);
-        doEvent(ComponentEvent.New_Component, component);
+        doEvent(ComponentEvent.New, component);
     }
     public void removeComponent(StyleComponent component){
         components.remove(component);
         if(component == selected)
             setSelectedComponent(null);
-        doEvent(ComponentEvent.Removed_Component, component);
+        doEvent(ComponentEvent.Removed, component);
     }
 
     public ArrayList<StyleComponent> getComponents(){
@@ -50,7 +51,7 @@ public class Components {
 
     public void setSelectedComponent(StyleComponent component){
         selected = component;
-        doEvent(ComponentEvent.Selected_Component_Changed, component);
+        doEvent(ComponentEvent.Selected_Changed, component);
     }
     public StyleComponent getSelectedComponent(){
         return selected;

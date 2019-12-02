@@ -57,9 +57,10 @@ public class CustomSkin extends XmlSkin {
                 if(thread_id == (int)Thread.currentThread().getId())
                     PreviewPanel.progressBar.setVisible(false);
 
-
-                Main.frame.preview.updateUI();
-                Main.frame.preview.painting.updateContent();
+                SwingUtilities.invokeLater(() -> {
+                    Main.frame.preview.updateUI();
+                    Main.frame.preview.painting.updateContent();
+                });
             }
         }).start();
     }

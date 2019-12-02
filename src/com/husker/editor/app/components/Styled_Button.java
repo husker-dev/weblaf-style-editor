@@ -1,9 +1,10 @@
 package com.husker.editor.app.components;
 
 import com.alee.laf.button.WebButton;
-import com.husker.editor.app.Parameter;
-import com.husker.editor.app.StyleComponent;
+import com.husker.editor.app.project.Parameter;
+import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.parameters.*;
+import com.husker.editor.app.project.Variable;
 import com.husker.editor.app.xml.XMLHead;
 
 import java.awt.*;
@@ -18,6 +19,7 @@ public class Styled_Button extends StyleComponent {
 
     public Styled_Button() {
         super("Button", "button");
+        addVariable("round", new Variable("3"));
     }
 
     public ArrayList<Parameter> getParameters() {
@@ -31,7 +33,7 @@ public class Styled_Button extends StyleComponent {
             addXMLHead(new XMLHead("decorations"){{
                 addXMLHead(new XMLHead("decoration"){{
                     addXMLHead(new XMLHead("WebShape"){{
-                        addXMLParameter("round", getValue("round"));
+                        addXMLParameter("round", getVariableValue("round"));
                     }});
                 }});
             }});

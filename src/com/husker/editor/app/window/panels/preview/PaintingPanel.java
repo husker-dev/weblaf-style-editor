@@ -24,7 +24,7 @@ public class PaintingPanel extends WebPanel {
         setLayout(null);
 
         Components.addListener((event, objects) -> {
-            if(event.oneOf(Selected_Component_Changed, Style_Parameters_Changed)){
+            if(event.oneOf(Selected_Changed, Style_Changed)){
                 removeAll();
                 if(Project.getCurrentProject().Components.getSelectedComponent() != null) {
                     content = Project.getCurrentProject().Components.getSelectedComponent().createPreviewComponent();

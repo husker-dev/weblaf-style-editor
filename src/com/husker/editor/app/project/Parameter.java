@@ -1,12 +1,15 @@
-package com.husker.editor.app;
+package com.husker.editor.app.project;
 
 
 
+import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
+import com.alee.laf.grouping.GroupPane;
+import com.alee.laf.grouping.GroupPaneConstraints;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
-import com.husker.editor.app.project.Project;
 
+import javax.swing.*;
 import java.awt.*;
 
 public abstract class Parameter{
@@ -17,22 +20,30 @@ public abstract class Parameter{
     WebLabel name;
     Component component;
     WebComboBox constants;
+    WebButton reset;
 
     String current_const = "";
 
     String last_value = "";
     boolean last_value_saved = false;
 
-    String component_value = "";
-    String default_value = "";
+    String component_variable = "";
+    String default_variable = "";
 
-    public Parameter(String name, String component_value, Constants.ConstType constType, String default_value){
+    StyleComponent current_component;
+
+    public static ImageIcon reset_img;
+    static {
+        reset_img = new ImageIcon("bin/reset.png");
+    }
+
+    public Parameter(String name, String component_variable, Constants.ConstType constType, String default_value){
         panel = new WebPanel();
         panel.setPreferredHeight(25);
         panel.setPadding(0, 0, 0, 5);
 
-        this.component_value = component_value;
-        this.default_value = default_value;
+        this.component_variable = component_variable;
+        this.default_variable = default_value;
 
         this.name = new WebLabel(name + ":");
         this.constants = new WebComboBox(){{
@@ -74,32 +85,46 @@ public abstract class Parameter{
             });
         }};
 
+        reset = new WebButton(){{
+            setPreferredSize(22, 20);
+            setIcon(reset_img);
+            addActionListener(e -> {
+                constants.setSelectedIndex(0);
+                setValue(current_component.getVariable(component_variable).getDefaultValue());
+            });
+        }};
+
         panel.setLayout(new GridLayout(1, 3));
 
         this.component = initComponent();
 
         panel.add(this.name);
         panel.add(this.component);
-        panel.add(this.constants);
+        panel.add(new GroupPane(){{
+            add(constants, GroupPaneConstraints.FILL);
+            add(reset);
+        }});
 
         addValueChangedListener((text, component) -> {
             if(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null)
                 return;
-            if(!component_value.isEmpty())
-                component.setValue(component_value, text);
+            if(!component_variable.isEmpty())
+                component.setVariable(component_variable, text);
         });
     }
 
     public void apply(StyleComponent component){
-        if(!component_value.isEmpty())
+        current_component = component;
+        if(!component_variable.isEmpty())
             if(applyParameter != null)
                 applyParameter.event(component);
 
-        if(component.getValue(component_value) == null) {
-            setValue(default_value);
-            component.setValue(component_value, default_value);
-        }else
-            setValue(component.getValue(component_value));
+        if(component.getVariable(component_variable) == null) {
+            setValue(default_variable);
+            component.setVariable(component_variable, default_variable);
+        }else {
+            setValue(component.getVariableValue(component_variable));
+        }
     }
 
     public void setApplyParameter(IApplyParameter applyParameter){
@@ -107,10 +132,10 @@ public abstract class Parameter{
     }
 
     public void setComponentValue(String value){
-        component_value = value;
+        component_variable = value;
     }
     public String getComponentValue(){
-        return component_value;
+        return component_variable;
     }
 
     public WebPanel getPanel(){

@@ -11,7 +11,7 @@ import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.StyleComponent;
+import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.window.components.MovableComponentList;
 
 
@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.husker.editor.app.project.Components.ComponentEvent.New_Component;
-import static com.husker.editor.app.project.Components.ComponentEvent.Removed_Component;
+import static com.husker.editor.app.project.Components.ComponentEvent.New;
+import static com.husker.editor.app.project.Components.ComponentEvent.Removed;
 import static com.husker.editor.app.project.Project.ProjectEvent.Current_Project_Changed;
 
 public class ComponentsPanel extends WebPanel {
@@ -58,9 +58,9 @@ public class ComponentsPanel extends WebPanel {
                         resetComponents(Project.getCurrentProject().Components.getComponents());
                 });
                 Components.addListener((event, objects) -> {
-                    if(event.oneOf(New_Component))
+                    if(event.oneOf(New))
                         addComponent((StyleComponent) objects[0]);
-                    if(event.oneOf(Removed_Component))
+                    if(event.oneOf(Removed))
                         removeComponent((StyleComponent) objects[0]);
 
                 });
@@ -117,7 +117,7 @@ public class ComponentsPanel extends WebPanel {
 
         Project.addListener((event, objects) -> setActive(Project.getCurrentProject() != null));
         Components.addListener((event, objects) -> {
-            if(event.oneOf(Components.ComponentEvent.Selected_Component_Changed))
+            if(event.oneOf(Components.ComponentEvent.Selected_Changed))
                 for(Map.Entry<StyleComponent, ComponentPanel> entry : components.entrySet())
                     entry.getValue().setSelected(Project.getCurrentProject().Components.getSelectedComponent() == entry.getKey());
         });

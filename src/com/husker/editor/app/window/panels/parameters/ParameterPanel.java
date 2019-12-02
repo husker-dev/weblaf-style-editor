@@ -6,9 +6,9 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.separator.WebSeparator;
 import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Components;
-import com.husker.editor.app.Parameter;
+import com.husker.editor.app.project.Parameter;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.StyleComponent;
+import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.window.components.MovableComponentList;
 
 
@@ -21,11 +21,14 @@ public class ParameterPanel extends WebPanel {
         Components.addListener((event, objects) -> {
             scroll.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
         });
+        Project.addListener((event, objects) -> {
+            scroll.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
+        });
 
         add(scroll = new WebScrollPane(new MovableComponentList(){{
             setShowReorderGrippers(false);
             Components.addListener((event, objects) -> {
-                if(event.oneOf(Components.ComponentEvent.Selected_Component_Changed)) {
+                if(event.oneOf(Components.ComponentEvent.Selected_Changed)) {
                     StyleComponent component = Project.getCurrentProject().Components.getSelectedComponent();
 
                     while(getElementCount() != 0){

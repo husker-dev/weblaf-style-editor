@@ -7,11 +7,10 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
-import com.husker.editor.app.Constants;
+import com.husker.editor.app.project.Constants;
 import com.husker.editor.app.window.components.MovableComponentList;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 
 public class ConstantsPanel extends WebPanel {

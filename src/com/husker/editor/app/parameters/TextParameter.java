@@ -2,8 +2,8 @@ package com.husker.editor.app.parameters;
 
 import com.alee.extended.image.WebImage;
 import com.alee.laf.text.WebTextField;
-import com.husker.editor.app.Constants;
-import com.husker.editor.app.Parameter;
+import com.husker.editor.app.project.Constants;
+import com.husker.editor.app.project.Parameter;
 import com.husker.editor.app.project.Project;
 
 import javax.swing.*;
@@ -18,8 +18,8 @@ public class TextParameter extends Parameter {
     public TextParameter(String name){
         this(name, "");
     }
-    public TextParameter(String name, String value) {
-        super(name, value, Constants.ConstType.Text, "");
+    public TextParameter(String name, String variable) {
+        super(name, variable, Constants.ConstType.Text, "");
 
     }
 

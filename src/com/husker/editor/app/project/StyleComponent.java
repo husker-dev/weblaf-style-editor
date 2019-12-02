@@ -1,10 +1,8 @@
-package com.husker.editor.app;
+package com.husker.editor.app.project;
 
 import com.husker.editor.app.components.Styled_Button;
 import com.husker.editor.app.components.Styled_Label;
 import com.husker.editor.app.parameters.TextParameter;
-import com.husker.editor.app.project.Components;
-import com.husker.editor.app.project.Project;
 import com.husker.editor.app.xml.XMLHead;
 
 import java.awt.*;
@@ -26,7 +24,9 @@ public abstract class StyleComponent implements Cloneable{
     static TextParameter p_id;
     static TextParameter p_extends;
 
-    HashMap<String, String> values = new HashMap<>();
+    HashMap<String, Variable> variables = new HashMap<>();
+
+    ArrayList<StyleComponent> child_components = new ArrayList<>();
 
     public StyleComponent clone(Project project){
         try{
@@ -45,6 +45,8 @@ public abstract class StyleComponent implements Cloneable{
     public StyleComponent(String title, String type){
         this.title = title;
         this.type = type;
+        addVariable("id", new Variable());
+        addVariable("extends", new Variable());
     }
 
     public void setName(String name){
@@ -76,10 +78,10 @@ public abstract class StyleComponent implements Cloneable{
             addXMLParameter("type", type);
             if(preview)
                 addXMLParameter("id", "preview");
-            else if(!getValue("id").equals(""))
-                addXMLParameter("id", getValue("id"));
-            if(getValue("extends") != null && !getValue("extends").equals(""))
-                addXMLParameter("extends", getValue("extends"));
+            else if(!getVariable("id").equals(""))
+                addXMLParameter("id", getVariableValue("id"));
+            if(getVariable("extends") != null && !getVariable("extends").equals(""))
+                addXMLParameter("extends", getVariableValue("extends"));
         }};
     }
 
@@ -95,15 +97,41 @@ public abstract class StyleComponent implements Cloneable{
     public abstract XMLHead getStyleContent();
     public abstract Component createPreviewComponent();
 
-    public void setValue(String tag, String value){
-        values.put(tag, value);
-        Components.doEvent(Components.ComponentEvent.Style_Parameters_Changed);
+    public void addVariable(String name, Variable variable){
+        variables.put(name, variable);
     }
-    public String getValue(String tag){
-        return values.get(tag);
+    public void setVariable(String name, String value){
+        variables.get(name).setValue(value);
+        Components.doEvent(Components.ComponentEvent.Style_Changed);
+    }
+    public Variable getVariable(String name){
+        return variables.get(name);
+    }
+    public String getVariableValue(String name){
+        return variables.get(name).getValue();
     }
 
     public void doEvent(Components.ComponentEvent event, Object... objects){
         Components.doEvent(event, this, objects);
+    }
+
+    public void addChildComponent(StyleComponent component){
+        child_components.add(component);
+        doEvent(Components.ComponentEvent.New_Child, component);
+    }
+    public ArrayList<StyleComponent> getChildComponents(){
+        return child_components;
+    }
+    public void removeChild(StyleComponent component){
+        removeChild(getChildComponents().indexOf(component));
+    }
+    public void removeChild(int index){
+        child_components.remove(index);
+        doEvent(Components.ComponentEvent.Removed_Child);
+    }
+    public void moveChildComponent(int from, int to){
+        StyleComponent component = child_components.get(from);
+        child_components.remove(component);
+        child_components.add(to, component);
     }
 }

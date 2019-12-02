@@ -1,8 +1,8 @@
 package com.husker.editor.app.parameters;
 
 import com.alee.laf.spinner.WebSpinner;
-import com.husker.editor.app.Constants;
-import com.husker.editor.app.Parameter;
+import com.husker.editor.app.project.Constants;
+import com.husker.editor.app.project.Parameter;
 import com.husker.editor.app.project.Project;
 
 import javax.swing.*;
@@ -14,8 +14,8 @@ public class IntegerParameter extends Parameter {
     public IntegerParameter(String name){
         this(name, "");
     }
-    public IntegerParameter(String name, String value) {
-        super(name, value, Constants.ConstType.Number, "0");
+    public IntegerParameter(String name, String variable) {
+        super(name, variable, Constants.ConstType.Number, "0");
     }
 
     public void addValueChangedListener(ParameterChanged listener) {
@@ -30,7 +30,11 @@ public class IntegerParameter extends Parameter {
     }
 
     public Component initComponent() {
-        return spinner = new WebSpinner(new SpinnerNumberModel());
+        spinner = new WebSpinner(new SpinnerNumberModel());
+        JSpinner.DefaultEditor spinnerEditor = (JSpinner.DefaultEditor)spinner.getEditor();
+        spinnerEditor.getTextField().setHorizontalAlignment(JTextField.LEFT);
+
+        return spinner;
     }
 
     public void setValue(String value){
