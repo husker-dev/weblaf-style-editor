@@ -57,6 +57,12 @@ public class Components {
         return selected;
     }
 
+    public void moveComponent(int from, int to){
+        StyleComponent component = components.get(from);
+        components.remove(from);
+        components.add(to, component);
+    }
+
     public interface IComponentListener {
         void event(Components.ComponentEvent event, Object... objects);
     }

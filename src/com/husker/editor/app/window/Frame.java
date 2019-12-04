@@ -21,6 +21,7 @@ import com.husker.editor.app.window.panels.projects.ProjectsPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class Frame extends JFrame {
 
@@ -63,11 +64,11 @@ public class Frame extends JFrame {
                 DockableFrameElement northElement = new DockableFrameElement(projects);
                 add(0, northElement);
 
-                final DockableListContainer centerContainer = new DockableListContainer(Orientation.horizontal);
+                DockableListContainer centerContainer = new DockableListContainer(Orientation.horizontal);
                 centerContainer.add(0, new DockableFrameElement(components));
                 centerContainer.add(1, new DockableContentElement());
                 centerContainer.add(2, new DockableListContainer(Orientation.vertical){{
-                    setSize(new Dimension(220, 250));
+                    setSize(new Dimension(300, 250));
                     add(0, new DockableFrameElement(parameters));
                     add(1, new DockableFrameElement(constants));
                 }});

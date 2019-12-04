@@ -19,7 +19,7 @@ public class IntegerParameter extends Parameter {
     }
 
     public void addValueChangedListener(ParameterChanged listener) {
-        spinner.addChangeListener(e -> listener.event(spinner.getValue().toString(), Project.getCurrentProject().Components.getSelectedComponent()));
+        spinner.addChangeListener(e -> listener.event(spinner.getValue().toString()));
     }
 
     public void setEnabled(boolean enabled) {

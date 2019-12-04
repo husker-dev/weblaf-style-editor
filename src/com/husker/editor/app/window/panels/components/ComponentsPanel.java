@@ -1,5 +1,6 @@
 package com.husker.editor.app.window.panels.components;
 
+import com.alee.extended.panel.ComponentReorderListener;
 import com.alee.extended.statusbar.WebStatusBar;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
@@ -21,8 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.husker.editor.app.project.Components.ComponentEvent.New;
-import static com.husker.editor.app.project.Components.ComponentEvent.Removed;
+import static com.husker.editor.app.project.Components.ComponentEvent.*;
 import static com.husker.editor.app.project.Project.ProjectEvent.Current_Project_Changed;
 
 public class ComponentsPanel extends WebPanel {
@@ -64,6 +64,9 @@ public class ComponentsPanel extends WebPanel {
                         removeComponent((StyleComponent) objects[0]);
 
                 });
+                addComponentReorderListener((component, i, i1) -> {
+                    Project.getCurrentProject().Components.moveComponent(i, i1);
+                });
             }
             void resetComponents(ArrayList<StyleComponent> components){
                 ComponentsPanel.this.components.clear();
@@ -71,8 +74,6 @@ public class ComponentsPanel extends WebPanel {
                     for(int i = 0; i < getElementCount(); i++)
                         this.removeElement(getElement(i));
                 }
-
-
                 for(StyleComponent component : components)
                     addComponent(component);
                 updateUI();
@@ -120,6 +121,9 @@ public class ComponentsPanel extends WebPanel {
             if(event.oneOf(Components.ComponentEvent.Selected_Changed))
                 for(Map.Entry<StyleComponent, ComponentPanel> entry : components.entrySet())
                     entry.getValue().setSelected(Project.getCurrentProject().Components.getSelectedComponent() == entry.getKey());
+            if(event.oneOf(Style_Changed))
+                components.get(objects[0]).onStyleUpdate();
+
         });
         setActive(false);
     }

@@ -29,14 +29,18 @@ public class Styled_Button extends StyleComponent {
     }
 
     public XMLHead getStyleContent() {
+        if(areVariablesDefault("round"))
+            return null;
+
         return new XMLHead("painter"){{
-            addXMLHead(new XMLHead("decorations"){{
-                addXMLHead(new XMLHead("decoration"){{
-                    addXMLHead(new XMLHead("WebShape"){{
+            addXMLHead(new XMLHead("decorations") {{
+                addXMLHead(new XMLHead("decoration") {{
+                    addXMLHead(new XMLHead("WebShape") {{
                         addXMLParameter("round", getVariableValue("round"));
                     }});
                 }});
             }});
+
         }};
     }
 

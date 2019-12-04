@@ -1,9 +1,16 @@
 package com.husker.editor.app.project;
 
-public class Variable {
+public class Variable implements Cloneable {
 
     String value = null;
     String default_value;
+
+    public Variable clone(){
+        try{
+            return (Variable) super.clone();
+        }catch (Exception ex){}
+        return null;
+    }
 
     public Variable(){
         this("");
@@ -23,6 +30,9 @@ public class Variable {
         return default_value;
     }
     public boolean isDefaultValue(){
-        return value == null;
+        if(value == null)
+            return true;
+        else
+            return value.equals(default_value);
     }
 }

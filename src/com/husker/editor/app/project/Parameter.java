@@ -105,26 +105,24 @@ public abstract class Parameter{
             add(reset);
         }});
 
-        addValueChangedListener((text, component) -> {
+        addValueChangedListener(text -> {
             if(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null)
                 return;
             if(!component_variable.isEmpty())
-                component.setVariable(component_variable, text);
+                current_component.setVariable(component_variable, text);
+
         });
     }
 
     public void apply(StyleComponent component){
+
         current_component = component;
         if(!component_variable.isEmpty())
             if(applyParameter != null)
                 applyParameter.event(component);
 
-        if(component.getVariable(component_variable) == null) {
-            setValue(default_variable);
-            component.setVariable(component_variable, default_variable);
-        }else {
+        if(component.getVariable(component_variable) != null)
             setValue(component.getVariableValue(component_variable));
-        }
     }
 
     public void setApplyParameter(IApplyParameter applyParameter){
@@ -153,7 +151,7 @@ public abstract class Parameter{
     public abstract void addValueChangedListener(ParameterChanged listener);
 
     public interface ParameterChanged {
-        void event(String text, StyleComponent component);
+        void event(String text);
     }
 
     public interface IApplyParameter {

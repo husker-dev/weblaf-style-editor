@@ -8,6 +8,8 @@ import com.husker.editor.app.xml.XMLHead;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public abstract class StyleComponent implements Cloneable{
 
@@ -32,8 +34,17 @@ public abstract class StyleComponent implements Cloneable{
         try{
             StyleComponent component = (StyleComponent) super.clone();
             component.project = project;
+
+            // Copying variables
+            HashMap<String, Variable> new_variables = new HashMap<>();
+            for(Map.Entry<String, Variable> entry : variables.entrySet())
+                new_variables.put(entry.getKey() + "", entry.getValue().clone());
+            component.variables = new_variables;
+
             return component;
-        }catch (Exception ex){}
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
         return null;
     }
 
@@ -78,9 +89,9 @@ public abstract class StyleComponent implements Cloneable{
             addXMLParameter("type", type);
             if(preview)
                 addXMLParameter("id", "preview");
-            else if(!getVariable("id").equals(""))
+            else if(!getVariable("id").isDefaultValue())
                 addXMLParameter("id", getVariableValue("id"));
-            if(getVariable("extends") != null && !getVariable("extends").equals(""))
+            if(!getVariable("extends").isDefaultValue())
                 addXMLParameter("extends", getVariableValue("extends"));
         }};
     }
@@ -102,7 +113,7 @@ public abstract class StyleComponent implements Cloneable{
     }
     public void setVariable(String name, String value){
         variables.get(name).setValue(value);
-        Components.doEvent(Components.ComponentEvent.Style_Changed);
+        Components.doEvent(Components.ComponentEvent.Style_Changed, this);
     }
     public Variable getVariable(String name){
         return variables.get(name);
@@ -133,5 +144,12 @@ public abstract class StyleComponent implements Cloneable{
         StyleComponent component = child_components.get(from);
         child_components.remove(component);
         child_components.add(to, component);
+    }
+
+    public boolean areVariablesDefault(String... variables){
+        for(String variable : variables)
+            if(!this.variables.get(variable).isDefaultValue())
+                return false;
+        return true;
     }
 }

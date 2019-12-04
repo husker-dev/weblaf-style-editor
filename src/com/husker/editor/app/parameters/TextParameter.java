@@ -55,7 +55,7 @@ public class TextParameter extends Parameter {
                 warn();
             }
             public void warn() {
-                listener.event(textField.getText(), Project.getCurrentProject().Components.getSelectedComponent());
+                listener.event(textField.getText());
             }
         });
     }

@@ -29,7 +29,7 @@ public class ParameterPanel extends WebPanel {
             setShowReorderGrippers(false);
             Components.addListener((event, objects) -> {
                 if(event.oneOf(Components.ComponentEvent.Selected_Changed)) {
-                    StyleComponent component = Project.getCurrentProject().Components.getSelectedComponent();
+                    StyleComponent component = (StyleComponent)objects[0];
 
                     while(getElementCount() != 0){
                         for(int i = 0; i < getElementCount(); i++)

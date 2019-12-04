@@ -5,12 +5,16 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.button.WebToggleButton;
 import com.alee.laf.grouping.GroupPane;
 import com.alee.laf.grouping.GroupPaneConstraints;
+import com.alee.laf.label.WebLabel;
 import com.alee.laf.menu.WebMenuItem;
 import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.panel.WebPanel;
+import com.alee.managers.style.StyleId;
+import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -22,6 +26,10 @@ class ComponentPanel extends WebPanel {
     WebToggleButton title;
     WebButton actions, resize;
 
+    WebLabel type, id, separator;
+
+    StyleComponent component;
+
     static ImageIcon close_1, close_2, more, arrow_down, arrow_up;
     static {
         close_1 = new ImageIcon("bin/close.png");
@@ -32,10 +40,29 @@ class ComponentPanel extends WebPanel {
     }
 
     public ComponentPanel(StyleComponent component){
-        setPreferredSize(170, 26);
+        this.component = component;
+        setPreferredSize(170, 27);
 
-        title = new WebToggleButton(component.getTitle()){{
+        title = new WebToggleButton(){{
             setHorizontalAlignment(LEFT);
+            setVerticalAlignment(CENTER);
+            add(new WebPanel(){{
+                setStyleId(StyleId.panelTransparent);
+                setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+                add(type = new WebLabel(component.getTitle()){{
+                    //setStyleId(StyleId.labelTag);
+                    setPreferredHeight(18);
+                }});
+                add(separator = new WebLabel("  ->  "){{
+                    setPreferredHeight(18);
+                    setVisible(false);
+                }});
+                add(id = new WebLabel(){{
+                    setStyleId(StyleId.labelTag);
+                    setPreferredHeight(18);
+                    setVisible(false);
+                }});
+            }});
 
             addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
@@ -47,14 +74,13 @@ class ComponentPanel extends WebPanel {
                         dragged = false;
                         setEnabled(true);
                         return;
+                    }else{
+                        if(isSelected())
+                            component.getProject().Components.setSelectedComponent(component);
+                        else
+                            component.getProject().Components.setSelectedComponent(null);
                     }
                 }
-            });
-            addActionListener(e -> {
-                if(isSelected())
-                    component.getProject().Components.setSelectedComponent(component);
-                else
-                    component.getProject().Components.setSelectedComponent(null);
             });
             addMouseMotionListener(new MouseMotionAdapter() {
                 public void mouseDragged(MouseEvent e) {
@@ -75,9 +101,14 @@ class ComponentPanel extends WebPanel {
             });
         }};
         WebPopupMenu popup = new WebPopupMenu();
-        popup.add(new WebMenuItem("Text line 1"){{
+        popup.add(new WebMenuItem("Add"){{
             addActionListener(e -> {
                 System.out.println("ok");
+            });
+        }});
+        popup.add(new WebMenuItem("Remove"){{
+            addActionListener(e -> {
+                Project.getCurrentProject().Components.removeComponent(component);
             });
         }});
 
@@ -102,6 +133,13 @@ class ComponentPanel extends WebPanel {
             add(resize);
         }});
 
+    }
+
+    public void onStyleUpdate(){
+        if(!component.getVariable("id").isDefaultValue())
+            id.setText(component.getVariableValue("id"));
+        id.setVisible(!component.getVariable("id").isDefaultValue());
+        separator.setVisible(!component.getVariable("id").isDefaultValue());
     }
 
     public void setSelected(boolean selected){
