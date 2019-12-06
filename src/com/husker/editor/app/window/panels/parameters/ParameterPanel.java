@@ -27,6 +27,7 @@ public class ParameterPanel extends WebPanel {
 
         add(scroll = new WebScrollPane(new MovableComponentList(){{
             setShowReorderGrippers(false);
+            setReorderingAllowed(false);
             Components.addListener((event, objects) -> {
                 if(event.oneOf(Components.ComponentEvent.Selected_Changed)) {
                     StyleComponent component = (StyleComponent)objects[0];

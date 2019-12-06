@@ -19,7 +19,7 @@ public class PreviewPanel extends WebPanel {
 
     public PreviewPanel(){
         setLayout(new BorderLayout());
-        setStyleId(StyleId.panelDecorated);
+        //setStyleId(StyleId.panelDecorated);
 
         Components.addListener((event, objects) -> {
             painting.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));

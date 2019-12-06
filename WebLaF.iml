@@ -74,15 +74,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/src/libraries/weblaf dependencies/svg-salamander-1.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/src/libraries/weblaf dependencies/xstream-1.4.9.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -92,7 +83,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/src/libraries/weblaf-core-1.2.10.jar!/" />
+          <root url="jar://$MODULE_DIR$/src/libraries/weblaf dependencies/svg-salamander-1.1.2.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -101,7 +92,16 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/src/libraries/weblaf-ui-1.2.10.jar!/" />
+          <root url="jar://$MODULE_DIR$/src/libraries/weblaf-core-1.2.11.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/src/libraries/weblaf-ui-1.2.11.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

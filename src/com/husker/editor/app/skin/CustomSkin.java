@@ -1,5 +1,7 @@
 package com.husker.editor.app.skin;
 
+import com.alee.api.resource.ClassResource;
+import com.alee.api.resource.Resource;
 import com.alee.managers.style.StyleManager;
 import com.alee.managers.style.XmlSkin;
 import com.alee.managers.style.data.SkinInfo;
@@ -20,7 +22,7 @@ public class CustomSkin extends XmlSkin {
             "    <title>Custom skin</title>\n" +
             "    <description>WebLaF Editor Skin</description>\n" +
             "    <author>Husker</author>\n" +
-            "    <include nearClass=\"com.alee.skin.web.WebSkin\">resources/skin.xml</include>\n" +
+            "    <include nearClass=\"com.alee.skin.light.WebLightSkin\">resources/web-light-skin.xml</include>\n" +
             "\n" +
             "<!-- CODE -->\n" +
             "</skin>";
@@ -29,7 +31,7 @@ public class CustomSkin extends XmlSkin {
     static int thread_id = 0;
 
     public CustomSkin() {
-        super(CustomSkin.class, "editor_skin.xml");
+        super(new ClassResource(CustomSkin.class, "editor_skin.xml"));
     }
 
     public static void applySkin(Component component, XMLHead skin){
@@ -47,9 +49,15 @@ public class CustomSkin extends XmlSkin {
 
                 String text = pattern.replace("<!-- CODE -->", skin.toString(1));
 
-                SkinInfo skinInfo = XmlUtils.fromXML(text);
+                System.out.println(text);
 
+                SkinInfo skinInfo = XmlUtils.fromXML(text);
+                skinInfo.install();
                 StyleManager.setSkin((JComponent)component, new XmlSkin(skinInfo));
+
+
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }finally {
@@ -58,8 +66,12 @@ public class CustomSkin extends XmlSkin {
                     PreviewPanel.progressBar.setVisible(false);
 
                 SwingUtilities.invokeLater(() -> {
-                    Main.frame.preview.updateUI();
-                    Main.frame.preview.painting.updateContent();
+                    try {
+                        Main.frame.preview.updateUI();
+                        Main.frame.preview.painting.updateContent();
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                 });
             }
         }).start();

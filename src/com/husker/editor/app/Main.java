@@ -5,7 +5,6 @@ import com.husker.editor.app.project.Constants;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.window.Frame;
 
-
 public class Main {
 
     public static Frame frame;
@@ -23,5 +22,6 @@ public class Main {
         Constants.setConstant(Constants.ConstType.Text, "Text Const 2", "Text 123 HELLO");
         Constants.setConstant(Constants.ConstType.Number, "Number Const 1", "123");
         Constants.setConstant(Constants.ConstType.Number, "Number Const 2", "12332");
+
     }
 }

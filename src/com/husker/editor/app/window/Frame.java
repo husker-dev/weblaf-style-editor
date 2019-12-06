@@ -11,6 +11,7 @@ import com.alee.laf.menu.WebMenu;
 import com.alee.laf.menu.WebMenuBar;
 import com.alee.laf.menu.WebMenuItem;
 import com.alee.managers.hotkey.Hotkey;
+import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.window.panels.code.CodePanel;
 import com.husker.editor.app.window.panels.components.ComponentsPanel;
@@ -21,7 +22,6 @@ import com.husker.editor.app.window.panels.projects.ProjectsPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 
 public class Frame extends JFrame {
 
@@ -45,15 +45,26 @@ public class Frame extends JFrame {
         setJMenuBar(setupMenu(new WebMenuBar()));
 
         add(new WebDockablePane(){{
+            setStyleId(StyleId.dockableframeCompact);
 
             preview = new PreviewPanel();
-            projects = new CustomDockablePanel("Projects", new ProjectsPanel());
-            parameters = new CustomDockablePanel("Parameters", new ParameterPanel());
-            components = new CustomDockablePanel("Components", new ComponentsPanel());
-            code = new CustomDockablePanel("Code", new CodePanel());
-            constants = new CustomDockablePanel("Constants", new ConstantsPanel());
 
-            setContent(preview);
+            projects = new CustomDockablePanel("Projects", new ProjectsPanel());
+            projects.setIcon(new ImageIcon("bin/projects.png"));
+
+            parameters = new CustomDockablePanel("Parameters", new ParameterPanel());
+            parameters.setIcon(new ImageIcon("bin/parameters.png"));
+
+            components = new CustomDockablePanel("Components", new ComponentsPanel());
+            components.setIcon(new ImageIcon("bin/components.png"));
+
+            code = new CustomDockablePanel("Code", new CodePanel());
+            code.setIcon(new ImageIcon("bin/code.png"));
+
+            constants = new CustomDockablePanel("Constants", new ConstantsPanel());
+            constants.setIcon(new ImageIcon("bin/constants.png"));
+
+            //setContent(preview);
             addFrame(projects);
             addFrame(parameters);
             addFrame(components);
@@ -96,6 +107,7 @@ public class Frame extends JFrame {
 
             addSeparator();
             add(new WebMenuItem("Exit"){{
+                setIcon(new ImageIcon("bin/exit_icon.png"));
                 setAccelerator(Hotkey.ALT_F4);
                 addActionListener((e) -> System.exit(0));
             }});
@@ -105,7 +117,7 @@ public class Frame extends JFrame {
     }
 
 
-    public class CustomDockablePanel extends WebDockableFrame{
+    public static class CustomDockablePanel extends WebDockableFrame{
 
         public CustomDockablePanel(String name, Component component) {
             super(name.replace(" ","_").toLowerCase(), name);

@@ -7,7 +7,6 @@ import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.skin.CustomSkin;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -24,7 +23,7 @@ public class PaintingPanel extends WebPanel {
         setLayout(null);
 
         Components.addListener((event, objects) -> {
-            if(event.oneOf(Selected_Changed, Style_Changed)){
+            if(event.oneOf(Selected_Changed)){
                 removeAll();
                 if(Project.getCurrentProject().Components.getSelectedComponent() != null) {
                     content = Project.getCurrentProject().Components.getSelectedComponent().createPreviewComponent();
@@ -36,9 +35,10 @@ public class PaintingPanel extends WebPanel {
                     }catch (Exception ex){
                         ex.printStackTrace();
                     }
-
                     add(content);
                 }
+            }
+            if(event.oneOf(Selected_Changed, Style_Changed)){
                 updateContent();
                 if(Project.getCurrentProject().Components.getSelectedComponent() != null)
                     updateSkin();
@@ -73,7 +73,8 @@ public class PaintingPanel extends WebPanel {
     }
 
     public void updateSkin(){
-        CustomSkin.applySkin(content, Project.getCurrentProject().Components.getSelectedComponent().getXMLStyle(true));
-        ((JComponent)content).updateUI();
+        try {
+            CustomSkin.applySkin(content, Project.getCurrentProject().Components.getSelectedComponent().getXMLStyle(true));
+        }catch (Exception ex){}
     }
 }
