@@ -64,7 +64,7 @@ public class Frame extends JFrame {
             constants = new CustomDockablePanel("Constants", new ConstantsPanel());
             constants.setIcon(new ImageIcon("bin/constants.png"));
 
-            //setContent(preview);
+            setContent(preview);
             addFrame(projects);
             addFrame(parameters);
             addFrame(components);

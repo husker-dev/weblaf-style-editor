@@ -49,14 +49,9 @@ public class CustomSkin extends XmlSkin {
 
                 String text = pattern.replace("<!-- CODE -->", skin.toString(1));
 
-                System.out.println(text);
-
                 SkinInfo skinInfo = XmlUtils.fromXML(text);
                 skinInfo.install();
                 StyleManager.setSkin((JComponent)component, new XmlSkin(skinInfo));
-
-
-
 
             } catch (Exception e) {
                 e.printStackTrace();
