@@ -43,6 +43,7 @@ public class Frame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         setJMenuBar(setupMenu(new WebMenuBar()));
+        setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 
         add(new WebDockablePane(){{
             setStyleId(StyleId.dockableframeCompact);
@@ -79,7 +80,7 @@ public class Frame extends JFrame {
                 centerContainer.add(0, new DockableFrameElement(components));
                 centerContainer.add(1, new DockableContentElement());
                 centerContainer.add(2, new DockableListContainer(Orientation.vertical){{
-                    setSize(new Dimension(300, 250));
+                    setSize(new Dimension(350, 250));
                     add(0, new DockableFrameElement(parameters));
                     add(1, new DockableFrameElement(constants));
                 }});
@@ -103,7 +104,6 @@ public class Frame extends JFrame {
                     addActionListener((e) -> Project.addProject(new Project()));
                 }});
             }});
-
 
             addSeparator();
             add(new WebMenuItem("Exit"){{

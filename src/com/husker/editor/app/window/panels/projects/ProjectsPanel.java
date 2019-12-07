@@ -11,7 +11,7 @@ import java.awt.*;
 public class ProjectsPanel extends WebPanel {
 
     public ProjectsPanel(){
-        setPreferredSize(new Dimension(0, 50));
+        setPreferredSize(new Dimension(0, 51));
 
 
         add(new WebScrollPane(new WebPanel(){{

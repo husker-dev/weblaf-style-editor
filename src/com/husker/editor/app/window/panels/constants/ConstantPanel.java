@@ -8,7 +8,5 @@ public class ConstantPanel extends WebPanel {
 
     public ConstantPanel(){
         setLayout(new GridLayout(1, 2));
-
-
     }
 }

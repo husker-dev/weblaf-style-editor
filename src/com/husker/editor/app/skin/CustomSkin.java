@@ -1,7 +1,6 @@
 package com.husker.editor.app.skin;
 
 import com.alee.api.resource.ClassResource;
-import com.alee.api.resource.Resource;
 import com.alee.managers.style.StyleManager;
 import com.alee.managers.style.XmlSkin;
 import com.alee.managers.style.data.SkinInfo;

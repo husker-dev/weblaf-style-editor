@@ -50,7 +50,6 @@ class ComponentPanel extends WebPanel {
                 setStyleId(StyleId.panelTransparent);
                 setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
                 add(type = new WebLabel(component.getTitle()){{
-                    //setStyleId(StyleId.labelTag);
                     setPreferredHeight(18);
                 }});
                 add(separator = new WebLabel("  ->  "){{

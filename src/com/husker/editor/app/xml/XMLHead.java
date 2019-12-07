@@ -1,9 +1,6 @@
 package com.husker.editor.app.xml;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class XMLHead {
 
@@ -23,6 +20,49 @@ public class XMLHead {
         if(head == null)
             return;
         heads.add(head);
+    }
+
+    public ArrayList<String> getXMLHeadsNames(){
+        ArrayList<String> heads_names = new ArrayList<>();
+        for(XMLHead head : this.heads)
+            heads_names.add(head.name);
+        return heads_names;
+    }
+    public XMLHead getXMLHead(String name){
+        for(XMLHead head : heads)
+            if(head.name.equals(name))
+                return head;
+        return null;
+    }
+    public boolean contains(String head_name){
+        for(XMLHead head : heads)
+            if(head.name.equals(head_name))
+                return true;
+        return false;
+    }
+
+    public void setParameterByPath(String path, XMLParameter parameter){
+        String[] heads = path.split("\\.");
+
+        XMLHead current_head = this;
+        for(String head : heads){
+            if(!current_head.contains(head))
+                current_head.addXMLHead(new XMLHead(head));
+            current_head = current_head.getXMLHead(head);
+        }
+        current_head.addXMLParameter(parameter);
+    }
+
+    public void setHeadByPath(String path, XMLHead new_head){
+        String[] heads = path.split("\\.");
+
+        XMLHead current_head = this;
+        for(String head : heads){
+            if(!current_head.contains(head))
+                current_head.addXMLHead(new XMLHead(head));
+            current_head = current_head.getXMLHead(head);
+        }
+        current_head.addXMLHead(new_head);
     }
 
     public void addXMLParameter(XMLParameter parameter){

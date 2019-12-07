@@ -6,18 +6,17 @@ import com.husker.editor.app.xml.XMLHead;
 import com.alee.laf.label.WebLabel;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 public class Styled_Label extends StyleComponent {
     public Styled_Label() {
         super("Label", "label");
     }
 
-    public ArrayList<Parameter> getParameters() {
+    public Parameter[] getCustomParameters() {
         return null;
     }
 
-    public XMLHead getStyleContent() {
+    public XMLHead[] getStyleContent() {
         return null;
     }
 

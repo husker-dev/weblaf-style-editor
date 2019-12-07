@@ -3,7 +3,6 @@ package com.husker.editor.app.parameters;
 import com.alee.laf.spinner.WebSpinner;
 import com.husker.editor.app.project.Constants;
 import com.husker.editor.app.project.Parameter;
-import com.husker.editor.app.project.Project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,11 +10,11 @@ import java.awt.*;
 public class IntegerParameter extends Parameter {
     public WebSpinner spinner;
 
-    public IntegerParameter(String name){
-        this(name, "");
+    public IntegerParameter(String name, String variable){
+        this(name, variable, null);
     }
-    public IntegerParameter(String name, String variable) {
-        super(name, variable, Constants.ConstType.Number, "0");
+    public IntegerParameter(String name, String variable, String group) {
+        super(name, variable, Constants.ConstType.Number, group);
     }
 
     public void addValueChangedListener(ParameterChanged listener) {

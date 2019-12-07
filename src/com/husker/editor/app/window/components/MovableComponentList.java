@@ -12,7 +12,6 @@ public class MovableComponentList extends WebComponentPane {
     public MovableComponentList(){
         setStyleId(StyleId.componentpane);
         setReorderingAllowed(true);
-        //setShowReorderGrippers(false);
     }
 
     public WebSelectablePanel addElement(Component component){

@@ -1,7 +1,5 @@
 package com.husker.editor.app.project;
 
-
-
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.grouping.GroupPane;
@@ -23,73 +21,81 @@ public abstract class Parameter{
     WebButton reset;
 
     String current_const = "";
-
     String last_value = "";
     boolean last_value_saved = false;
 
-    String component_variable = "";
-    String default_variable = "";
+    String component_variable;
+    Constants.ConstType constType;
 
     StyleComponent current_component;
 
-    public static ImageIcon reset_img;
+    String group;
+
+    public static ImageIcon reset_img, reset_disabled_img;
     static {
         reset_img = new ImageIcon("bin/reset.png");
+        reset_disabled_img = new ImageIcon("bin/reset_disabled.png");
     }
 
-    public Parameter(String name, String component_variable, Constants.ConstType constType, String default_value){
+    public Parameter(String name, String component_variable, Constants.ConstType constType, String group){
         panel = new WebPanel();
         panel.setPreferredHeight(25);
         panel.setPadding(0, 0, 0, 5);
 
         this.component_variable = component_variable;
-        this.default_variable = default_value;
+        this.constType = constType;
+        this.group = group;
 
         this.name = new WebLabel(name + ":");
-        this.constants = new WebComboBox(){{
-            setPreferredWidth(20);
-            addItem("Custom");
-            setWidePopup(true);
 
-            Constants.addListener((event, objects) -> {
-                removeAllItems();
+        if(constType != null) {
+            this.constants = new WebComboBox() {{
+                setPreferredWidth(20);
                 addItem("Custom");
-                for(String tag : Constants.getConstants(constType))
-                    addItem(tag);
-            });
+                setWidePopup(true);
+
+                Constants.addListener((event, objects) -> {
+                    removeAllItems();
+                    addItem("Custom");
+                    for (String tag : Constants.getConstants(constType))
+                        addItem(tag);
+                });
 
 
-            addItemListener(e -> {
-                if(getSelectedItem() == null)
-                    return;
+                addItemListener(e -> {
+                    if (getSelectedItem() == null)
+                        return;
 
-                if(current_const.equals("") || !current_const.equals(getSelectedItem()))
-                    current_const = getSelectedItem().toString();
-                else if(current_const.equals(getSelectedItem()))
-                    return;
+                    if (current_const.equals("") || !current_const.equals(getSelectedItem()))
+                        current_const = getSelectedItem().toString();
+                    else if (current_const.equals(getSelectedItem()))
+                        return;
 
-                if(getSelectedItem() != null) {
-                    if (getSelectedItem().equals("Custom")) {
-                        Parameter.this.setEnabled(true);
-                        Parameter.this.setValue(last_value);
-                        last_value_saved = false;
-                    }else {
-                        if(!last_value_saved){
-                            last_value_saved = true;
-                            last_value = getValue();
+                    if (getSelectedItem() != null) {
+                        if (getSelectedItem().equals("Custom")) {
+                            Parameter.this.setEnabled(true);
+                            Parameter.this.setValue(last_value);
+                            last_value_saved = false;
+                        } else {
+                            if (!last_value_saved) {
+                                last_value_saved = true;
+                                last_value = getValue();
+                            }
+                            Parameter.this.setEnabled(false);
+                            Parameter.this.setValue(Constants.getConstant(constType, getSelectedItem().toString()));
                         }
-                        Parameter.this.setEnabled(false);
-                        Parameter.this.setValue(Constants.getConstant(constType, getSelectedItem().toString()));
                     }
-                }
-            });
-        }};
+                });
+            }};
+        }
 
         reset = new WebButton(){{
-            setPreferredSize(22, 20);
+            setPreferredSize(26, 20);
             setIcon(reset_img);
+            setDisabledIcon(reset_disabled_img);
             addActionListener(e -> {
-                constants.setSelectedIndex(0);
+                if(constType != null)
+                    constants.setSelectedIndex(0);
                 setValue(current_component.getVariable(component_variable).getDefaultValue());
             });
         }};
@@ -100,10 +106,14 @@ public abstract class Parameter{
 
         panel.add(this.name);
         panel.add(this.component);
-        panel.add(new GroupPane(){{
-            add(constants, GroupPaneConstraints.FILL);
-            add(reset);
-        }});
+        if(constType != null) {
+            panel.add(new GroupPane() {{
+                add(reset);
+                add(constants, GroupPaneConstraints.FILL);
+            }});
+        }else{
+            panel.add(reset);
+        }
 
         addValueChangedListener(text -> {
             if(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null)
@@ -111,11 +121,11 @@ public abstract class Parameter{
             if(!component_variable.isEmpty())
                 current_component.setVariable(component_variable, text);
 
+            reset.setEnabled(!current_component.getVariable(component_variable).getDefaultValue().equals(getValue()));
         });
     }
 
     public void apply(StyleComponent component){
-
         current_component = component;
         if(!component_variable.isEmpty())
             if(applyParameter != null)
@@ -123,6 +133,7 @@ public abstract class Parameter{
 
         if(component.getVariable(component_variable) != null)
             setValue(component.getVariableValue(component_variable));
+        reset.setEnabled(!current_component.getVariable(component_variable).getDefaultValue().equals(getValue()));
     }
 
     public void setApplyParameter(IApplyParameter applyParameter){
@@ -138,6 +149,13 @@ public abstract class Parameter{
 
     public WebPanel getPanel(){
         return panel;
+    }
+
+    public void setGroup(String group){
+        this.group = group;
+    }
+    public String getGroup(){
+        return group;
     }
 
     public abstract void setValue(String value);

@@ -1,6 +1,5 @@
 package com.husker.editor.app.window.panels.components;
 
-import com.alee.extended.panel.ComponentReorderListener;
 import com.alee.extended.statusbar.WebStatusBar;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;

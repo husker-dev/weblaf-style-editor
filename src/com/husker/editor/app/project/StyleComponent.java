@@ -2,13 +2,15 @@ package com.husker.editor.app.project;
 
 import com.husker.editor.app.components.Styled_Button;
 import com.husker.editor.app.components.Styled_Label;
+import com.husker.editor.app.parameters.BooleanParameter;
 import com.husker.editor.app.parameters.TextParameter;
 import com.husker.editor.app.xml.XMLHead;
+import com.husker.editor.app.xml.XMLParameter;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public abstract class StyleComponent implements Cloneable{
@@ -23,8 +25,8 @@ public abstract class StyleComponent implements Cloneable{
     String title;
     Project project;
 
-    static TextParameter p_id;
-    static TextParameter p_extends;
+    static TextParameter p_id, p_extends;
+    static BooleanParameter p_decoration;
 
     HashMap<String, Variable> variables = new HashMap<>();
 
@@ -51,13 +53,15 @@ public abstract class StyleComponent implements Cloneable{
     static {
         p_id = new TextParameter("Id","id");
         p_extends = new TextParameter("Extends", "extends");
+        p_decoration = new BooleanParameter("Decorations", "decorations");
     }
 
     public StyleComponent(String title, String type){
         this.title = title;
         this.type = type;
-        addVariable("id", new Variable());
-        addVariable("extends", new Variable());
+        addVariable("id");
+        addVariable("extends");
+        addVariable("decorations", "true");
     }
 
     public void setName(String name){
@@ -75,13 +79,12 @@ public abstract class StyleComponent implements Cloneable{
         return project;
     }
 
-    public abstract ArrayList<Parameter> getParameters();
+    public abstract Parameter[] getCustomParameters();
 
-    public ArrayList<Parameter> getDefaultParameters(){
-        return new ArrayList<Parameter>(){{
-            add(p_id);
-            add(p_extends);
-        }};
+    public Parameter[] getDefaultParameters(){
+        return new Parameter[]{
+                p_id, p_extends, p_decoration
+        };
     }
 
     public XMLHead getStyleHead(boolean preview){
@@ -101,15 +104,30 @@ public abstract class StyleComponent implements Cloneable{
     }
     public XMLHead getXMLStyle(boolean preview){
         XMLHead head = getStyleHead(preview);
-        head.addXMLHead(getStyleContent());
+        XMLHead[] custom = getStyleContent();
+        if(custom != null)
+            for(XMLHead content : custom)
+                head.addXMLHead(content);
+
+        // Decorations
+        if(getVariableValue("decorations").equals("false"))
+            head.setParameterByPath("painter.decorations.decoration", new XMLParameter("visible", "false"));
+
+
         return head;
     }
 
-    public abstract XMLHead getStyleContent();
+    public abstract XMLHead[] getStyleContent();
     public abstract Component createPreviewComponent();
 
     public void addVariable(String name, Variable variable){
         variables.put(name, variable);
+    }
+    public void addVariable(String name, String default_value){
+        this.addVariable(name, new Variable(default_value));
+    }
+    public void addVariable(String name){
+        this.addVariable(name, new Variable());
     }
     public void setVariable(String name, String value){
         variables.get(name).setValue(value);
@@ -151,5 +169,18 @@ public abstract class StyleComponent implements Cloneable{
             if(!this.variables.get(variable).isDefaultValue())
                 return false;
         return true;
+    }
+
+    public Parameter[] getParameters(){
+        ArrayList<Parameter> both = new ArrayList<>();
+
+        Parameter[] default_parameters = getDefaultParameters();
+        Parameter[] custom_parameters = getCustomParameters();
+        if(default_parameters != null)
+            both.addAll(Arrays.asList(default_parameters));
+        if(custom_parameters != null)
+            both.addAll(Arrays.asList(custom_parameters));
+
+        return both.toArray(new Parameter[0]);
     }
 }
