@@ -37,6 +37,7 @@ public class TextParameter extends Parameter {
 
     public Component initComponent() {
         textField = new WebTextField();
+        textField.setPreferredWidth(50);
         textField.setTrailingComponent(new WebImage(new ImageIcon("bin/text_field.png")));
         return textField;
     }

@@ -37,7 +37,9 @@ public abstract class Parameter{
         reset_disabled_img = new ImageIcon("bin/reset_disabled.png");
     }
 
-    public Parameter(String name, String component_variable, Constants.ConstType constType, String group){
+    public Parameter(String name, String component_variable, Constants.ConstType constType, String group, Object[]... objects){
+        initObjects(objects);
+
         panel = new WebPanel();
         panel.setPreferredHeight(25);
         panel.setPadding(0, 0, 0, 5);
@@ -143,7 +145,7 @@ public abstract class Parameter{
     public void setComponentValue(String value){
         component_variable = value;
     }
-    public String getComponentValue(){
+    public String getComponentVariable(){
         return component_variable;
     }
 
@@ -157,6 +159,8 @@ public abstract class Parameter{
     public String getGroup(){
         return group;
     }
+
+    public void initObjects(Object[][] objects){}
 
     public abstract void setValue(String value);
     public abstract String getValue();

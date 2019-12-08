@@ -8,7 +8,7 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Constants;
-import com.husker.editor.app.window.components.MovableComponentList;
+import com.husker.editor.app.window.tools.MovableComponentList;
 
 import java.awt.*;
 

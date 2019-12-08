@@ -12,7 +12,7 @@ import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
-import com.husker.editor.app.window.components.MovableComponentList;
+import com.husker.editor.app.window.tools.MovableComponentList;
 
 
 import java.awt.*;
@@ -39,7 +39,7 @@ public class ComponentsPanel extends WebPanel {
 
         combo = new WebComboBox(){{
             ArrayList<String> components = new ArrayList<>();
-            for(Map.Entry<String, StyleComponent> entry : StyleComponent.components.entrySet())
+            for(Map.Entry<String, Class<? extends StyleComponent>> entry : StyleComponent.components.entrySet())
                 components.add(entry.getKey());
             Collections.sort(components);
             for(String component : components)
@@ -47,8 +47,12 @@ public class ComponentsPanel extends WebPanel {
         }};
         add = new WebButton("+"){{
             addActionListener(e -> {
-                if(Project.getCurrentProject() != null)
-                    Project.getCurrentProject().Components.addComponent(StyleComponent.components.get(combo.getSelectedItem()).clone(Project.getCurrentProject()));
+                try {
+                    if (Project.getCurrentProject() != null)
+                        Project.getCurrentProject().Components.addComponent(StyleComponent.components.get(combo.getSelectedItem()).newInstance().clone(Project.getCurrentProject()));
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                };
             });
         }};
         list = new MovableComponentList(){{

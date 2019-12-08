@@ -78,18 +78,19 @@ public class Frame extends JFrame {
 
                 DockableListContainer centerContainer = new DockableListContainer(Orientation.horizontal);
                 centerContainer.add(0, new DockableFrameElement(components));
-                centerContainer.add(1, new DockableContentElement());
+                centerContainer.add(1, new DockableListContainer(Orientation.vertical){{
+                    setSize(new Dimension(350, 250));
+                    add(0, new DockableContentElement());
+                    add(1, new DockableFrameElement(code){{
+                        setSize(new Dimension(200, 250));
+                    }});
+                }});
                 centerContainer.add(2, new DockableListContainer(Orientation.vertical){{
                     setSize(new Dimension(350, 250));
                     add(0, new DockableFrameElement(parameters));
                     add(1, new DockableFrameElement(constants));
                 }});
                 add(1, centerContainer);
-
-                final DockableListContainer southContainer = new DockableListContainer(Orientation.horizontal);
-                southContainer.add(0, new DockableFrameElement(code));
-                southContainer.setSize(new Dimension(200, 250));
-                add(2, southContainer);
             }} );
 
         }}, BorderLayout.CENTER);

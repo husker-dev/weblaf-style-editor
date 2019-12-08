@@ -10,7 +10,7 @@ import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Parameter;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
-import com.husker.editor.app.window.components.MovableComponentList;
+import com.husker.editor.app.window.tools.MovableComponentList;
 
 import java.util.ArrayList;
 
@@ -49,6 +49,8 @@ public class ParameterPanel extends WebPanel {
                     ArrayList<Parameter> ungrouped = new ArrayList<>();
 
                     for (Parameter parameter : component.getParameters()) {
+                        if(parameter == null)
+                            continue;
                         if(parameter.getGroup() == null)
                             ungrouped.add(parameter);
                         else if(!groups.contains(parameter.getGroup()))

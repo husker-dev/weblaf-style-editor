@@ -53,7 +53,7 @@ public class CustomSkin extends XmlSkin {
                 StyleManager.setSkin((JComponent)component, new XmlSkin(skinInfo));
 
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }finally {
                 applying = false;
                 if(thread_id == (int)Thread.currentThread().getId())

@@ -1,4 +1,4 @@
-package com.husker.editor.app.window.components;
+package com.husker.editor.app.window.tools;
 
 import com.alee.extended.panel.WebComponentPane;
 import com.alee.extended.panel.WebSelectablePanel;

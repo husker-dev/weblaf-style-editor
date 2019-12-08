@@ -16,19 +16,19 @@ public class XMLHead {
         this("head");
     }
 
-    public void addXMLHead(XMLHead head){
+    public void addHead(XMLHead head){
         if(head == null)
             return;
         heads.add(head);
     }
 
-    public ArrayList<String> getXMLHeadsNames(){
+    public ArrayList<String> getHeadsNames(){
         ArrayList<String> heads_names = new ArrayList<>();
         for(XMLHead head : this.heads)
             heads_names.add(head.name);
         return heads_names;
     }
-    public XMLHead getXMLHead(String name){
+    public XMLHead getHead(String name){
         for(XMLHead head : heads)
             if(head.name.equals(name))
                 return head;
@@ -47,10 +47,10 @@ public class XMLHead {
         XMLHead current_head = this;
         for(String head : heads){
             if(!current_head.contains(head))
-                current_head.addXMLHead(new XMLHead(head));
-            current_head = current_head.getXMLHead(head);
+                current_head.addHead(new XMLHead(head));
+            current_head = current_head.getHead(head);
         }
-        current_head.addXMLParameter(parameter);
+        current_head.addParameter(parameter);
     }
 
     public void setHeadByPath(String path, XMLHead new_head){
@@ -59,16 +59,27 @@ public class XMLHead {
         XMLHead current_head = this;
         for(String head : heads){
             if(!current_head.contains(head))
-                current_head.addXMLHead(new XMLHead(head));
-            current_head = current_head.getXMLHead(head);
+                current_head.addHead(new XMLHead(head));
+            current_head = current_head.getHead(head);
         }
-        current_head.addXMLHead(new_head);
+        current_head.addHead(new_head);
     }
 
-    public void addXMLParameter(XMLParameter parameter){
+    public void createHeadPath(String path){
+        String[] heads = path.split("\\.");
+
+        XMLHead current_head = this;
+        for(String head : heads){
+            if(!current_head.contains(head))
+                current_head.addHead(new XMLHead(head));
+            current_head = current_head.getHead(head);
+        }
+    }
+
+    public void addParameter(XMLParameter parameter){
         parameters.put(parameter.getName(), parameter);
     }
-    public void addXMLParameter(String name, String value){
+    public void addParameter(String name, String value){
         XMLParameter parameter = new XMLParameter(name, value);
         parameters.put(parameter.getName(), parameter);
     }

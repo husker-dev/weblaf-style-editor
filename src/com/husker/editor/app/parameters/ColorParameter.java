@@ -24,11 +24,17 @@ public class ColorParameter extends Parameter {
             chooser.setColor(Color.WHITE);
             return;
         }
-        chooser.setColor(new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2])));
+        if(color.length == 3)
+            chooser.setColor(new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2])));
+        else
+            chooser.setColor(new Color(Integer.parseInt(color[0]), Integer.parseInt(color[1]), Integer.parseInt(color[2]), Integer.parseInt(color[3])));
     }
 
     public String getValue() {
-        return chooser.getColor().getRed() + "," + chooser.getColor().getGreen() + "," + chooser.getColor().getBlue();
+        if(chooser.getColor().getAlpha() == 255)
+            return chooser.getColor().getRed() + "," + chooser.getColor().getGreen() + "," + chooser.getColor().getBlue();
+        else
+            return chooser.getColor().getRed() + "," + chooser.getColor().getGreen() + "," + chooser.getColor().getBlue() + "," + chooser.getColor().getAlpha();
     }
 
     public void setEnabled(boolean enabled) {
@@ -42,6 +48,7 @@ public class ColorParameter extends Parameter {
     public Component initComponent() {
         chooser = new WebColorChooserField();
         chooser.setDisplayEyedropper(false);
+        chooser.setPreferredWidth(50);
         chooser.setHorizontalAlignment(SwingConstants.LEFT);
         return chooser;
     }
