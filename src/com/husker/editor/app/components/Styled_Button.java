@@ -17,13 +17,16 @@ public class Styled_Button extends StyleComponent {
                 KIT_BORDER,
                 KIT_INNER_SHADOW,
                 KIT_OUTER_SHADOW,
-                KIT_SHAPE
+                KIT_SHAPE,
+                KIT_BUTTON_CONTENT
         );
-        setCustomVariable(ROUND, "3");
-        setCustomVariable(OUTER_SHADOW_WIDTH, "2");
-        setCustomVariable(BORDER_COLOR, "170,170,170");
-        setCustomVariable(BACKGROUND_TYPE, "Gradient");
-
+        setCustomValue(SHAPE_ENABLED, "true");
+        setCustomValue(ROUND, "3");
+        setCustomValue(OUTER_SHADOW_WIDTH, "2");
+        setCustomValue(BORDER_COLOR, "170,170,170");
+        setCustomValue(BACKGROUND_TYPE, "Gradient");
+        setCustomValue(BUTTON_SHOW_ICON, "true");
+        setCustomValue(BUTTON_SHOW_TEXT, "true");
     }
 
     public Component createPreviewComponent() {

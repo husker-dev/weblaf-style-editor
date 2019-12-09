@@ -17,6 +17,8 @@ import java.util.ArrayList;
 
 public class ParameterPanel extends WebPanel {
     WebScrollPane scroll;
+    MovableComponentList list;
+    StyleComponent selected_component;
 
     public ParameterPanel(){
         setPreferredWidth(230);
@@ -28,68 +30,19 @@ public class ParameterPanel extends WebPanel {
             scroll.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
         });
 
-        add(scroll = new WebScrollPane(new MovableComponentList(){{
+        add(scroll = new WebScrollPane(list = new MovableComponentList(){{
             setShowReorderGrippers(false);
             setReorderingAllowed(false);
             setPadding(5, 0, 5, 0);
 
+            Parameter.addVisibleChangedListener(() -> {
+                showAll(selected_component, false);
+            });
+
             Components.addListener((event, objects) -> {
                 if(event.oneOf(Components.ComponentEvent.Selected_Changed)) {
-
-                    StyleComponent component = (StyleComponent)objects[0];
-                    // Clear panel
-                    while(getElementCount() != 0){
-                        for(int i = 0; i < getElementCount(); i++)
-                            this.removeElement(getElement(i));
-                    }
-                    if(component == null)
-                        return;
-
-                    ArrayList<String> groups = new ArrayList<>();
-                    ArrayList<Parameter> ungrouped = new ArrayList<>();
-
-                    for (Parameter parameter : component.getParameters()) {
-                        if(parameter == null)
-                            continue;
-                        if(parameter.getGroup() == null)
-                            ungrouped.add(parameter);
-                        else if(!groups.contains(parameter.getGroup()))
-                            groups.add(parameter.getGroup());
-                    }
-
-                    for(Parameter parameter : ungrouped){
-                        parameter.apply(component);
-                        addElement(parameter.getPanel());
-                        addElement(WebSeparator.createHorizontal());
-                    }
-
-                    for(String group : groups){
-                        WebCollapsiblePane group_panel = new WebCollapsiblePane();
-                        group_panel.setFocusable(false);
-                        group_panel.setMargin(5, 0, 0, 5);
-                        group_panel.setTitle(group);
-                        group_panel.setContent(new MovableComponentList(){{
-                            setPadding(5, 0, 5, 0);
-                            setShowReorderGrippers(false);
-                            setReorderingAllowed(false);
-
-                            boolean first = true;
-                            for(Parameter parameter : component.getParameters()){
-                                if(parameter.getGroup() != null && parameter.getGroup().equals(group)){
-                                    parameter.apply(component);
-                                    if(!first)
-                                        addElement(WebSeparator.createHorizontal());
-                                    else
-                                        first = false;
-
-                                    addElement(parameter.getPanel());
-                                }
-                            }
-                        }});
-                        addElement(group_panel);
-                    }
-
-                    updateUI();
+                    selected_component = (StyleComponent)objects[0];
+                    showAll(selected_component, true);
                 }
             });
 
@@ -98,5 +51,66 @@ public class ParameterPanel extends WebPanel {
             setVisible(false);
             setStyleId(StyleId.scrollpaneUndecorated);
         }});
+    }
+
+    public void showAll(StyleComponent component, boolean apply){
+
+        // Clear panel
+        while(list.getElementCount() != 0){
+            for(int i = 0; i < list.getElementCount(); i++)
+                list.removeElement(list.getElement(i));
+        }
+        if(component == null)
+            return;
+
+        ArrayList<String> groups = new ArrayList<>();
+        ArrayList<Parameter> ungrouped = new ArrayList<>();
+
+        for (Parameter parameter : component.getParameters()) {
+            if(parameter == null || !parameter.isVisible())
+                continue;
+            if(parameter.getGroup() == null)
+                ungrouped.add(parameter);
+            else if(!groups.contains(parameter.getGroup()))
+                groups.add(parameter.getGroup());
+        }
+
+        for(Parameter parameter : ungrouped){
+            list.addElement(parameter.getPanel());
+            list.addElement(WebSeparator.createHorizontal());
+        }
+
+        for(String group : groups){
+            WebCollapsiblePane group_panel = new WebCollapsiblePane();
+            group_panel.setFocusable(false);
+            group_panel.setMargin(5, 0, 0, 5);
+            group_panel.setTitle(group);
+            group_panel.setContent(new MovableComponentList(){{
+                setPadding(5, 0, 5, 0);
+                setShowReorderGrippers(false);
+                setReorderingAllowed(false);
+
+                boolean first = true;
+                for(Parameter parameter : component.getParameters()){
+                    if(parameter.getGroup() != null && parameter.getGroup().equals(group) && parameter.isVisible()){
+                        if(!first)
+                            addElement(WebSeparator.createHorizontal());
+                        else
+                            first = false;
+
+                        addElement(parameter.getPanel());
+                    }
+                }
+            }});
+            list.addElement(group_panel);
+        }
+
+        for(Parameter parameter : component.getParameters())
+            if(apply)
+                parameter.apply(component);
+
+        list.updateUI();
+
+
     }
 }

@@ -9,9 +9,11 @@ import com.alee.laf.panel.WebPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public abstract class Parameter{
-    IApplyParameter applyParameter;
+    ArrayList<IApplyParameter> apply_listener = new ArrayList<>();
+    ArrayList<IActionListener> action_listener = new ArrayList<>();
 
     WebPanel panel;
 
@@ -30,6 +32,9 @@ public abstract class Parameter{
     StyleComponent current_component;
 
     String group;
+
+    boolean visible = true;
+    static ArrayList<IVisibleChanged> visible_listener = new ArrayList<>();
 
     public static ImageIcon reset_img, reset_disabled_img;
     static {
@@ -129,17 +134,19 @@ public abstract class Parameter{
 
     public void apply(StyleComponent component){
         current_component = component;
-        if(!component_variable.isEmpty())
-            if(applyParameter != null)
-                applyParameter.event(component);
 
         if(component.getVariable(component_variable) != null)
             setValue(component.getVariableValue(component_variable));
         reset.setEnabled(!current_component.getVariable(component_variable).getDefaultValue().equals(getValue()));
+
+        if(!component_variable.isEmpty()){
+            for(IApplyParameter listener : apply_listener)
+                listener.event(component);
+        }
     }
 
-    public void setApplyParameter(IApplyParameter applyParameter){
-        this.applyParameter = applyParameter;
+    public void addOnApplyListener(IApplyParameter applyParameter){
+        apply_listener.add(applyParameter);
     }
 
     public void setComponentValue(String value){
@@ -147,6 +154,17 @@ public abstract class Parameter{
     }
     public String getComponentVariable(){
         return component_variable;
+    }
+
+    public void setVisible(boolean visible){
+        this.visible = visible;
+    }
+    public boolean isVisible(){
+        return visible;
+    }
+    public static void visibleUpdate(){
+        for(IVisibleChanged listener : visible_listener)
+            listener.event();
     }
 
     public WebPanel getPanel(){
@@ -172,11 +190,27 @@ public abstract class Parameter{
 
     public abstract void addValueChangedListener(ParameterChanged listener);
 
+    public static void addVisibleChangedListener(IVisibleChanged listener){
+        visible_listener.add(listener);
+    }
+
+    public void addActionListener(IActionListener listener){
+        addValueChangedListener(e -> listener.event());
+        addOnApplyListener(e -> listener.event());
+    }
+
     public interface ParameterChanged {
         void event(String text);
     }
 
     public interface IApplyParameter {
         void event(StyleComponent component);
+    }
+
+    public interface IVisibleChanged {
+        void event();
+    }
+    public interface IActionListener {
+        void event();
     }
 }

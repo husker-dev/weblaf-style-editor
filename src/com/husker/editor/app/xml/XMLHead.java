@@ -41,6 +41,9 @@ public class XMLHead {
         return false;
     }
 
+    public void setParameterByPath(String path, String parameter, String value){
+        this.setParameterByPath(path, new XMLParameter(parameter, value));
+    }
     public void setParameterByPath(String path, XMLParameter parameter){
         String[] heads = path.split("\\.");
 
@@ -63,6 +66,16 @@ public class XMLHead {
             current_head = current_head.getHead(head);
         }
         current_head.addHead(new_head);
+    }
+    public void setHeadByPath(String path){
+        String[] heads = path.split("\\.");
+
+        XMLHead current_head = this;
+        for(String head : heads){
+            if(!current_head.contains(head))
+                current_head.addHead(new XMLHead(head));
+            current_head = current_head.getHead(head);
+        }
     }
 
     public void createHeadPath(String path){
