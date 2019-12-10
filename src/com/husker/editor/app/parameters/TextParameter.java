@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class TextParameter extends Parameter {
 
-    public WebTextField textField;
+    private WebTextField textField;
 
     public TextParameter(String name, String variable){
         this(name, variable, null);

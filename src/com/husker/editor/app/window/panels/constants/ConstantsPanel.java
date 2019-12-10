@@ -15,10 +15,10 @@ import java.awt.*;
 
 public class ConstantsPanel extends WebPanel {
 
-    WebComboBox comboBox;
-    WebButton add;
-    MovableComponentList list;
-    WebScrollPane scroll;
+    private WebComboBox comboBox;
+    private WebButton add;
+    private MovableComponentList list;
+    private WebScrollPane scroll;
 
 
     public ConstantsPanel(){

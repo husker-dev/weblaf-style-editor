@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Project {
 
-    public static ArrayList<IProjectListener> listeners = new ArrayList<>();
+    private static ArrayList<IProjectListener> listeners = new ArrayList<>();
 
     public enum ProjectEvent {
         Current_Project_Changed,
@@ -25,8 +25,8 @@ public class Project {
         }
     }
 
-    public static Project current;
-    public static ArrayList<Project> projects = new ArrayList<>();
+    private static Project current;
+    private static ArrayList<Project> projects = new ArrayList<>();
 
     public static void doEvent(ProjectEvent event, Object... objects){
         for(IProjectListener listener : listeners)

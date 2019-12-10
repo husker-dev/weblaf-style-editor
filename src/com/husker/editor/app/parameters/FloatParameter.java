@@ -9,8 +9,8 @@ import java.awt.*;
 
 public class FloatParameter extends Parameter {
 
-    FloatSpinner spinner;
-    float step;
+    private FloatSpinner spinner;
+    private float step;
 
     public FloatParameter(String name, String component_variable) {
         this(name, component_variable, null, 0.1f);

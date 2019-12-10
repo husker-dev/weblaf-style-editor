@@ -16,9 +16,10 @@ import java.util.ArrayList;
 
 
 public class ParameterPanel extends WebPanel {
-    WebScrollPane scroll;
-    MovableComponentList list;
-    StyleComponent selected_component;
+
+    private WebScrollPane scroll;
+    private MovableComponentList list;
+    private StyleComponent selected_component;
 
     public ParameterPanel(){
         setPreferredWidth(230);

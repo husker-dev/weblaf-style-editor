@@ -22,13 +22,13 @@ import java.awt.event.MouseMotionAdapter;
 
 class ComponentPanel extends WebPanel {
 
-    boolean dragged = false;
-    WebToggleButton title;
-    WebButton actions, resize;
+    private boolean dragged = false;
+    private WebToggleButton title;
+    private WebButton actions, resize;
 
-    WebLabel type, id, separator;
+    private WebLabel type, id, separator;
 
-    StyleComponent component;
+    private StyleComponent component;
 
     static ImageIcon close_1, close_2, more, arrow_down, arrow_up;
     static {

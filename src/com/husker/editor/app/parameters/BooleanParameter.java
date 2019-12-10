@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class BooleanParameter extends Parameter {
 
-    WebCheckBox checkBox;
+    private WebCheckBox checkBox;
 
     public BooleanParameter(String name, String variable){
         this(name, variable, null);

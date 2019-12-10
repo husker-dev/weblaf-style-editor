@@ -6,6 +6,7 @@ import com.husker.editor.app.parameters.*;
 import com.husker.editor.app.xml.XMLHead;
 import com.husker.editor.app.xml.XMLParameter;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,12 +21,19 @@ public abstract class StyleComponent implements Cloneable{
         put("Label", Styled_Label.class);
     }};
 
+    private static ImageIcon example_icon = new ImageIcon("bin/icon_example.png");
+
     public static class Parameters {
         public static final String ID = "id";
         public static final String EXTENDS = "extends";
         public static final String DECORATIONS = "decorations";
         public static final String OVERWRITE_DECORATIONS = "overwrite_decorations";
-        public static final String ROUND = "round";
+        public static final String ROUND_TYPE = "round_type";
+        public static final String ROUND_FULL = "round_full";
+        public static final String ROUND_LT = "round_lt";   // Left top
+        public static final String ROUND_RT = "round_rt";   // Right top
+        public static final String ROUND_LB = "round_lb";   // Left bottom
+        public static final String ROUND_RB = "round_rb";   // Right bottom
         public static final String SHAPE_ENABLED = "shape_enabled";
         public static final String INNER_SHADOW_WIDTH = "inner_shadow_width";
         public static final String OUTER_SHADOW_WIDTH = "outer_shadow_width";
@@ -42,7 +50,7 @@ public abstract class StyleComponent implements Cloneable{
         public static final String BUTTON_SHOW_TEXT = "button_show_text";
 
         private static final String KIT_BASE = getKit(ID, EXTENDS, DECORATIONS, OVERWRITE_DECORATIONS);
-        public static final String KIT_SHAPE = getKit(ROUND, SHAPE_ENABLED);
+        public static final String KIT_SHAPE = getKit(ROUND_FULL, ROUND_TYPE, ROUND_LB, ROUND_LT, ROUND_RB, ROUND_RT, SHAPE_ENABLED);
         public static final String KIT_INNER_SHADOW = getKit(INNER_SHADOW_COLOR, INNER_SHADOW_WIDTH);
         public static final String KIT_OUTER_SHADOW = getKit(OUTER_SHADOW_COLOR, OUTER_SHADOW_WIDTH);
         public static final String KIT_BORDER = getKit(BORDER_COLOR);
@@ -66,8 +74,44 @@ public abstract class StyleComponent implements Cloneable{
             new BooleanParameter("Overwrite base", Parameters.OVERWRITE_DECORATIONS),
 
             // Shape
-            new BooleanParameter("Enable", Parameters.SHAPE_ENABLED, "Shape"),
-            new IntegerParameter("Round", Parameters.ROUND, "Shape"),
+            new BooleanParameter("Enable", Parameters.SHAPE_ENABLED, "Shape"){{
+                addActionListener(() -> {
+                    boolean visible = getValue().equals("true");
+                    getParameter(Parameters.ROUND_TYPE).setVisible(visible);
+                    getParameter(Parameters.ROUND_TYPE).action();
+
+                    Parameter.visibleUpdate();
+                });
+            }},
+            new ComboParameter("Round type", Parameters.ROUND_TYPE, "Shape", new String[]{"Full", "Custom"}){{
+                addActionListener(() -> {
+                    boolean full = getValue().equals("Full");
+                    boolean custom = !full;
+                    if(!isVisible()){
+                        full = false;
+                        custom = false;
+                    }
+                    getParameter(Parameters.ROUND_LT).setVisible(custom);
+                    getParameter(Parameters.ROUND_LB).setVisible(custom);
+                    getParameter(Parameters.ROUND_RB).setVisible(custom);
+                    getParameter(Parameters.ROUND_RT).setVisible(custom);
+                    getParameter(Parameters.ROUND_FULL).setVisible(full);
+                    Parameter.visibleUpdate();
+                });
+            }},
+            new IntegerParameter("Round", Parameters.ROUND_FULL, "Shape"),
+            new IntegerParameter(" Corner", Parameters.ROUND_LT, "Shape"){{
+                setIcon(new ImageIcon("bin/round_lt.png"));
+            }},
+            new IntegerParameter(" Corner", Parameters.ROUND_LB, "Shape"){{
+                setIcon(new ImageIcon("bin/round_lb.png"));
+            }},
+            new IntegerParameter(" Corner", Parameters.ROUND_RB, "Shape"){{
+                setIcon(new ImageIcon("bin/round_rb.png"));
+            }},
+            new IntegerParameter(" Corner", Parameters.ROUND_RT, "Shape"){{
+                setIcon(new ImageIcon("bin/round_rt.png"));
+            }},
 
             // Shadow Inner
             new IntegerParameter("Width", Parameters.INNER_SHADOW_WIDTH, "Inner shadow"),
@@ -81,7 +125,7 @@ public abstract class StyleComponent implements Cloneable{
             new ColorParameter("Color", Parameters.BORDER_COLOR, "Border"),
 
             // Background
-            new ComboParameter("Background", Parameters.BACKGROUND_TYPE, "Background", new String[]{"Gradient","Color"}){{
+            new ComboParameter("Background", Parameters.BACKGROUND_TYPE, "Background", new String[]{"Gradient", "Color"}){{
                 addActionListener(() -> {
                     boolean visible = getValue().equals("Gradient");
                     getParameter(Parameters.GRADIENT_TYPE).setVisible(visible);
@@ -112,7 +156,13 @@ public abstract class StyleComponent implements Cloneable{
         addVariable(Parameters.OVERWRITE_DECORATIONS, "false");
 
         // Round
-        addVariable(Parameters.ROUND, "0");
+        addVariable(Parameters.ROUND_TYPE, "Full");
+        addVariable(Parameters.ROUND_FULL, "0");
+        addVariable(Parameters.ROUND_LB, "0");
+        addVariable(Parameters.ROUND_LT, "0");
+        addVariable(Parameters.ROUND_RB, "0");
+        addVariable(Parameters.ROUND_RT, "0");
+
         addVariable(Parameters.SHAPE_ENABLED, "false");
 
         // Background
@@ -156,16 +206,20 @@ public abstract class StyleComponent implements Cloneable{
         return null;
     }
 
+    public static ImageIcon getExampleIcon(){
+        return example_icon;
+    }
+
     // Object
 
-    String name;
-    String type;
-    String title;
-    Project project;
+    private String name;
+    private String type;
+    private String title;
+    private Project project;
 
-    ArrayList<StyleComponent> child_components = new ArrayList<>();
+    private ArrayList<StyleComponent> child_components = new ArrayList<>();
 
-    HashMap<String, Variable> implemented_variables = new HashMap<>();
+    private HashMap<String, Variable> implemented_variables = new HashMap<>();
 
     public StyleComponent(String title, String type){
         this.title = title;
@@ -233,7 +287,17 @@ public abstract class StyleComponent implements Cloneable{
         if(getVariable(Parameters.SHAPE_ENABLED) != null) {
             if (getVariableValue(Parameters.SHAPE_ENABLED).equals("true")) {
                 applyHeadOnCustom(head, "painter.decorations.decoration.WebShape", Parameters.SHAPE_ENABLED);
-                applyParameterOnCustom(head, "painter.decorations.decoration.WebShape", "round", Parameters.ROUND);
+
+                if(getVariableValue(Parameters.ROUND_TYPE).equals("Full")){
+                    applyParameterOnCustom(head, "painter.decorations.decoration.WebShape", "round", Parameters.ROUND_FULL);
+                }else{
+                    String round = "";
+                    round += getVariableValue(Parameters.ROUND_LT) + ",";
+                    round += getVariableValue(Parameters.ROUND_RT) + ",";
+                    round += getVariableValue(Parameters.ROUND_RB) + ",";
+                    round += getVariableValue(Parameters.ROUND_LB);
+                    head.setParameterByPath("painter.decorations.decoration.WebShape", "round", round);
+                }
             }
         }
 
@@ -260,6 +324,17 @@ public abstract class StyleComponent implements Cloneable{
 
                 if(!isVariableDefault(Parameters.OUTER_SHADOW_COLOR))
                     addParameter("color", getVariableValue(Parameters.OUTER_SHADOW_COLOR));
+
+                if(getVariableValue(Parameters.ROUND_TYPE).equals("Full")){
+                    addParameter("round", getVariableValue(Parameters.ROUND_FULL));
+                }else{
+                    String round = "";
+                    round += getVariableValue(Parameters.ROUND_LT) + ",";
+                    round += getVariableValue(Parameters.ROUND_RT) + ",";
+                    round += getVariableValue(Parameters.ROUND_RB) + ",";
+                    round += getVariableValue(Parameters.ROUND_LB);
+                    addParameter("round", round);
+                }
             }});
         }
 

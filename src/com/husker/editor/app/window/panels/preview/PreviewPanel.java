@@ -5,7 +5,6 @@ import com.alee.laf.button.WebToggleButton;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.progressbar.WebProgressBar;
 import com.alee.laf.toolbar.WebToolBar;
-import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Project;
 
@@ -35,8 +34,7 @@ public class PreviewPanel extends WebPanel {
             }});
             add(new WebToggleButton("Shape"){{
                 addActionListener(e -> {
-                    painting.drawBorder = isSelected();
-                    painting.repaint();
+                    painting.setDrawBorder(isSelected());
                 });
             }});
 

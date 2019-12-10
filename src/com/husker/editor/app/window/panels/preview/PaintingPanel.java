@@ -16,8 +16,8 @@ import static com.husker.editor.app.project.Components.ComponentEvent.*;
 
 public class PaintingPanel extends WebPanel {
 
-    Component content;
-    public boolean drawBorder = false;
+    private Component content;
+    private boolean drawBorder = false;
 
     public PaintingPanel(){
         setLayout(null);
@@ -70,6 +70,11 @@ public class PaintingPanel extends WebPanel {
             }
         }
         super.paintComponents(gr);
+    }
+
+    public void setDrawBorder(boolean drawBorder){
+        this.drawBorder = drawBorder;
+        repaint();
     }
 
     public void updateSkin(){

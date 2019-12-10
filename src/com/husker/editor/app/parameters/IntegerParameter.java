@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class IntegerParameter extends Parameter {
-    public WebSpinner spinner;
+    private WebSpinner spinner;
 
     public IntegerParameter(String name, String variable){
         this(name, variable, null);

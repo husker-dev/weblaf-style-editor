@@ -7,8 +7,8 @@ import java.awt.*;
 
 public class ComboParameter extends Parameter {
 
-    String[] items;
-    WebComboBox combo;
+    private String[] items;
+    private WebComboBox combo;
 
     public ComboParameter(String name, String component_variable, String[] items) {
         this(name, component_variable, null, items);

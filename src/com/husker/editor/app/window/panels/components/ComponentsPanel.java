@@ -26,13 +26,13 @@ import static com.husker.editor.app.project.Project.ProjectEvent.Current_Project
 
 public class ComponentsPanel extends WebPanel {
 
-    WebComboBox combo;
-    WebButton add;
-    MovableComponentList list;
-    WebScrollPane scroll;
-    WebStatusBar statusBar;
+    private WebComboBox combo;
+    private WebButton add;
+    private MovableComponentList list;
+    private WebScrollPane scroll;
+    private WebStatusBar statusBar;
 
-    public HashMap<StyleComponent, ComponentPanel> components = new HashMap<>();
+    private HashMap<StyleComponent, ComponentPanel> components = new HashMap<>();
 
     public ComponentsPanel(){
         setPreferredWidth(250);

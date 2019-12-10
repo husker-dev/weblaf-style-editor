@@ -13,6 +13,6 @@ public class Styled_Label extends StyleComponent {
     }
 
     public Component createPreviewComponent() {
-        return new WebLabel("It's a label with TEXT!");
+        return new WebLabel("It's a label with TEXT!", getExampleIcon());
     }
 }

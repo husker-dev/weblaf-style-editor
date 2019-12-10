@@ -21,15 +21,20 @@ public class Styled_Button extends StyleComponent {
                 KIT_BUTTON_CONTENT
         );
         setCustomValue(SHAPE_ENABLED, "true");
-        setCustomValue(ROUND, "3");
+        setCustomValue(ROUND_FULL, "3");
         setCustomValue(OUTER_SHADOW_WIDTH, "2");
         setCustomValue(BORDER_COLOR, "170,170,170");
         setCustomValue(BACKGROUND_TYPE, "Gradient");
         setCustomValue(BUTTON_SHOW_ICON, "true");
         setCustomValue(BUTTON_SHOW_TEXT, "true");
+
+        setCustomValue(ROUND_LB, "3");
+        setCustomValue(ROUND_LT, "3");
+        setCustomValue(ROUND_RB, "3");
+        setCustomValue(ROUND_RT, "3");
     }
 
     public Component createPreviewComponent() {
-        return new WebButton("It's a button with text");
+        return new WebButton("It's a button with text", getExampleIcon());
     }
 }

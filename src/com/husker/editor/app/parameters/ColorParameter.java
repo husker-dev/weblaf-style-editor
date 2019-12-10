@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class ColorParameter extends Parameter {
 
-    WebColorChooserField chooser;
+    private WebColorChooserField chooser;
 
     public ColorParameter(String name, String component_variable) {
         this(name, component_variable, null);

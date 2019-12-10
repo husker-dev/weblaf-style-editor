@@ -12,31 +12,32 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public abstract class Parameter{
-    ArrayList<IApplyParameter> apply_listener = new ArrayList<>();
-    ArrayList<IActionListener> action_listener = new ArrayList<>();
+    private ArrayList<IApplyParameter> apply_listener = new ArrayList<>();
+    private ArrayList<IActionListener> action_listener = new ArrayList<>();
 
-    WebPanel panel;
+    private WebPanel panel;
 
-    WebLabel name;
-    Component component;
-    WebComboBox constants;
-    WebButton reset;
+    private WebLabel name;
+    private Component component;
+    private WebComboBox constants;
+    private WebButton reset;
 
-    String current_const = "";
-    String last_value = "";
-    boolean last_value_saved = false;
+    private String current_const = "";
+    private String last_value = "";
+    private boolean last_value_saved = false;
 
-    String component_variable;
-    Constants.ConstType constType;
+    private String component_variable;
+    private Constants.ConstType constType;
 
-    StyleComponent current_component;
+    private StyleComponent current_component;
 
-    String group;
+    private String group;
 
-    boolean visible = true;
-    static ArrayList<IVisibleChanged> visible_listener = new ArrayList<>();
+    private boolean visible = true;
+    private static ArrayList<IVisibleChanged> visible_listener = new ArrayList<>();
 
-    public static ImageIcon reset_img, reset_disabled_img;
+    private static ImageIcon reset_img, reset_disabled_img;
+
     static {
         reset_img = new ImageIcon("bin/reset.png");
         reset_disabled_img = new ImageIcon("bin/reset_disabled.png");
@@ -186,6 +187,10 @@ public abstract class Parameter{
     public abstract void setEnabled(boolean enabled);
     public abstract boolean isEnabled();
 
+    public void setIcon(ImageIcon icon){
+        name.setIcon(icon);
+    }
+
     public abstract Component initComponent();
 
     public abstract void addValueChangedListener(ParameterChanged listener);
@@ -194,7 +199,13 @@ public abstract class Parameter{
         visible_listener.add(listener);
     }
 
+    public void action(){
+        for(IActionListener listener : action_listener)
+            listener.event();
+    }
+
     public void addActionListener(IActionListener listener){
+        action_listener.add(listener);
         addValueChangedListener(e -> listener.event());
         addOnApplyListener(e -> listener.event());
     }

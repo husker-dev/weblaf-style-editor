@@ -16,7 +16,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 class ProjectPanel extends WebToggleButton {
-    Project project;
+
+    private Project project;
 
     static ImageIcon close_1, close_2;
     static {

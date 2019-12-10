@@ -2,8 +2,8 @@ package com.husker.editor.app.project;
 
 public class Variable implements Cloneable {
 
-    String value = null;
-    String default_value;
+    private String value = null;
+    private String default_value;
 
     public Variable clone(){
         try{

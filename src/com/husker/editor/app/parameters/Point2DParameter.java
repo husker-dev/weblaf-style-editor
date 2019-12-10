@@ -9,9 +9,9 @@ import java.awt.*;
 
 public class Point2DParameter extends Parameter {
 
-    FloatSpinner x;
-    FloatSpinner y;
-    float step;
+    private FloatSpinner x;
+    private FloatSpinner y;
+    private float step;
 
     public Point2DParameter(String name, String component_variable) {
         this(name, component_variable, null, 0.1f);

@@ -4,9 +4,9 @@ import java.util.*;
 
 public class XMLHead {
 
-    ArrayList<XMLHead> heads = new ArrayList<>();
-    LinkedHashMap<String, XMLParameter> parameters = new LinkedHashMap<>();
-    String name;
+    private ArrayList<XMLHead> heads = new ArrayList<>();
+    private LinkedHashMap<String, XMLParameter> parameters = new LinkedHashMap<>();
+    private String name;
 
     public XMLHead(String name){
         this.name = name;

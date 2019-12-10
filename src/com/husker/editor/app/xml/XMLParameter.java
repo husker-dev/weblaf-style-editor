@@ -2,8 +2,8 @@ package com.husker.editor.app.xml;
 
 public class XMLParameter {
 
-    String name;
-    String value;
+    private String name;
+    private String value;
 
     public XMLParameter(String name, String value){
         this.name = name;

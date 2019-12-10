@@ -14,7 +14,7 @@ import java.awt.*;
 
 public class CustomSkin extends XmlSkin {
 
-    static String pattern = "<skin xmlns=\"http://weblookandfeel.com/XmlSkin\">\n" +
+    private static String pattern = "<skin xmlns=\"http://weblookandfeel.com/XmlSkin\">\n" +
             "    <id>husker.editor.skin</id>\n" +
             "    <class>com.husker.editor.app.skin.CustomSkin</class>\n" +
             "    <supportedSystems>all</supportedSystems>\n" +
@@ -26,8 +26,8 @@ public class CustomSkin extends XmlSkin {
             "<!-- CODE -->\n" +
             "</skin>";
 
-    static boolean applying = false;
-    static int thread_id = 0;
+    private static boolean applying = false;
+    private static int thread_id = 0;
 
     public CustomSkin() {
         super(new ClassResource(CustomSkin.class, "editor_skin.xml"));
