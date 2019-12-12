@@ -13,6 +13,10 @@ import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.window.tools.MovableComponentList;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.husker.editor.app.project.listeners.component.ComponentEvent.Type.*;
 
 
 public class ParameterPanel extends WebPanel {
@@ -20,16 +24,11 @@ public class ParameterPanel extends WebPanel {
     private WebScrollPane scroll;
     private MovableComponentList list;
     private StyleComponent selected_component;
+    private HashMap<String, WebCollapsiblePane> groups = new HashMap<>();
+    private HashMap<Parameter, WebSeparator> separators = new HashMap<>();
 
     public ParameterPanel(){
         setPreferredWidth(230);
-
-        Components.addListener((event, objects) -> {
-            scroll.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
-        });
-        Project.addListener((event, objects) -> {
-            scroll.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
-        });
 
         add(scroll = new WebScrollPane(list = new MovableComponentList(){{
             setShowReorderGrippers(false);
@@ -37,37 +36,36 @@ public class ParameterPanel extends WebPanel {
             setPadding(5, 0, 5, 0);
 
             Parameter.addVisibleChangedListener(() -> {
-                showAll(selected_component, false);
+                apply(selected_component, false);
             });
 
-            Components.addListener((event, objects) -> {
-                if(event.oneOf(Components.ComponentEvent.Selected_Changed)) {
-                    selected_component = (StyleComponent)objects[0];
-                    showAll(selected_component, true);
+            Components.addListener(e -> {
+                if(e.getType().oneOf(Selected_Changed)) {
+                    selected_component = (StyleComponent)e.getObjects()[0];
+                    apply(selected_component, true);
                 }
             });
 
         }}){{
             getVerticalScrollBar().setUnitIncrement(16);
-            setVisible(false);
             setStyleId(StyleId.scrollpaneUndecorated);
         }});
+
+        Components.addListener(e -> {
+            scroll.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
+        });
+        Project.addListener(e -> {
+            scroll.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
+        });
+
+        prepareParameters();
     }
 
-    public void showAll(StyleComponent component, boolean apply){
-
-        // Clear panel
-        while(list.getElementCount() != 0){
-            for(int i = 0; i < list.getElementCount(); i++)
-                list.removeElement(list.getElement(i));
-        }
-        if(component == null)
-            return;
-
+    public void prepareParameters(){
         ArrayList<String> groups = new ArrayList<>();
         ArrayList<Parameter> ungrouped = new ArrayList<>();
 
-        for (Parameter parameter : component.getParameters()) {
+        for (Parameter parameter : StyleComponent.parameters) {
             if(parameter == null || !parameter.isVisible())
                 continue;
             if(parameter.getGroup() == null)
@@ -83,6 +81,7 @@ public class ParameterPanel extends WebPanel {
 
         for(String group : groups){
             WebCollapsiblePane group_panel = new WebCollapsiblePane();
+            this.groups.put(group, group_panel);
             group_panel.setFocusable(false);
             group_panel.setMargin(5, 0, 0, 5);
             group_panel.setTitle(group);
@@ -92,11 +91,13 @@ public class ParameterPanel extends WebPanel {
                 setReorderingAllowed(false);
 
                 boolean first = true;
-                for(Parameter parameter : component.getParameters()){
+                for(Parameter parameter : StyleComponent.parameters){
                     if(parameter.getGroup() != null && parameter.getGroup().equals(group) && parameter.isVisible()){
-                        if(!first)
-                            addElement(WebSeparator.createHorizontal());
-                        else
+                        if(!first) {
+                            WebSeparator separator = WebSeparator.createHorizontal();
+                            addElement(separator);
+                            separators.put(parameter, separator);
+                        }else
                             first = false;
 
                         addElement(parameter.getPanel());
@@ -105,13 +106,30 @@ public class ParameterPanel extends WebPanel {
             }});
             list.addElement(group_panel);
         }
-
-        for(Parameter parameter : component.getParameters())
-            if(apply)
-                parameter.apply(component);
-
         list.updateUI();
+    }
 
+    public void apply(StyleComponent component, boolean apply){
+        for(Parameter parameter : StyleComponent.parameters){
+            if(component != null && component.isParameterImplemented(parameter.getComponentVariable())) {
+                if(apply)
+                    parameter.apply(component);
+                parameter.getPanel().setVisible(parameter.isVisible());
+                if(separators.containsKey(parameter))
+                    separators.get(parameter).setVisible(parameter.isVisible());
+            }else {
+                parameter.getPanel().setVisible(false);
+                if(separators.containsKey(parameter))
+                    separators.get(parameter).setVisible(false);
+            }
+        }
 
+        for(Map.Entry<String, WebCollapsiblePane> entry : groups.entrySet()){
+            boolean visible = false;
+            for(Parameter parameter : StyleComponent.parameters)
+                if(parameter.getGroup() != null && parameter.getGroup().equals(entry.getKey()) && parameter.getPanel().isVisible())
+                    visible = true;
+            entry.getValue().setVisible(visible);
+        }
     }
 }

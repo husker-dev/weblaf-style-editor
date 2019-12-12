@@ -12,6 +12,7 @@ import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.project.listeners.project.ProjectEvent;
 import com.husker.editor.app.window.tools.MovableComponentList;
 
 
@@ -21,8 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.husker.editor.app.project.Components.ComponentEvent.*;
-import static com.husker.editor.app.project.Project.ProjectEvent.Current_Project_Changed;
+import static com.husker.editor.app.project.listeners.component.ComponentEvent.Type.*;
 
 public class ComponentsPanel extends WebPanel {
 
@@ -30,7 +30,6 @@ public class ComponentsPanel extends WebPanel {
     private WebButton add;
     private MovableComponentList list;
     private WebScrollPane scroll;
-    private WebStatusBar statusBar;
 
     private HashMap<StyleComponent, ComponentPanel> components = new HashMap<>();
 
@@ -56,16 +55,15 @@ public class ComponentsPanel extends WebPanel {
             });
         }};
         list = new MovableComponentList(){{
-                Project.addListener((event, objects) -> {
-                    if(event.oneOf(Current_Project_Changed) && Project.getCurrentProject() != null)
-                        resetComponents(Project.getCurrentProject().Components.getComponents());
+                Components.addListener(e -> {
+                    if(e.getType().oneOf(New))
+                        addComponent((StyleComponent) e.getObjects()[0]);
+                    if(e.getType().oneOf(Removed))
+                        removeComponent((StyleComponent) e.getObjects()[0]);
                 });
-                Components.addListener((event, objects) -> {
-                    if(event.oneOf(New))
-                        addComponent((StyleComponent) objects[0]);
-                    if(event.oneOf(Removed))
-                        removeComponent((StyleComponent) objects[0]);
-
+                Project.addListener(e -> {
+                    if(e.getType().oneOf(ProjectEvent.Type.Changed))
+                        resetComponents(Project.getCurrentProject().Components.getComponents());
                 });
                 addComponentReorderListener((component, i, i1) -> {
                     Project.getCurrentProject().Components.moveComponent(i, i1);
@@ -98,44 +96,28 @@ public class ComponentsPanel extends WebPanel {
             setStyleId(StyleId.scrollpaneUndecorated);
         }};
 
-        statusBar = new WebStatusBar(){{
-            WebLabel count = new WebLabel("Components: -1");
-            add(count);
-            Project.addListener((event, objects) -> {
-                if(Project.getCurrentProject() != null)
-                    count.setText("Components: " + Project.getCurrentProject().Components.getComponents().size());
-            });
-            Components.addListener((event, objects) -> {
-                count.setText("Components: " + Project.getCurrentProject().Components.getComponents().size());
-            });
-
-        }};
-
         setLayout(new BorderLayout());
         add(new WebToolBar(){{
             add(new GroupPane(combo, add));
         }}, BorderLayout.NORTH);
         add(scroll);
-        add(statusBar, BorderLayout.SOUTH);
 
-
-        Project.addListener((event, objects) -> setActive(Project.getCurrentProject() != null));
-        Components.addListener((event, objects) -> {
-            if(event.oneOf(Components.ComponentEvent.Selected_Changed))
+        Components.addListener(e -> {
+            if(e.getType().oneOf(Selected_Changed))
                 for(Map.Entry<StyleComponent, ComponentPanel> entry : components.entrySet())
                     entry.getValue().setSelected(Project.getCurrentProject().Components.getSelectedComponent() == entry.getKey());
-            if(event.oneOf(Style_Changed))
-                components.get(objects[0]).onStyleUpdate();
-
+            if(e.getType().oneOf(Style_Changed))
+                components.get(e.getObjects()[0]).onStyleUpdate();
         });
-        setActive(false);
+        Project.addListener(e -> {
+            setActive(Project.getCurrentProject() != null);
+        });
     }
 
     public void setActive(boolean active){
         combo.setEnabled(active);
         add.setEnabled(active);
         scroll.setVisible(active);
-        statusBar.setVisible(active);
     }
 }
 

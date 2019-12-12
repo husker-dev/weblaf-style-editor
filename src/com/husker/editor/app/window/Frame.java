@@ -18,7 +18,7 @@ import com.husker.editor.app.window.panels.components.ComponentsPanel;
 import com.husker.editor.app.window.panels.constants.ConstantsPanel;
 import com.husker.editor.app.window.panels.parameters.ParameterPanel;
 import com.husker.editor.app.window.panels.preview.PreviewPanel;
-import com.husker.editor.app.window.panels.projects.ProjectsPanel;
+import com.husker.editor.app.window.panels.project.ProjectPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,14 +27,14 @@ public class Frame extends JFrame {
 
     public static Frame context;
 
-    public CustomDockablePanel projects;
-    public CustomDockablePanel parameters;
-    public CustomDockablePanel components;
-    public CustomDockablePanel code;
-    public CustomDockablePanel constants;
-    public PreviewPanel preview;
+    private CustomDockablePanel parameters;
+    private CustomDockablePanel components;
+    private CustomDockablePanel code;
+    private CustomDockablePanel constants;
+    private PreviewPanel preview;
 
     public Frame(){
+
         context = this;
 
         setTitle("WebLaF Editor");
@@ -50,9 +50,6 @@ public class Frame extends JFrame {
 
             preview = new PreviewPanel();
 
-            projects = new CustomDockablePanel("Projects", new ProjectsPanel());
-            projects.setIcon(new ImageIcon("bin/projects.png"));
-
             parameters = new CustomDockablePanel("Parameters", new ParameterPanel());
             parameters.setIcon(new ImageIcon("bin/parameters.png"));
 
@@ -66,16 +63,12 @@ public class Frame extends JFrame {
             constants.setIcon(new ImageIcon("bin/constants.png"));
 
             setContent(preview);
-            addFrame(projects);
             addFrame(parameters);
             addFrame(components);
             addFrame(code);
             addFrame(constants);
 
             setState ( new DockableListContainer(Orientation.vertical){{
-                DockableFrameElement northElement = new DockableFrameElement(projects);
-                add(0, northElement);
-
                 DockableListContainer centerContainer = new DockableListContainer(Orientation.horizontal);
                 centerContainer.add(0, new DockableFrameElement(components));
                 centerContainer.add(1, new DockableListContainer(Orientation.vertical){{
@@ -90,11 +83,12 @@ public class Frame extends JFrame {
                     add(0, new DockableFrameElement(parameters));
                     add(1, new DockableFrameElement(constants));
                 }});
-                add(1, centerContainer);
+                add(0, centerContainer);
             }} );
 
         }}, BorderLayout.CENTER);
 
+        add(new ProjectPanel(), BorderLayout.NORTH);
     }
 
     static WebMenuBar setupMenu(WebMenuBar menu){
@@ -102,7 +96,9 @@ public class Frame extends JFrame {
             add(new WebMenu("New"){{
                 add(new WebMenuItem("Skin"){{
                     setAccelerator(Hotkey.CTRL_N);
-                    addActionListener((e) -> Project.addProject(new Project()));
+                    addActionListener((e) -> {
+                        Project.setProject(new Project());
+                    });
                 }});
             }});
 

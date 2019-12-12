@@ -5,6 +5,29 @@
         <title>Custom skin</title>
         <description>WebLaF Editor Skin</description>
         <author>Husker</author>
-        <include nearClass="com.alee.skin.web.WebSkin\">resources/skin.xml</include>
-        <!-- CODE -->
-        </skin>
+        <include nearClass="com.alee.skin.light.WebLightSkin">resources/web-light-skin.xml</include>
+
+        <style type="breadcrumb" id="custom-breadcrumb">
+                <painter>
+                        <decorations>
+                                <decoration>
+                                        <WebShape round="0" sides="0,0,1,0"/>
+                                        <WebShadow type="outer" width="0" />
+                                        <LineBorder color="170,170,170" />
+                                        <ColorBackground color="0,0,0,0" />
+                                </decoration>
+                                <decoration states="focused">
+                                        <LineBorder color="0,0,0,0" />
+                                </decoration>
+                        </decorations>
+                </painter>
+        </style>
+
+        <style type="panel" id="custom-documentpane" extends="documentpane">
+                <!-- Tabbed pane -->
+                <style type="tabbedpane" id="tabbedpane">
+                        <!-- Tab panel -->
+                        <style type="panel" id="tab" padding="1,0,0,0"/>
+                </style>
+        </style>
+</skin>

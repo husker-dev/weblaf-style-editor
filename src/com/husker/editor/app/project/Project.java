@@ -1,73 +1,43 @@
 package com.husker.editor.app.project;
 
-import com.alee.laf.optionpane.WebOptionPane;
-import com.husker.editor.app.window.Frame;
+import com.husker.editor.app.project.listeners.project.ProjectEvent;
+import com.husker.editor.app.project.listeners.project.ProjectListener;
 
-import javax.swing.*;
 import java.util.ArrayList;
+
+import static com.husker.editor.app.project.listeners.project.ProjectEvent.Type.*;
 
 
 public class Project {
 
-    private static ArrayList<IProjectListener> listeners = new ArrayList<>();
+    private static ArrayList<ProjectListener> listeners = new ArrayList<>();
+    private static Project current_project;
 
-    public enum ProjectEvent {
-        Current_Project_Changed,
-        New_Project,
-        Removed_Project
-        ;
-
-        public boolean oneOf(ProjectEvent... events){
-            for (ProjectEvent e : events)
-                if(name().equals(e.name()))
-                    return true;
-            return false;
-        }
+    public static void doEvent(ProjectEvent.Type event, Object... objects){
+        doEvent(new ProjectEvent(event, objects));
+    }
+    public static void doEvent(ProjectEvent event){
+        for(ProjectListener listener : listeners)
+            listener.event(event);
     }
 
-    private static Project current;
-    private static ArrayList<Project> projects = new ArrayList<>();
-
-    public static void doEvent(ProjectEvent event, Object... objects){
-        for(IProjectListener listener : listeners)
-            listener.event(event, objects);
+    public static void setProject(Project project){
+        current_project = project;
+        current_project.Components.setSelectedComponent(null);
+        doEvent(Changed);
     }
 
-    public static void setCurrentProject(Project project){
-        current = project;
-        doEvent(ProjectEvent.Current_Project_Changed);
-    }
-
-    public static Project getCurrentProject(){
-        return current;
-    }
-
-    public static void addProject(Project project){
-        if(!projects.contains(project))
-            projects.add(project);
-        doEvent(ProjectEvent.New_Project);
-        setCurrentProject(project);
-    }
-    public static void removeProject(Project project){
-        projects.remove(project);
-        doEvent(ProjectEvent.Removed_Project);
-    }
-
-    public static void resetProject(){
-        setCurrentProject(null);
-    }
-
-    public static ArrayList<Project> getProjects(){
-        return projects;
-    }
-    public static void addListener(IProjectListener listener){
+    public static void addListener(ProjectListener listener){
         listeners.add(listener);
+    }
+    public static Project getCurrentProject(){
+        return current_project;
     }
     // ----------
 
-    public String name = "Unnamed";
+    private String name = "Unnamed";
 
-    public com.husker.editor.app.project.Components Components = new Components();
+    public final com.husker.editor.app.project.Components Components = new Components();
 
     public void setName(String name){
         this.name = name;
@@ -75,18 +45,5 @@ public class Project {
     public String getName(){
         return name;
     }
-
-    public void showRenameDialog(){
-        String text = (String) WebOptionPane.showInputDialog(Frame.context, "Name:", "Rename", JOptionPane.QUESTION_MESSAGE, null, null, getName());
-        if(text == null)
-            return;
-        else
-            setName(text);
-    }
-
-    public interface IProjectListener {
-        void event(Project.ProjectEvent event, Object... objects);
-    }
-
 
 }

@@ -3,6 +3,7 @@ package com.husker.editor.app.project;
 import com.husker.editor.app.components.Styled_Button;
 import com.husker.editor.app.components.Styled_Label;
 import com.husker.editor.app.parameters.*;
+import com.husker.editor.app.project.listeners.component.ComponentEvent;
 import com.husker.editor.app.xml.XMLHead;
 import com.husker.editor.app.xml.XMLParameter;
 
@@ -11,6 +12,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.husker.editor.app.project.listeners.component.ComponentEvent.Type.*;
 
 public abstract class StyleComponent implements Cloneable{
 
@@ -66,7 +69,7 @@ public abstract class StyleComponent implements Cloneable{
         }
     }
 
-    private static Parameter[] parameters = new Parameter[]{
+    public static Parameter[] parameters = new Parameter[]{
             // Base
             new TextParameter("Id", Parameters.ID),
             new TextParameter("Extends", Parameters.EXTENDS),
@@ -246,13 +249,6 @@ public abstract class StyleComponent implements Cloneable{
         return null;
     }
 
-    public void setName(String name){
-        this.name = name;
-    }
-    public String getName(){
-        return name;
-    }
-
     public String getTitle(){
         return title;
     }
@@ -360,7 +356,7 @@ public abstract class StyleComponent implements Cloneable{
 
     public void setVariable(String name, String value){
         implemented_variables.get(name).setValue(value);
-        Components.doEvent(Components.ComponentEvent.Style_Changed, this);
+        Components.doEvent(Style_Changed, this);
     }
     public Variable getVariable(String name){
         return implemented_variables.get(name);
@@ -372,13 +368,13 @@ public abstract class StyleComponent implements Cloneable{
         implemented_variables.put(name, new Variable(default_value));
     }
 
-    public void doEvent(Components.ComponentEvent event, Object... objects){
+    public void doEvent(ComponentEvent.Type event, Object... objects){
         Components.doEvent(event, this, objects);
     }
 
     public void addChildComponent(StyleComponent component){
         child_components.add(component);
-        doEvent(Components.ComponentEvent.New_Child, component);
+        doEvent(New_Child, component);
     }
     public ArrayList<StyleComponent> getChildComponents(){
         return child_components;
@@ -388,7 +384,7 @@ public abstract class StyleComponent implements Cloneable{
     }
     public void removeChild(int index){
         child_components.remove(index);
-        doEvent(Components.ComponentEvent.Removed_Child);
+        doEvent(Removed_Child);
     }
     public void moveChildComponent(int from, int to){
         StyleComponent component = child_components.get(from);

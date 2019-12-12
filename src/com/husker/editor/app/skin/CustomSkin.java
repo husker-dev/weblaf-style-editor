@@ -5,14 +5,17 @@ import com.alee.managers.style.StyleManager;
 import com.alee.managers.style.XmlSkin;
 import com.alee.managers.style.data.SkinInfo;
 import com.alee.utils.XmlUtils;
-import com.husker.editor.app.Main;
-import com.husker.editor.app.window.panels.preview.PreviewPanel;
+import com.husker.editor.app.project.listeners.skin.SkinEvent;
+import com.husker.editor.app.project.listeners.skin.SkinListener;
 import com.husker.editor.app.xml.XMLHead;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class CustomSkin extends XmlSkin {
+
+    private static ArrayList<SkinListener> listeners = new ArrayList<>();
 
     private static String pattern = "<skin xmlns=\"http://weblookandfeel.com/XmlSkin\">\n" +
             "    <id>husker.editor.skin</id>\n" +
@@ -44,7 +47,7 @@ public class CustomSkin extends XmlSkin {
                     return;
                 applying = true;
 
-                PreviewPanel.progressBar.setVisible(true);
+                onEvent(new SkinEvent(SkinEvent.Type.Skin_Applying));
 
                 String text = pattern.replace("<!-- CODE -->", skin.toString(1));
 
@@ -57,17 +60,20 @@ public class CustomSkin extends XmlSkin {
             }finally {
                 applying = false;
                 if(thread_id == (int)Thread.currentThread().getId())
-                    PreviewPanel.progressBar.setVisible(false);
+                    onEvent(new SkinEvent(SkinEvent.Type.Last_Applied));
+                onEvent(new SkinEvent(SkinEvent.Type.Skin_Applied));
 
-                SwingUtilities.invokeLater(() -> {
-                    try {
-                        Main.frame.preview.updateUI();
-                        Main.frame.preview.painting.updateContent();
-                    }catch (Exception ex){
-                        ex.printStackTrace();
-                    }
-                });
+
             }
         }).start();
+    }
+
+    private static void onEvent(SkinEvent event){
+        for(SkinListener listener : listeners)
+            listener.event(event);
+    }
+
+    public static void addSkinListener(SkinListener listener){
+        listeners.add(listener);
     }
 }

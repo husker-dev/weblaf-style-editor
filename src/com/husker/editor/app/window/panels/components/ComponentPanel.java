@@ -23,33 +23,33 @@ import java.awt.event.MouseMotionAdapter;
 class ComponentPanel extends WebPanel {
 
     private boolean dragged = false;
-    private WebToggleButton title;
-    private WebButton actions, resize;
+    private WebButton title, actions, resize;
 
     private WebLabel type, id, separator;
 
     private StyleComponent component;
 
-    static ImageIcon close_1, close_2, more, arrow_down, arrow_up;
+    static ImageIcon close_1, close_2, more, arrow_down, arrow_up, style_icon;
     static {
         close_1 = new ImageIcon("bin/close.png");
         close_2 = new ImageIcon("bin/close_h.png");
         more = new ImageIcon("bin/more.png");
         arrow_down = new ImageIcon("bin/arrow_down.png");
         arrow_up = new ImageIcon("bin/arrow_up.png");
+        style_icon = new ImageIcon("bin/style.png");
     }
 
     public ComponentPanel(StyleComponent component){
         this.component = component;
         setPreferredSize(170, 27);
 
-        title = new WebToggleButton(){{
+        title = new WebButton(){{
             setHorizontalAlignment(LEFT);
             setVerticalAlignment(CENTER);
             add(new WebPanel(){{
                 setStyleId(StyleId.panelTransparent);
                 setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-                add(type = new WebLabel(component.getTitle()){{
+                add(type = new WebLabel(component.getTitle(), style_icon){{
                     setPreferredHeight(18);
                 }});
                 add(separator = new WebLabel("  ->  "){{
@@ -74,10 +74,7 @@ class ComponentPanel extends WebPanel {
                         setEnabled(true);
                         return;
                     }else{
-                        if(isSelected())
-                            component.getProject().Components.setSelectedComponent(component);
-                        else
-                            component.getProject().Components.setSelectedComponent(null);
+
                     }
                 }
             });
@@ -85,10 +82,7 @@ class ComponentPanel extends WebPanel {
                 public void mouseDragged(MouseEvent e) {
                     if(!dragged){
                         setEnabled(false);
-                        if(isSelected()){
-                            component.getProject().Components.setSelectedComponent(null);
-                            setSelected(false);
-                        }
+
                     }
                     dragged = true;
 
@@ -97,6 +91,9 @@ class ComponentPanel extends WebPanel {
                 public void mouseMoved(MouseEvent e) {
                     ComponentPanel.this.getParent().dispatchEvent(e);
                 }
+            });
+            addActionListener(e -> {
+                component.getProject().Components.setSelectedComponent(component);
             });
         }};
         WebPopupMenu popup = new WebPopupMenu();
@@ -142,6 +139,6 @@ class ComponentPanel extends WebPanel {
     }
 
     public void setSelected(boolean selected){
-        title.setSelected(selected);
+        //title.setSelected(selected);
     }
 }
