@@ -29,10 +29,8 @@ class ComponentPanel extends WebPanel {
 
     private StyleComponent component;
 
-    static ImageIcon close_1, close_2, more, arrow_down, arrow_up, style_icon;
+    private static ImageIcon  more, arrow_down, arrow_up, style_icon;
     static {
-        close_1 = new ImageIcon("bin/close.png");
-        close_2 = new ImageIcon("bin/close_h.png");
         more = new ImageIcon("bin/more.png");
         arrow_down = new ImageIcon("bin/arrow_down.png");
         arrow_up = new ImageIcon("bin/arrow_up.png");
@@ -52,7 +50,7 @@ class ComponentPanel extends WebPanel {
                 add(type = new WebLabel(component.getTitle(), style_icon){{
                     setPreferredHeight(18);
                 }});
-                add(separator = new WebLabel("  ->  "){{
+                add(separator = new WebLabel("  "){{
                     setPreferredHeight(18);
                     setVisible(false);
                 }});

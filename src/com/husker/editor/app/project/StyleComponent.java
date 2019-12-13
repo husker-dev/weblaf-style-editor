@@ -296,7 +296,6 @@ public abstract class StyleComponent implements Cloneable{
                 }
             }
         }
-
         applyParameterOnCustom(head, "painter.decorations.decoration.LineBorder", "color", Parameters.BORDER_COLOR);
 
         if(!areVariablesDefault(Parameters.INNER_SHADOW_WIDTH, Parameters.INNER_SHADOW_COLOR)) {

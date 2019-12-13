@@ -17,8 +17,8 @@ import static com.husker.editor.app.project.listeners.component.ComponentEvent.T
 
 public class CodePanel extends WebPanel {
 
-    WebSyntaxArea sourceViewer;
-    WebSyntaxScrollPane scroll;
+    private WebSyntaxArea sourceViewer;
+    private WebSyntaxScrollPane scroll;
 
     public CodePanel(){
         setPreferredHeight(200);

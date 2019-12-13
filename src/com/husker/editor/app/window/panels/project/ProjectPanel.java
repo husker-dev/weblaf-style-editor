@@ -43,6 +43,7 @@ public class ProjectPanel extends WebPanel {
                                 setPreferredHeight(18);
                             }});
                             add(new WebLabel(component.getVariableValue("id")){{
+                                setMargin(0, 4, 0, 0);
                                 setStyleId(StyleId.labelTag);
                                 setPreferredHeight(18);
                                 setVisible(!component.getVariableValue("id").equals(""));
