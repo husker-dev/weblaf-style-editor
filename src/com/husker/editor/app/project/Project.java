@@ -26,6 +26,9 @@ public class Project {
         current_project.Components.setSelectedComponent(null);
         doEvent(Changed);
     }
+    public static void createProject(){
+        setProject(new Project());
+    }
 
     public static void addListener(ProjectListener listener){
         listeners.add(listener);

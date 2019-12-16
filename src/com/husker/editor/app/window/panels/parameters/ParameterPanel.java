@@ -6,10 +6,7 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.separator.WebSeparator;
 import com.alee.managers.style.StyleId;
-import com.husker.editor.app.project.Components;
-import com.husker.editor.app.project.Parameter;
-import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.project.*;
 import com.husker.editor.app.window.tools.MovableComponentList;
 
 import java.util.ArrayList;
@@ -57,15 +54,21 @@ public class ParameterPanel extends WebPanel {
         Project.addListener(e -> {
             scroll.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
         });
-
+        Parameters.addActionListener(this::prepareParameters);
         prepareParameters();
     }
 
     public void prepareParameters(){
+        groups.clear();
+        separators.clear();
+        while(list.getElementCount() > 0)
+            for(int i = 0; i < list.getElementCount(); i++)
+                list.removeElement(i);
+
         ArrayList<String> groups = new ArrayList<>();
         ArrayList<Parameter> ungrouped = new ArrayList<>();
 
-        for (Parameter parameter : StyleComponent.parameters) {
+        for (Parameter parameter : AbstractParameterReceiver.getStaticParameters()) {
             if(parameter == null || !parameter.isVisible())
                 continue;
             if(parameter.getGroup() == null)
@@ -91,7 +94,7 @@ public class ParameterPanel extends WebPanel {
                 setReorderingAllowed(false);
 
                 boolean first = true;
-                for(Parameter parameter : StyleComponent.parameters){
+                for(Parameter parameter : AbstractParameterReceiver.getStaticParameters()){
                     if(parameter.getGroup() != null && parameter.getGroup().equals(group) && parameter.isVisible()){
                         if(!first) {
                             WebSeparator separator = WebSeparator.createHorizontal();
@@ -110,8 +113,8 @@ public class ParameterPanel extends WebPanel {
     }
 
     public void apply(StyleComponent component, boolean apply){
-        for(Parameter parameter : StyleComponent.parameters){
-            if(component != null && component.isParameterImplemented(parameter.getComponentVariable())) {
+        for(Parameter parameter : StyleComponent.getStaticParameters()){
+            if(component != null && component.isImplemented(parameter.getVariableName())) {
                 if(apply)
                     parameter.apply(component);
                 parameter.getPanel().setVisible(parameter.isVisible());
@@ -126,7 +129,7 @@ public class ParameterPanel extends WebPanel {
 
         for(Map.Entry<String, WebCollapsiblePane> entry : groups.entrySet()){
             boolean visible = false;
-            for(Parameter parameter : StyleComponent.parameters)
+            for(Parameter parameter : StyleComponent.getStaticParameters())
                 if(parameter.getGroup() != null && parameter.getGroup().equals(entry.getKey()) && parameter.getPanel().isVisible())
                     visible = true;
             entry.getValue().setVisible(visible);

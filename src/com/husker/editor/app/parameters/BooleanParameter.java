@@ -2,6 +2,7 @@ package com.husker.editor.app.parameters;
 
 import com.alee.laf.checkbox.WebCheckBox;
 import com.husker.editor.app.project.Parameter;
+import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
 
 import java.awt.*;
 
@@ -9,11 +10,11 @@ public class BooleanParameter extends Parameter {
 
     private WebCheckBox checkBox;
 
-    public BooleanParameter(String name, String variable){
-        this(name, variable, null);
+    public BooleanParameter(String name){
+        this(name, null);
     }
-    public BooleanParameter(String name, String component_variable, String group) {
-        super(name, component_variable, null, group);
+    public BooleanParameter(String name, String group) {
+        super(name, null, group);
     }
 
     public void setValue(String value) {
@@ -37,7 +38,7 @@ public class BooleanParameter extends Parameter {
         return checkBox;
     }
 
-    public void addValueChangedListener(ParameterChanged listener) {
+    public void addValueChangedListener(ParameterChangedListener listener) {
         checkBox.addChangeListener(e -> listener.event(getValue()));
     }
 }

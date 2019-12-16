@@ -26,8 +26,6 @@ import static com.husker.editor.app.project.listeners.component.ComponentEvent.T
 
 public class ComponentsPanel extends WebPanel {
 
-    private WebComboBox combo;
-    private WebButton add;
     private MovableComponentList list;
     private WebScrollPane scroll;
 
@@ -36,24 +34,6 @@ public class ComponentsPanel extends WebPanel {
     public ComponentsPanel(){
         setPreferredWidth(250);
 
-        combo = new WebComboBox(){{
-            ArrayList<String> components = new ArrayList<>();
-            for(Map.Entry<String, Class<? extends StyleComponent>> entry : StyleComponent.components.entrySet())
-                components.add(entry.getKey());
-            Collections.sort(components);
-            for(String component : components)
-                addItem(component);
-        }};
-        add = new WebButton("+"){{
-            addActionListener(e -> {
-                try {
-                    if (Project.getCurrentProject() != null)
-                        Project.getCurrentProject().Components.addComponent(StyleComponent.components.get(combo.getSelectedItem()).newInstance().clone(Project.getCurrentProject()));
-                }catch (Exception ex){
-                    ex.printStackTrace();
-                };
-            });
-        }};
         list = new MovableComponentList(){{
                 Components.addListener(e -> {
                     if(e.getType().oneOf(New))
@@ -97,9 +77,6 @@ public class ComponentsPanel extends WebPanel {
         }};
 
         setLayout(new BorderLayout());
-        add(new WebToolBar(){{
-            add(new GroupPane(combo, add));
-        }}, BorderLayout.NORTH);
         add(scroll);
 
         Components.addListener(e -> {
@@ -115,8 +92,6 @@ public class ComponentsPanel extends WebPanel {
     }
 
     public void setActive(boolean active){
-        combo.setEnabled(active);
-        add.setEnabled(active);
         scroll.setVisible(active);
     }
 }

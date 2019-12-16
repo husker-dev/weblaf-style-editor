@@ -18,6 +18,10 @@ public class ProjectPanel extends WebPanel {
 
     public ProjectPanel(){
         setLayout(new BorderLayout());
+
+        Project.addListener((event) -> setVisible(Project.getCurrentProject() != null));
+        setVisible(false);
+
         add(new WebBreadcrumb(){
             {
                 setStyleId(StyleId.of("custom-breadcrumb"));

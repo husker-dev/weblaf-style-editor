@@ -2,6 +2,7 @@ package com.husker.editor.app.parameters;
 
 import com.husker.editor.app.project.Constants;
 import com.husker.editor.app.project.Parameter;
+import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
 import com.husker.editor.app.window.tools.FloatSpinner;
 
 import javax.swing.*;
@@ -12,17 +13,17 @@ public class FloatParameter extends Parameter {
     private FloatSpinner spinner;
     private float step;
 
-    public FloatParameter(String name, String component_variable) {
-        this(name, component_variable, null, 0.1f);
+    public FloatParameter(String name) {
+        this(name, null, 0.1f);
     }
-    public FloatParameter(String name, String component_variable, String group) {
-        this(name, component_variable, group, 0.1f);
+    public FloatParameter(String name, String group) {
+        this(name, group, 0.1f);
     }
-    public FloatParameter(String name, String component_variable, float step) {
-        this(name, component_variable, null, step);
+    public FloatParameter(String name, float step) {
+        this(name, null, step);
     }
-    public FloatParameter(String name, String component_variable, String group, float step) {
-        super(name, component_variable, Constants.ConstType.Number, group, new Object[]{step});
+    public FloatParameter(String name, String group, float step) {
+        super(name, Constants.ConstType.Number, group, new Object[]{step});
     }
 
     public void setValue(String value) {
@@ -56,7 +57,7 @@ public class FloatParameter extends Parameter {
         return spinner;
     }
 
-    public void addValueChangedListener(ParameterChanged listener) {
+    public void addValueChangedListener(ParameterChangedListener listener) {
         spinner.addChangeListener(e -> listener.event(spinner.getValue().toString()));
     }
 }

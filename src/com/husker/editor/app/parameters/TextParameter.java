@@ -4,6 +4,7 @@ import com.alee.extended.image.WebImage;
 import com.alee.laf.text.WebTextField;
 import com.husker.editor.app.project.Constants;
 import com.husker.editor.app.project.Parameter;
+import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -14,11 +15,11 @@ public class TextParameter extends Parameter {
 
     private WebTextField textField;
 
-    public TextParameter(String name, String variable){
-        this(name, variable, null);
+    public TextParameter(String name){
+        this(name, null);
     }
-    public TextParameter(String name, String variable, String group) {
-        super(name, variable, Constants.ConstType.Text, group);
+    public TextParameter(String name, String group) {
+        super(name, Constants.ConstType.Text, group);
     }
 
     public void setValue(String value) {
@@ -42,7 +43,7 @@ public class TextParameter extends Parameter {
         return textField;
     }
 
-    public void addValueChangedListener(ParameterChanged listener) {
+    public void addValueChangedListener(ParameterChangedListener listener) {
         textField.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
                 warn();

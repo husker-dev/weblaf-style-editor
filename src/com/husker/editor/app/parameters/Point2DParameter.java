@@ -1,7 +1,10 @@
 package com.husker.editor.app.parameters;
 
+import com.alee.laf.grouping.GroupPane;
+import com.alee.laf.grouping.GroupPaneConstraints;
 import com.alee.laf.panel.WebPanel;
 import com.husker.editor.app.project.Parameter;
+import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
 import com.husker.editor.app.window.tools.FloatSpinner;
 
 import javax.swing.*;
@@ -13,17 +16,17 @@ public class Point2DParameter extends Parameter {
     private FloatSpinner y;
     private float step;
 
-    public Point2DParameter(String name, String component_variable) {
-        this(name, component_variable, null, 0.1f);
+    public Point2DParameter(String name) {
+        this(name, null, 0.1f);
     }
-    public Point2DParameter(String name, String component_variable, String group) {
-        this(name, component_variable, group, 0.1f);
+    public Point2DParameter(String name, String group) {
+        this(name, group, 0.1f);
     }
-    public Point2DParameter(String name, String component_variable, float step) {
-        this(name, component_variable, null, step);
+    public Point2DParameter(String name, float step) {
+        this(name, null, step);
     }
-    public Point2DParameter(String name, String component_variable, String group, float step) {
-        super(name, component_variable, null, group, new Object[]{step});
+    public Point2DParameter(String name, String group, float step) {
+        super(name, null, group, new Object[]{step});
     }
 
     public void setValue(String value) {
@@ -53,14 +56,13 @@ public class Point2DParameter extends Parameter {
 
         JSpinner.DefaultEditor spinnerEditorY = (JSpinner.DefaultEditor)y.getEditor();
         spinnerEditorY.getTextField().setHorizontalAlignment(JTextField.LEFT);
-        return new WebPanel(){{
-            setLayout(new GridLayout(0, 2));
-            add(x);
-            add(y);
+        return new GroupPane(){{
+            add(x, GroupPaneConstraints.FILL);
+            add(y, GroupPaneConstraints.FILL);
         }};
     }
 
-    public void addValueChangedListener(ParameterChanged listener) {
+    public void addValueChangedListener(ParameterChangedListener listener) {
         x.addChangeListener(e -> listener.event(getValue()));
         y.addChangeListener(e -> listener.event(getValue()));
     }

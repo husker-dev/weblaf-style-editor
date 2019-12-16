@@ -2,6 +2,7 @@ package com.husker.editor.app.parameters;
 
 import com.alee.laf.combobox.WebComboBox;
 import com.husker.editor.app.project.Parameter;
+import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
 
 import java.awt.*;
 
@@ -10,11 +11,11 @@ public class ComboParameter extends Parameter {
     private String[] items;
     private WebComboBox combo;
 
-    public ComboParameter(String name, String component_variable, String[] items) {
-        this(name, component_variable, null, items);
+    public ComboParameter(String name, String[] items) {
+        this(name, null, items);
     }
-    public ComboParameter(String name, String component_variable, String group, String[] items) {
-        super(name, component_variable, null, group);
+    public ComboParameter(String name, String group, String[] items) {
+        super(name, null, group);
 
         for(String item : items)
             combo.addItem(item);
@@ -42,7 +43,7 @@ public class ComboParameter extends Parameter {
         return combo;
     }
 
-    public void addValueChangedListener(ParameterChanged listener) {
+    public void addValueChangedListener(ParameterChangedListener listener) {
         combo.addItemListener(e -> listener.event(getValue()));
     }
 }

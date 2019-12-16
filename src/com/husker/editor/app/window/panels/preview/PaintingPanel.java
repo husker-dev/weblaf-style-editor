@@ -1,12 +1,14 @@
 package com.husker.editor.app.window.panels.preview;
 
 
+import com.alee.extended.layout.AlignLayout;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.skin.CustomSkin;
 
+import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Method;
 
@@ -17,12 +19,11 @@ public class PaintingPanel extends WebPanel {
     private boolean drawBorder = false;
 
     public PaintingPanel(StyleComponent component){
-        setLayout(null);
+        setLayout(new AlignLayout());
         this.component = component;
         content = component.createPreviewComponent();
         add(content);
 
-        updateContent();
         // setting style id
         try {
             Method method = content.getClass().getDeclaredMethod("setStyleId", StyleId.class);
@@ -33,17 +34,9 @@ public class PaintingPanel extends WebPanel {
         }
     }
 
-    public void updateContent(){
-        if(content != null) {
-            content.setSize(content.getPreferredSize());
-            content.setLocation((getWidth() - content.getWidth()) / 2, (getHeight() - content.getHeight()) / 2);
-        }
-        repaint();
-    }
 
     public void paint(Graphics gr){
-        gr.setColor(new Color(237, 237 ,237));
-        gr.fillRect(0, 0, getWidth(), getHeight());
+        super.paint(gr);
         if(content != null) {
             if(drawBorder) {
                 gr.setColor(Color.red);

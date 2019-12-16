@@ -4,6 +4,7 @@ public class Variable implements Cloneable {
 
     private String value = null;
     private String default_value;
+    private String name;
 
     public Variable clone(){
         try{
@@ -12,11 +13,12 @@ public class Variable implements Cloneable {
         return null;
     }
 
-    public Variable(){
-        this("");
+    public Variable(String name){
+        this(name, "");
     }
-    public Variable(String default_value){
+    public Variable(String name, String default_value){
         this.default_value = default_value;
+        this.name = name;
     }
     public void setValue(String value){
         this.value = value;
@@ -34,5 +36,13 @@ public class Variable implements Cloneable {
             return true;
         else
             return value.equals(default_value);
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public boolean equals(String value){
+        return getValue().equals(value);
     }
 }

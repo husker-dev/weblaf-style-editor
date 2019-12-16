@@ -20,18 +20,18 @@ public class Styled_Button extends StyleComponent {
                 KIT_SHAPE,
                 KIT_BUTTON_CONTENT
         );
-        setCustomValue(SHAPE_ENABLED, "true");
-        setCustomValue(ROUND_FULL, "3");
-        setCustomValue(OUTER_SHADOW_WIDTH, "2");
-        setCustomValue(BORDER_COLOR, "170,170,170");
-        setCustomValue(BACKGROUND_TYPE, "Gradient");
-        setCustomValue(BUTTON_SHOW_ICON, "true");
-        setCustomValue(BUTTON_SHOW_TEXT, "true");
+        setDefaultValue(SHAPE_ENABLED, "true");
+        setDefaultValue(ROUND_FULL, "3");
+        setDefaultValue(OUTER_SHADOW_WIDTH, "2");
+        setDefaultValue(BORDER_COLOR, "170,170,170");
+        setDefaultValue(BACKGROUND_TYPE, "Gradient");
+        setDefaultValue(BUTTON_SHOW_ICON, "true");
+        setDefaultValue(BUTTON_SHOW_TEXT, "true");
 
-        setCustomValue(ROUND_LB, "3");
-        setCustomValue(ROUND_LT, "3");
-        setCustomValue(ROUND_RB, "3");
-        setCustomValue(ROUND_RT, "3");
+        setDefaultValue(ROUND_LB, "3");
+        setDefaultValue(ROUND_LT, "3");
+        setDefaultValue(ROUND_RB, "3");
+        setDefaultValue(ROUND_RT, "3");
     }
 
     public Component createPreviewComponent() {

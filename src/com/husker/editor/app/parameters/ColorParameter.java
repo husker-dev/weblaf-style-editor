@@ -1,8 +1,10 @@
 package com.husker.editor.app.parameters;
 
 import com.alee.extended.colorchooser.WebColorChooserField;
+import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Constants;
 import com.husker.editor.app.project.Parameter;
+import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,11 +13,11 @@ public class ColorParameter extends Parameter {
 
     private WebColorChooserField chooser;
 
-    public ColorParameter(String name, String component_variable) {
-        this(name, component_variable, null);
+    public ColorParameter(String name) {
+        this(name, null);
     }
-    public ColorParameter(String name, String component_variable, String group) {
-        super(name, component_variable, Constants.ConstType.Color, group);
+    public ColorParameter(String name, String group) {
+        super(name, Constants.ConstType.Color, group);
     }
 
     public void setValue(String value) {
@@ -47,13 +49,14 @@ public class ColorParameter extends Parameter {
 
     public Component initComponent() {
         chooser = new WebColorChooserField();
+        chooser.setStyleId(StyleId.of("custom-chooserfield"));
         chooser.setDisplayEyedropper(false);
         chooser.setPreferredWidth(50);
         chooser.setHorizontalAlignment(SwingConstants.LEFT);
         return chooser;
     }
 
-    public void addValueChangedListener(ParameterChanged listener) {
+    public void addValueChangedListener(ParameterChangedListener listener) {
         chooser.addColorChooserListener( (e, d) -> listener.event(getValue()));
     }
 }

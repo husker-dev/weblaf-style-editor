@@ -6,14 +6,19 @@ import com.alee.laf.grouping.GroupPane;
 import com.alee.laf.grouping.GroupPaneConstraints;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.husker.editor.app.project.listeners.parameter.ParameterActionListener;
+import com.husker.editor.app.project.listeners.parameter.ParameterApplyListener;
+import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
+import com.husker.editor.app.project.listeners.parameter.ParameterVisibleListener;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
 public abstract class Parameter{
-    private ArrayList<IApplyParameter> apply_listener = new ArrayList<>();
-    private ArrayList<IActionListener> action_listener = new ArrayList<>();
+
+    private ArrayList<ParameterApplyListener> apply_listener = new ArrayList<>();
+    private ArrayList<ParameterActionListener> action_listener = new ArrayList<>();
 
     private WebPanel panel;
 
@@ -26,15 +31,12 @@ public abstract class Parameter{
     private String last_value = "";
     private boolean last_value_saved = false;
 
-    private String component_variable;
-    private Constants.ConstType constType;
-
-    private StyleComponent current_component;
-
+    private String variable_name = "";
+    private AbstractParameterReceiver current_parameter_receiver;
     private String group;
 
     private boolean visible = true;
-    private static ArrayList<IVisibleChanged> visible_listener = new ArrayList<>();
+    private static ArrayList<ParameterVisibleListener> visible_listener = new ArrayList<>();
 
     private static ImageIcon reset_img, reset_disabled_img;
 
@@ -43,15 +45,13 @@ public abstract class Parameter{
         reset_disabled_img = new ImageIcon("bin/reset_disabled.png");
     }
 
-    public Parameter(String name, String component_variable, Constants.ConstType constType, String group, Object[]... objects){
+    public Parameter(String name, Constants.ConstType constType, String group, Object[]... objects){
         initObjects(objects);
 
         panel = new WebPanel();
         panel.setPreferredHeight(25);
         panel.setPadding(0, 0, 0, 5);
 
-        this.component_variable = component_variable;
-        this.constType = constType;
         this.group = group;
 
         this.name = new WebLabel(name + ":");
@@ -104,7 +104,7 @@ public abstract class Parameter{
             addActionListener(e -> {
                 if(constType != null)
                     constants.setSelectedIndex(0);
-                setValue(current_component.getVariable(component_variable).getDefaultValue());
+                setValue(current_parameter_receiver.getVariable(variable_name).getDefaultValue());
             });
         }};
 
@@ -126,46 +126,45 @@ public abstract class Parameter{
         addValueChangedListener(text -> {
             if(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null)
                 return;
-            if(!component_variable.isEmpty())
-                current_component.setVariable(component_variable, text);
+            if(!variable_name.isEmpty())
+                current_parameter_receiver.setCustomValue(variable_name, text);
 
-            reset.setEnabled(!current_component.getVariable(component_variable).getDefaultValue().equals(getValue()));
+            if(current_parameter_receiver != null && current_parameter_receiver.isImplemented(variable_name))
+                reset.setEnabled(!current_parameter_receiver.getVariable(variable_name).getDefaultValue().equals(getValue()));
         });
     }
 
     public void apply(StyleComponent component){
-        current_component = component;
+        current_parameter_receiver = component;
 
-        if(component.getVariable(component_variable) != null)
-            setValue(component.getVariableValue(component_variable));
-        reset.setEnabled(!current_component.getVariable(component_variable).getDefaultValue().equals(getValue()));
+        if(component.getVariable(variable_name) != null)
+            setValue(component.getVariableValue(variable_name));
+        reset.setEnabled(!current_parameter_receiver.getVariable(variable_name).getDefaultValue().equals(getValue()));
 
-        if(!component_variable.isEmpty()){
-            for(IApplyParameter listener : apply_listener)
+        if(!variable_name.isEmpty()){
+            for(ParameterApplyListener listener : apply_listener)
                 listener.event(component);
         }
     }
 
-    public void addOnApplyListener(IApplyParameter applyParameter){
+    public void addOnApplyListener(ParameterApplyListener applyParameter){
         apply_listener.add(applyParameter);
     }
 
-    public void setComponentValue(String value){
-        component_variable = value;
+    public void setVariableName(String value){
+        variable_name = value;
     }
-    public String getComponentVariable(){
-        return component_variable;
+    public String getVariableName(){
+        return variable_name;
     }
 
     public void setVisible(boolean visible){
         this.visible = visible;
+        for(ParameterVisibleListener listener : visible_listener)
+            listener.event();
     }
     public boolean isVisible(){
         return visible;
-    }
-    public static void visibleUpdate(){
-        for(IVisibleChanged listener : visible_listener)
-            listener.event();
     }
 
     public WebPanel getPanel(){
@@ -193,35 +192,20 @@ public abstract class Parameter{
 
     public abstract Component initComponent();
 
-    public abstract void addValueChangedListener(ParameterChanged listener);
+    public abstract void addValueChangedListener(ParameterChangedListener listener);
 
-    public static void addVisibleChangedListener(IVisibleChanged listener){
+    public static void addVisibleChangedListener(ParameterVisibleListener listener){
         visible_listener.add(listener);
     }
 
     public void action(){
-        for(IActionListener listener : action_listener)
+        for(ParameterActionListener listener : action_listener)
             listener.event();
     }
 
-    public void addActionListener(IActionListener listener){
+    public void addActionListener(ParameterActionListener listener){
         action_listener.add(listener);
         addValueChangedListener(e -> listener.event());
         addOnApplyListener(e -> listener.event());
-    }
-
-    public interface ParameterChanged {
-        void event(String text);
-    }
-
-    public interface IApplyParameter {
-        void event(StyleComponent component);
-    }
-
-    public interface IVisibleChanged {
-        void event();
-    }
-    public interface IActionListener {
-        void event();
     }
 }
