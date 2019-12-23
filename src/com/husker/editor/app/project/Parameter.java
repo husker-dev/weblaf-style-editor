@@ -32,8 +32,9 @@ public abstract class Parameter{
     private boolean last_value_saved = false;
 
     private String variable_name = "";
-    private AbstractParameterReceiver current_parameter_receiver;
+    private AbstractEditableObject current_parameter_receiver;
     private String group;
+    private Constants.ConstType const_type;
 
     private boolean visible = true;
     private static ArrayList<ParameterVisibleListener> visible_listener = new ArrayList<>();
@@ -53,7 +54,7 @@ public abstract class Parameter{
         panel.setPadding(0, 0, 0, 5);
 
         this.group = group;
-
+        this.const_type = constType;
         this.name = new WebLabel(name + ":");
 
         if(constType != null) {
@@ -61,14 +62,6 @@ public abstract class Parameter{
                 setPreferredWidth(20);
                 addItem("Custom");
                 setWidePopup(true);
-
-                Constants.addListener((event, objects) -> {
-                    removeAllItems();
-                    addItem("Custom");
-                    for (String tag : Constants.getConstants(constType))
-                        addItem(tag);
-                });
-
 
                 addItemListener(e -> {
                     if (getSelectedItem() == null)
@@ -90,7 +83,7 @@ public abstract class Parameter{
                                 last_value = getValue();
                             }
                             Parameter.this.setEnabled(false);
-                            Parameter.this.setValue(Constants.getConstant(constType, getSelectedItem().toString()));
+                            Parameter.this.setValue(Project.getCurrentProject().Constants.getConstant(constType, getSelectedItem().toString()));
                         }
                     }
                 });
@@ -132,6 +125,12 @@ public abstract class Parameter{
             if(current_parameter_receiver != null && current_parameter_receiver.isImplemented(variable_name))
                 reset.setEnabled(!current_parameter_receiver.getVariable(variable_name).getDefaultValue().equals(getValue()));
         });
+
+        if(constType != null) {
+            Constants.addListener(event -> updateConstants());
+            Project.addListener(event -> updateConstants());
+            updateConstants();
+        }
     }
 
     public void apply(StyleComponent component){
@@ -199,6 +198,7 @@ public abstract class Parameter{
     }
 
     public void action(){
+        System.out.println("EVENT Parameter");
         for(ParameterActionListener listener : action_listener)
             listener.event();
     }
@@ -207,5 +207,12 @@ public abstract class Parameter{
         action_listener.add(listener);
         addValueChangedListener(e -> listener.event());
         addOnApplyListener(e -> listener.event());
+    }
+
+    private void updateConstants(){
+        constants.removeAllItems();
+        constants.addItem("Custom");
+        for (String tag : Project.getCurrentProject().Constants.getConstants(const_type))
+            constants.addItem(tag);
     }
 }

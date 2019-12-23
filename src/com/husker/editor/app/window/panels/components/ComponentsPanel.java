@@ -1,24 +1,17 @@
 package com.husker.editor.app.window.panels.components;
 
-import com.alee.extended.statusbar.WebStatusBar;
-import com.alee.laf.button.WebButton;
-import com.alee.laf.combobox.WebComboBox;
-import com.alee.laf.grouping.GroupPane;
-import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
-import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.project.listeners.project.ProjectEvent;
-import com.husker.editor.app.window.tools.MovableComponentList;
+import com.husker.editor.app.tools.MovableComponentList;
 
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

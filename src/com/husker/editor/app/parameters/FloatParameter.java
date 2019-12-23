@@ -3,7 +3,7 @@ package com.husker.editor.app.parameters;
 import com.husker.editor.app.project.Constants;
 import com.husker.editor.app.project.Parameter;
 import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
-import com.husker.editor.app.window.tools.FloatSpinner;
+import com.husker.editor.app.tools.FloatSpinner;
 
 import javax.swing.*;
 import java.awt.*;

@@ -8,9 +8,11 @@ import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.project.Code;
 import com.husker.editor.app.project.listeners.project.ProjectEvent;
-import org.fife.ui.autocomplete.*;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 
 import static com.husker.editor.app.project.listeners.component.ComponentEvent.Type.*;
@@ -20,6 +22,7 @@ public class CodePanel extends WebPanel {
 
     private WebSyntaxArea sourceViewer;
     private WebSyntaxScrollPane scroll;
+    private int edited = 0;
 
     public CodePanel(){
         setPreferredHeight(200);
@@ -29,57 +32,43 @@ public class CodePanel extends WebPanel {
         scroll = sourceViewer.createScroll(StyleId.syntaxareaScrollUndecorated);
         add(scroll, BorderLayout.CENTER);
 
+        sourceViewer.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                warn();
+            }
+            public void removeUpdate(DocumentEvent e) {
+                warn();
+            }
+            public void insertUpdate(DocumentEvent e) {
+                warn();
+            }
+            public void warn() {
+                if(edited == 0)
+                    Code.event(sourceViewer.getText());
+                else
+                    edited--;
+            }
+        });
+
         Components.addListener(e -> {
             if(e.getType().oneOf(Selected_Changed, Style_Changed))
                 updateText();
+            scroll.setVisible(Project.getCurrentProject().Components.getSelectedComponent() != null);
         });
         Project.addListener(e -> {
             if(e.getType().oneOf(ProjectEvent.Type.Changed))
                 updateText();
+            scroll.setVisible(Project.getCurrentProject().Components.getSelectedComponent() != null);
         });
-
-        new AutoCompletion(createCompletionProvider()).install(sourceViewer);
     }
 
     public void updateText(){
+        edited++;
         StyleComponent component = Project.getCurrentProject().Components.getSelectedComponent();
         if(component != null)
             sourceViewer.setText("<!--test--> \n" + component.getXMLStyle().toString());
         else
             sourceViewer.setText("");
         scroll.setEnabled(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
-    }
-
-    private CompletionProvider createCompletionProvider() {
-
-        // A DefaultCompletionProvider is the simplest concrete implementation
-        // of CompletionProvider. This provider has no understanding of
-        // language semantics. It simply checks the text entered up to the
-        // caret position for a match against known completions. This is all
-        // that is needed in the majority of cases.
-        DefaultCompletionProvider provider = new DefaultCompletionProvider();
-
-        // Add completions for all Java keywords. A BasicCompletion is just
-        // a straightforward word completion.
-        provider.addCompletion(new BasicCompletion(provider, "abstract"));
-        provider.addCompletion(new BasicCompletion(provider, "assert"));
-        provider.addCompletion(new BasicCompletion(provider, "break"));
-        provider.addCompletion(new BasicCompletion(provider, "case"));
-        // ... etc ...
-        provider.addCompletion(new BasicCompletion(provider, "transient"));
-        provider.addCompletion(new BasicCompletion(provider, "try"));
-        provider.addCompletion(new BasicCompletion(provider, "void"));
-        provider.addCompletion(new BasicCompletion(provider, "volatile"));
-        provider.addCompletion(new BasicCompletion(provider, "while"));
-
-        // Add a couple of "shorthand" completions. These completions don't
-        // require the input text to be the same thing as the replacement text.
-        provider.addCompletion(new ShorthandCompletion(provider, "sysout",
-                "System.out.println(", "System.out.println("));
-        provider.addCompletion(new ShorthandCompletion(provider, "syserr",
-                "System.err.println(", "System.err.println("));
-
-        return provider;
-
     }
 }

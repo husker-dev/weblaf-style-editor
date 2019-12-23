@@ -1,13 +1,38 @@
 package com.husker.editor.app.project;
 
+import com.husker.editor.app.xml.XMLHead;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public abstract class AbstractParameterReceiver {
+public abstract class AbstractEditableObject implements Cloneable {
 
     private static LinkedHashMap<StaticVariable, Parameter> parameters = new LinkedHashMap<>();
-    private static ArrayList<Class> used_classes = new ArrayList<>();
+    private static ArrayList<Class<? extends AbstractEditableObject>> used_classes = new ArrayList<>();
+
+    static {
+        Code.addActionListener(code -> {
+            new Thread(() -> {
+                if(!code.isEmpty()) {
+                    try {
+                        XMLHead head = XMLHead.fromString(code);
+                        if (head == null)
+                            throw new NullPointerException();
+                        Project.getCurrentProject().Components.getSelectedComponent().applyXML(head);
+
+                        Errors.Current.removeError("xml_reading");
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        Errors.Current.addError(new Error("xml_reading", "XML Reading error", "If you are sure that everything is correct, please contact the developer."));
+                    }
+                }else{
+                    Errors.Current.removeError("xml_reading");
+                }
+            }).start();
+        });
+    }
 
     public static void addStaticParameter(StaticVariable variable, Parameter parameter){
         if(parameters.containsKey(variable))
@@ -43,9 +68,18 @@ public abstract class AbstractParameterReceiver {
             out.add(entry.getValue());
         return out.toArray(new Parameter[0]);
     }
+    public static AbstractEditableObject newInstance(Class<? extends AbstractEditableObject> clazz, Project project) throws IllegalAccessException, InstantiationException{
+        AbstractEditableObject object = clazz.newInstance();;
+        object.project = project;
+        return object;
+    }
 
+    private ArrayList<Variable> implemented_variables = new ArrayList<>();
+    private Project project;
+    private String title;
 
-    protected AbstractParameterReceiver(Class cl){
+    protected AbstractEditableObject(Class cl, String title){
+        this.title = title;
         if(!used_classes.contains(cl)){
             initParameters();
             used_classes.add(cl);
@@ -53,10 +87,25 @@ public abstract class AbstractParameterReceiver {
         }
     }
 
+    // Abstract
     protected abstract void initParameters();
     protected abstract void onVariableChanged(String variable);
 
-    private ArrayList<Variable> implemented_variables = new ArrayList<>();
+    public XMLHead getXMLStyle(){
+        return getXMLStyle(false);
+    }
+    public abstract XMLHead getXMLStyle(boolean preview);
+    public abstract void applyXML(XMLHead code);
+
+    public abstract Component createPreviewComponent();
+
+    // Functions
+    public Project getProject(){
+        return project;
+    }
+    public String getTitle(){
+        return title;
+    }
 
     public void addImplementedParameter(String variable){
         for(Variable variable1 : implemented_variables)

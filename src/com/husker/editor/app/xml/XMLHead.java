@@ -1,8 +1,9 @@
 package com.husker.editor.app.xml;
 
-import com.husker.editor.app.window.tools.CharUtils;
+import com.husker.editor.app.tools.CharUtils;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class XMLHead {
 
@@ -10,12 +11,11 @@ public class XMLHead {
     private LinkedHashMap<String, XMLParameter> parameters = new LinkedHashMap<>();
     private String name;
     private String value;
-    private String commentaries;
+    private ArrayList<String> comments = new ArrayList<>();
 
     public XMLHead(String name){
         this.name = name;
     }
-
     public XMLHead(){
         this("head");
     }
@@ -26,71 +26,125 @@ public class XMLHead {
         heads.add(head);
     }
 
-    public ArrayList<String> getHeadsNames(){
+    public String getName(){
+        return name;
+    }
+    public XMLParameter[] getParameters(){
+        ArrayList<XMLParameter> out = new ArrayList<>();
+        for(Map.Entry<String, XMLParameter> entry : parameters.entrySet())
+            out.add(entry.getValue());
+        return out.toArray(new XMLParameter[0]);
+    }
+
+    public String[] getHeadsNames(){
         ArrayList<String> heads_names = new ArrayList<>();
-        for(XMLHead head : this.heads)
+        for(XMLHead head : getHeads())
             heads_names.add(head.name);
-        return heads_names;
+        return heads_names.toArray(new String[0]);
     }
-    public XMLHead getHead(String name){
-        for(XMLHead head : heads)
-            if(head.name.equals(name))
-                return head;
-        return null;
+    public XMLHead[] getHeads(){
+        return heads.toArray(new XMLHead[0]);
     }
-    public boolean contains(String head_name){
-        for(XMLHead head : heads)
-            if(head.name.equals(head_name))
-                return true;
-        return false;
+
+    public XMLHead[] getHeadsByName(String name){
+        return getHeadsByName(name, null);
+    }
+    public XMLHead[] getHeadsByName(String name, Predicate<XMLHead> predicate){
+        ArrayList<XMLHead> out = new ArrayList<>();
+        for(XMLHead head : getHeads())
+            if(head.getName().equals(name))
+                if(predicate == null || predicate.test(head))
+                    out.add(head);
+        return out.toArray(new XMLHead[0]);
+    }
+
+    public XMLHead getHeadByName(String name){
+        return getHeadByName(name, null);
+    }
+    public XMLHead getHeadByName(String name, Predicate<XMLHead> predicate){
+        XMLHead[] heads = getHeadsByName(name, predicate);
+        if(heads.length > 1)
+            throw new RuntimeException("Predicate applies to more than two XMLHead");
+        else
+            return heads[0];
     }
 
     public void setParameterByPath(String path, String parameter, String value){
         this.setParameterByPath(path, new XMLParameter(parameter, value));
     }
     public void setParameterByPath(String path, XMLParameter parameter){
-        String[] heads = path.split("\\.");
-
-        XMLHead current_head = this;
-        for(String head : heads){
-            if(!current_head.contains(head))
-                current_head.addHead(new XMLHead(head));
-            current_head = current_head.getHead(head);
-        }
-        current_head.addParameter(parameter);
+        createHeadByPath(path).addParameter(parameter);
     }
 
-    public void setHeadByPath(String path, XMLHead new_head){
+    public XMLHead createHeadByPath(String path, XMLHead new_head){
         String[] heads = path.split("\\.");
 
         XMLHead current_head = this;
         for(String head : heads){
-            if(!current_head.contains(head))
+            if(!current_head.containsHead(head))
                 current_head.addHead(new XMLHead(head));
-            current_head = current_head.getHead(head);
+            current_head = current_head.getHeadsByName(head)[0];
         }
         current_head.addHead(new_head);
+        return new_head;
     }
-    public void setHeadByPath(String path){
+    public XMLHead createHeadByPath(String path){
         String[] heads = path.split("\\.");
 
         XMLHead current_head = this;
         for(String head : heads){
-            if(!current_head.contains(head))
+            if(!current_head.containsHead(head))
                 current_head.addHead(new XMLHead(head));
-            current_head = current_head.getHead(head);
+            current_head = current_head.getHeadsByName(head)[0];
         }
+        return current_head;
     }
 
-    public void createHeadPath(String path){
-        String[] heads = path.split("\\.");
+    public boolean containsParameter(String path, String parameter){
+        return getParameterByPath(path, parameter, null) != null;
+    }
+    public boolean containsHead(String head_name){
+        for(XMLHead head : getHeads())
+            if(head.getName().equals(head_name))
+                return true;
+        return false;
+    }
+
+    public XMLParameter getParameterByPath(String path, String parameter){
+        return getParameterByPath(path, parameter, null);
+    }
+    public XMLParameter getParameterByPath(String path, String parameter, Predicate<XMLHead> predicate){
+        return getHeadByPath(path, predicate).getParameter(parameter);
+    }
+
+    public XMLHead[] getHeadsByPath(String path){
+        return getHeadsByPath(path, null);
+    }
+    public XMLHead[] getHeadsByPath(String path, Predicate<XMLHead> predicate){
+        String[] heads_names = path.split("\\.");
+        String[] child_path = Arrays.copyOfRange(heads_names, 0, heads_names.length - 2);
+        String head_name = path.split("\\.")[path.split("\\.").length - 1];
 
         XMLHead current_head = this;
-        for(String head : heads){
-            if(!current_head.contains(head))
-                current_head.addHead(new XMLHead(head));
-            current_head = current_head.getHead(head);
+        for(int i = 0; i < child_path.length - 1; i++){
+            String head = child_path[i];
+            if(!current_head.containsHead(head))
+                return null;
+            current_head = current_head.getHeadsByName(head)[0];
         }
+
+        return current_head.getHeadsByName(head_name, predicate);
+    }
+
+    public XMLHead getHeadByPath(String path){
+        return getHeadByPath(path, null);
+    }
+    public XMLHead getHeadByPath(String path, Predicate<XMLHead> predicate){
+        XMLHead[] heads = getHeadsByPath(path, predicate);
+        if(heads.length > 1)
+            throw new RuntimeException("Predicate applies to more than two XMLHead");
+        else
+            return heads[0];
     }
 
     public void addParameter(XMLParameter parameter){
@@ -100,31 +154,43 @@ public class XMLHead {
         XMLParameter parameter = new XMLParameter(name, value);
         parameters.put(parameter.getName(), parameter);
     }
+    public XMLParameter getParameter(String name){
+        return parameters.get(name);
+    }
 
     public String toString(){
         return toString(0);
     }
-
     public String toString(int tab){
         String tab_str = "";
         for (int i = 0; i < tab; i++)
             tab_str += "    ";
 
-        String line_head = tab_str + "<" + name + "";
-        for(Map.Entry<String, XMLParameter> entry : parameters.entrySet())
-            line_head += " " + entry.getValue().toString();
+        String line_comments = "";
+        for(String comment : getComments())
+            line_comments += tab_str + "<!--" + comment + "-->\n";
 
-        if(heads.size() == 0)
-            return line_head + " />\n";
+        String line_head = tab_str + "<" + getName() + "";
+        for(XMLParameter parameter : getParameters())
+            line_head += " " + parameter.toString();
 
-        line_head += ">\n";
+        if(getHeads().length == 0 && getValue() == null)
+            return line_comments + line_head + " />\n";
+
         String line_content = "";
-        for(XMLHead head : heads)
-            line_content += head.toString(tab + 1);
+        String line_end;
+        if(getValue() == null) {
+            line_head += ">\n";
+            line_end = tab_str + "</" + getName() + ">\n";
+            for (XMLHead head : getHeads())
+                line_content += head.toString(tab + 1);
+        }else {
+            line_head += ">";
+            line_end = "</" + getName() + ">\n";
+            line_content = getValue();
+        }
 
-        String line_end = tab_str + "</" + name + ">\n";
-
-        return line_head + line_content + line_end;
+        return line_comments + line_head + line_content + line_end;
     }
 
     public void setValue(String value){
@@ -137,26 +203,47 @@ public class XMLHead {
         return value != null;
     }
 
-    public void setCommentaries(String commentaries){
-        this.commentaries = commentaries;
+    public void addComment(String comment){
+        this.comments.add(comment);
     }
-    public String getCommentaries(){
-        return commentaries;
-    }
-
-    public static XMLHead[] getHeadsFromString(String text){
-
-        return null;
+    public String[] getComments(){
+        return comments.toArray(new String[0]);
     }
 
-    public static XMLHead fromString(String text, String comments){
-        /*
-            <!-- Comments -->
-            <head parameter"value">
-                <content/>
-            </head>
-         */
-        XMLHead out;
+    public static XMLHead fromString(String text){
+        return fromString(text, new String[0]);
+    }
+    private static XMLHead fromString(String text, String[] comments){
+        XMLHead out = null;
+
+        ArrayList<String> comments_list = new ArrayList<>();
+        Collections.addAll(comments_list, comments);
+        if(text.isEmpty())
+            return null;
+        text = text.trim();
+
+        if(comments_list.size() == 0) {
+            for (int i = 0; ; i++) {
+                char[] chars = text.toCharArray();
+                if (CharUtils.isText(chars, i, "<!--")) {
+                    String comment = "";
+                    i += 4;
+                    while (!CharUtils.isText(chars, i, "-->")) {
+                        comment += chars[i];
+                        i++;
+                    }
+                    i += 2;
+                    comments_list.add(comment);
+                    continue;
+                }
+                if(CharUtils.isText(chars, i, "<")) {
+                    text = text.substring(i);
+                    break;
+                }
+            }
+        }
+        if(!text.contains(">"))
+            throw new RuntimeException();
 
         String head = text.split(">")[0];
         boolean full = !head.endsWith("/");
@@ -173,6 +260,8 @@ public class XMLHead {
         String params = head.replace("<" + name + " ", "");
 
         out = new XMLHead(name);
+        for(String comment : comments_list)
+            out.addComment(comment);
 
         for(int i = 0; i < params.split("\"").length; i += 2){
             if(params.split("\"").length - i < 2)
@@ -184,32 +273,44 @@ public class XMLHead {
 
         if(full){
             // replacing closing head
+            boolean replaced = false;
             for(int i = text.length(); i >= 0; i--) {
                 if (text.substring(i).startsWith("</" + name)) {
                     text = text.substring(0, i);
+                    replaced = true;
                     break;
                 }
             }
+            if(!replaced)
+                throw new RuntimeException();
+
             text = text.replaceFirst(head + ">", "");
+            text = text.replaceAll("\\s+"," ");
 
             if(!text.contains("<") && !text.contains(">")) {
-                out.setValue(text);
+                if(!text.isEmpty())
+                    out.setValue(text);
                 return out;
             }
 
             char[] chars = text.toCharArray();
-            String last_comment = "";
+            ArrayList<String> last_comments = new ArrayList<>();
             boolean last_comment_applied = true;
+
+            System.out.println(text);
 
             for(int i = 0; i < chars.length; i++){
 
                 // Commentaries
                 if(CharUtils.isText(chars, i, "<!--")){
-                    while(CharUtils.isText(chars, i, "-->")) {
+                    String comment = "";
+                    i += 4;
+                    while (!CharUtils.isText(chars, i, "-->")) {
+                        comment += chars[i];
                         i++;
-                        last_comment += chars[i];
                     }
-                    i += 3;
+                    i += 2;
+                    last_comments.add(comment);
                     last_comment_applied = false;
                 }
 
@@ -219,10 +320,9 @@ public class XMLHead {
                     int to_close = 0;
                     while(true){
 
-                        if(CharUtils.isText(chars, i, "<")) {
+                        if(CharUtils.isText(chars, i, "<") && !CharUtils.isText(chars, i, "<!--")) {
                             if(CharUtils.isText(chars, i, "</")) {
                                 to_close--;
-
                                 if(to_close == 0) {
                                     while(chars[i] != '>') {
                                         i++;
@@ -238,6 +338,8 @@ public class XMLHead {
                             to_close--;
                             if(to_close == 0) {
                                 content += chars[i + 1];
+                                content += chars[i + 2];
+                                i+= 2;
                                 break;
                             }
                         }
@@ -246,18 +348,20 @@ public class XMLHead {
                         content += chars[i];
                     }
 
-                    XMLHead new_head;
-                    if(!last_comment_applied) {
-                        new_head = XMLHead.fromString(content, last_comment);
-                        last_comment_applied = true;
-                    }else
-                        new_head = XMLHead.fromString(content, "");
-                    out.addHead(new_head);
+                    if(!content.contains(">") && !content.contains("<")){
+                        out.setValue(content);
+                    }else {
+                        XMLHead new_head;
+                        if (!last_comment_applied) {
+                            new_head = XMLHead.fromString(content, last_comments.toArray(new String[0]));
+                            last_comment_applied = true;
+                        } else
+                            new_head = XMLHead.fromString(content, new String[0]);
+                        out.addHead(new_head);
+                    }
                 }
             }
         }
-
-
         return out;
     }
 }

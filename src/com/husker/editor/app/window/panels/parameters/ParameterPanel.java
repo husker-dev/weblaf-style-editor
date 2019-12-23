@@ -7,7 +7,7 @@ import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.separator.WebSeparator;
 import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.*;
-import com.husker.editor.app.window.tools.MovableComponentList;
+import com.husker.editor.app.tools.MovableComponentList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +68,7 @@ public class ParameterPanel extends WebPanel {
         ArrayList<String> groups = new ArrayList<>();
         ArrayList<Parameter> ungrouped = new ArrayList<>();
 
-        for (Parameter parameter : AbstractParameterReceiver.getStaticParameters()) {
+        for (Parameter parameter : AbstractEditableObject.getStaticParameters()) {
             if(parameter == null || !parameter.isVisible())
                 continue;
             if(parameter.getGroup() == null)
@@ -94,7 +94,7 @@ public class ParameterPanel extends WebPanel {
                 setReorderingAllowed(false);
 
                 boolean first = true;
-                for(Parameter parameter : AbstractParameterReceiver.getStaticParameters()){
+                for(Parameter parameter : AbstractEditableObject.getStaticParameters()){
                     if(parameter.getGroup() != null && parameter.getGroup().equals(group) && parameter.isVisible()){
                         if(!first) {
                             WebSeparator separator = WebSeparator.createHorizontal();

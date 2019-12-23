@@ -1,4 +1,4 @@
-package com.husker.editor.app.window.tools;
+package com.husker.editor.app.tools;
 
 import com.alee.laf.spinner.WebSpinner;
 

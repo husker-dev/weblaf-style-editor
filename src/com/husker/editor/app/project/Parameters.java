@@ -12,6 +12,7 @@ public class Parameters {
     }
 
     public static void event(){
+        System.out.println("EVENT Parameters");
         for(ParametersActionListener listener : listeners)
             listener.event();
     }

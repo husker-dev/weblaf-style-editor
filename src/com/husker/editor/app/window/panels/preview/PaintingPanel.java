@@ -28,7 +28,7 @@ public class PaintingPanel extends WebPanel {
         try {
             Method method = content.getClass().getDeclaredMethod("setStyleId", StyleId.class);
             method.setAccessible(true);
-            method.invoke(content, StyleId.of("preview"));
+            method.invoke(content, StyleId.of("::preview::"));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -59,5 +59,9 @@ public class PaintingPanel extends WebPanel {
 
     public StyleComponent getComponent(){
         return component;
+    }
+
+    public Component getContent(){
+        return content;
     }
 }

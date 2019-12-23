@@ -1,5 +1,8 @@
 package com.husker.editor.app.project;
 
+import com.husker.editor.app.project.listeners.contants.ConstantsEvent;
+import com.husker.editor.app.project.listeners.contants.ConstantsListener;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,22 +10,7 @@ import java.util.Map;
 
 public class Constants {
 
-    public enum ConstEvent{
-        New,
-        Removed,
-        Renamed,
-        ValueChanged
-        ;
-        public boolean oneOf(ConstEvent... events){
-            for (ConstEvent e : events)
-                if(name().equals(e.name()))
-                    return true;
-            return false;
-        }
-
-    }
-
-    static ArrayList<IConstantListener> listeners = new ArrayList<>();
+    static ArrayList<ConstantsListener> listeners = new ArrayList<>();
 
     public enum ConstType{
         Text,
@@ -30,14 +18,14 @@ public class Constants {
         Color
     }
 
-    private static HashMap<ConstType, HashMap<String, String>> consts = new HashMap<>();
+    private HashMap<ConstType, HashMap<String, String>> consts = new HashMap<>();
 
-    static {
+    public Constants(){
         for(ConstType type : ConstType.values())
             consts.put(type, new HashMap<>());
     }
 
-    public static ArrayList<String> getConstants(ConstType type){
+    public ArrayList<String> getConstants(ConstType type){
         ArrayList<String> const_list = new ArrayList<>();
         if(consts.containsKey(type))
             for(Map.Entry<String, String> entry : consts.get(type).entrySet())
@@ -46,28 +34,28 @@ public class Constants {
         return const_list;
     }
 
-    public static void setConstant(ConstType type, String name, String value){
+    public void setConstant(ConstType type, String name, String value){
         consts.get(type).put(name, value);
-        event(ConstEvent.ValueChanged, name);
+        doEvent(ConstantsEvent.Type.ValueChanged, name);
     }
 
-    public static String getConstant(ConstType type, String name){
+    public String getConstant(ConstType type, String name){
         return consts.get(type).get(name);
     }
 
-    public static void removeConstant(ConstType type, String name){
+    public void removeConstant(ConstType type, String name){
         consts.get(type).remove(name);
-        event(ConstEvent.Removed, name);
+        doEvent(ConstantsEvent.Type.Removed, name);
     }
 
-    public static void renameConstant(ConstType type, String old_name, String new_name){
+    public void renameConstant(ConstType type, String old_name, String new_name){
         String value = consts.get(type).get(old_name);
         consts.get(type).remove(old_name);
         consts.get(type).put(new_name, value);
-        event(ConstEvent.Renamed, old_name, new_name);
+        doEvent(ConstantsEvent.Type.Renamed, old_name, new_name);
     }
 
-    public static void addConstant(ConstType type){
+    public void addConstant(ConstType type){
         for(int i = 0; true; i++){
             String name = "New Constant " + (i == 0 ? "" : i);
             if(getConstant(type, name) == null){
@@ -80,22 +68,22 @@ public class Constants {
                     value = "0.0.0";
 
                 consts.get(type).put(name, value);
-                event(ConstEvent.New, name);
+                doEvent(ConstantsEvent.Type.New, name);
                 break;
             }
         }
     }
 
-    public static void addListener(IConstantListener listener){
+    public static void addListener(ConstantsListener listener){
         listeners.add(listener);
     }
 
-    public static void event(ConstEvent event, Object... objects){
-        for(IConstantListener listener : listeners)
-            listener.event(event, objects);
+    public static void doEvent(ConstantsEvent event){
+        System.out.println("EVENT Constants: " + event.getType().toString());
+        for(ConstantsListener listener : listeners)
+            listener.event(event);
     }
-
-    public interface IConstantListener{
-        void event(ConstEvent event, Object... objects);
+    public static void doEvent(ConstantsEvent.Type type, Object... objects){
+        doEvent(new ConstantsEvent(type, objects));
     }
 }

@@ -1,6 +1,5 @@
 package com.husker.editor.app.window.panels.preview;
 
-import com.alee.api.annotations.NotNull;
 import com.alee.extended.tab.DocumentAdapter;
 import com.alee.extended.tab.DocumentData;
 import com.alee.extended.tab.PaneData;
@@ -12,16 +11,15 @@ import com.alee.laf.progressbar.WebProgressBar;
 import com.alee.laf.tabbedpane.WebTabbedPane;
 import com.alee.laf.toolbar.WebToolBar;
 import com.alee.managers.style.StyleId;
-import com.alee.utils.swing.Customizer;
 import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.project.Code;
 import com.husker.editor.app.project.listeners.component.ComponentEvent;
 import com.husker.editor.app.skin.CustomSkin;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +60,10 @@ public class PreviewPanel extends WebPanel {
                 updateComponent(Project.getCurrentProject().Components.getSelectedComponent());
         });
         Project.addListener(e -> components_tab.setVisible(!(Project.getCurrentProject() == null)));
+        Code.addActionListener(code -> {
+            if(Project.getCurrentProject().Components.getSelectedComponent() != null)
+                CustomSkin.applySkin(paints.get(Project.getCurrentProject().Components.getSelectedComponent()).getContent(), code);
+        });
 
         components_tab = new WebDocumentPane(tabbedPane -> ((WebTabbedPane)tabbedPane).setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT));
         components_tab.setSplitEnabled(true);
@@ -136,8 +138,7 @@ public class PreviewPanel extends WebPanel {
 
     private void removeComponent(StyleComponent component){
         paints.remove(component);
-
+        if(paints.size() == 0)
+            Project.getCurrentProject().Components.setSelectedComponent(null);
     }
-
-
 }

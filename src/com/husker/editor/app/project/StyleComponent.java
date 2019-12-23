@@ -8,13 +8,12 @@ import com.husker.editor.app.xml.XMLHead;
 import com.husker.editor.app.xml.XMLParameter;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.husker.editor.app.project.listeners.component.ComponentEvent.Type.*;
 
-public abstract class StyleComponent extends AbstractParameterReceiver implements Cloneable{
+public abstract class StyleComponent extends AbstractEditableObject implements Cloneable{
 
     // Static
     public static HashMap<String, Class<? extends StyleComponent>> components = new HashMap<String, Class<? extends StyleComponent>>(){{
@@ -132,7 +131,6 @@ public abstract class StyleComponent extends AbstractParameterReceiver implement
         addStaticParameter(Parameters.OUTER_SHADOW_WIDTH, new IntegerParameter("Width", "Outer shadow"));
         addStaticParameter(Parameters.OUTER_SHADOW_COLOR, new ColorParameter("Color", "Outer shadow"));
 
-
         // Button content
         addStaticParameter(Parameters.BUTTON_SHOW_TEXT, new BooleanParameter("Show text", "Content"));
         addStaticParameter(Parameters.BUTTON_SHOW_ICON, new BooleanParameter("Show icon", "Content"));
@@ -145,37 +143,20 @@ public abstract class StyleComponent extends AbstractParameterReceiver implement
     // Object
 
     private String type;
-    private String title;
-    private Project project;
 
     private ArrayList<StyleComponent> child_components = new ArrayList<>();
 
     public StyleComponent(String title, String type){
-        super(StyleComponent.class);
-        this.title = title;
+        super(StyleComponent.class, title);
         this.type = type;
 
         addImplementedParameters(Parameters.KIT_BASE);
     }
 
-    public StyleComponent clone(Project project){
-        try{
-            StyleComponent component = (StyleComponent) super.clone();
-            component.project = project;
-
-            return component;
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-        return null;
-    }
-
-    public String getTitle(){
-        return title;
-    }
-
-    public Project getProject(){
-        return project;
+    public void applyXML(XMLHead head){
+        //System.out.println(head.toString());
+        //if(head != null)
+        //    System.out.println(head.toString());
     }
 
     public XMLHead getXMLStyle(){
@@ -185,13 +166,14 @@ public abstract class StyleComponent extends AbstractParameterReceiver implement
         XMLHead head = new XMLHead("style");
 
         if(preview)
-            head.addParameter("id", "preview");
+            head.addParameter("id", "::preview::");
         else
             applyParameterOnCustom(head, "id", Parameters.ID);
         head.addParameter("type", type);
         applyParameterOnCustom(head, "extends", Parameters.EXTENDS);
         applyParameterOnCustom(head, "painter.decorations.decoration", "visible", Parameters.DECORATIONS);
-        applyParameterOnCustom(head, "painter.decorations", "overwrite", Parameters.OVERWRITE_DECORATIONS);
+        if(!getVariable(Parameters.OVERWRITE_DECORATIONS).isDefaultValue())
+            head.setParameterByPath("painter.decorations", "overwrite", getVariableValue(Parameters.OVERWRITE_DECORATIONS));
 
         if(isImplemented(Parameters.SHAPE_ENABLED)) {
             if (getVariableValue(Parameters.SHAPE_ENABLED).equals("true")) {
@@ -212,7 +194,7 @@ public abstract class StyleComponent extends AbstractParameterReceiver implement
         applyParameterOnCustom(head, "painter.decorations.decoration.LineBorder", "color", Parameters.BORDER_COLOR);
 
         if(!areVariablesDefault(Parameters.INNER_SHADOW_WIDTH, Parameters.INNER_SHADOW_COLOR)) {
-            head.setHeadByPath("painter.decorations.decoration", new XMLHead("WebShadow") {{
+            head.createHeadByPath("painter.decorations.decoration", new XMLHead("WebShadow") {{
                 addParameter("type", "inner");
 
                 if(!isVariableDefault(Parameters.INNER_SHADOW_WIDTH))
@@ -224,7 +206,7 @@ public abstract class StyleComponent extends AbstractParameterReceiver implement
         }
 
         if(!areVariablesDefault(Parameters.OUTER_SHADOW_WIDTH, Parameters.OUTER_SHADOW_COLOR)) {
-            head.setHeadByPath("painter.decorations.decoration", new XMLHead("WebShadow") {{
+            head.createHeadByPath("painter.decorations.decoration", new XMLHead("WebShadow") {{
                 addParameter("type", "outer");
 
                 if(!isVariableDefault(Parameters.OUTER_SHADOW_WIDTH))
@@ -252,8 +234,6 @@ public abstract class StyleComponent extends AbstractParameterReceiver implement
 
         return head;
     }
-
-    public abstract Component createPreviewComponent();
 
     public void doEvent(ComponentEvent.Type event, Object... objects){
         Components.doEvent(event, this, objects);
@@ -302,7 +282,7 @@ public abstract class StyleComponent extends AbstractParameterReceiver implement
         if(!isImplemented(variable))
             return;
         if(!isVariableDefault(variable))
-            head.setHeadByPath(path);
+            head.createHeadByPath(path);
     }
 
     public boolean isVariableDefault(StaticVariable variable){

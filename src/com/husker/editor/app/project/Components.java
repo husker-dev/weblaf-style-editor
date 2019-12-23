@@ -15,7 +15,7 @@ public class Components {
         doEvent(new ComponentEvent(event, objects));
     }
     public static void doEvent(ComponentEvent event){
-        System.out.println("EVENT " + event.getType().toString());
+        System.out.println("EVENT Components: " + event.getType().toString());
         for(ComponentListener listener : listeners)
             listener.event(event);
     }

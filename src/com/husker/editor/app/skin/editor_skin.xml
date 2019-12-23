@@ -44,6 +44,19 @@
                         </decorations>
                 </painter>
         </style>
+        <style type="panel" id="background-round">
+                <component>
+                        <opaque>false</opaque>
+                </component>
+                <painter>
+                        <decorations>
+                                <decoration>
+                                        <WebShape round="15" />
+                                        <LineBorder color="200,200,200"/>
+                                </decoration>
+                        </decorations>
+                </painter>
+        </style>
 
         <style type="panel" id="background1">
                 <component>

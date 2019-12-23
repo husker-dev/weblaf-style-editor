@@ -17,6 +17,7 @@ public class Project {
         doEvent(new ProjectEvent(event, objects));
     }
     public static void doEvent(ProjectEvent event){
+        System.out.println("EVENT Project: " + event.getType().toString());
         for(ProjectListener listener : listeners)
             listener.event(event);
     }
@@ -40,7 +41,9 @@ public class Project {
 
     private String name = "Unnamed";
 
-    public final com.husker.editor.app.project.Components Components = new Components();
+    public final Components Components = new Components();
+    public final Errors Errors = new Errors();
+    public final Constants Constants = new Constants();
 
     public void setName(String name){
         this.name = name;
