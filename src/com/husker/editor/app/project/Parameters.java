@@ -1,5 +1,6 @@
 package com.husker.editor.app.project;
 
+import com.husker.editor.app.Main;
 import com.husker.editor.app.project.listeners.parameters.ParametersActionListener;
 
 import java.util.ArrayList;
@@ -12,7 +13,8 @@ public class Parameters {
     }
 
     public static void event(){
-        System.out.println("EVENT Parameters");
+        if(Main.event_output_enabled)
+            System.out.println("EVENT Parameters");
         for(ParametersActionListener listener : listeners)
             listener.event();
     }

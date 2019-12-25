@@ -35,6 +35,6 @@ public class Styled_Button extends StyleComponent {
     }
 
     public Component createPreviewComponent() {
-        return new WebButton("It's a button with text", getExampleIcon());
+        return new WebButton(getExampleText(), getExampleIcon());
     }
 }

@@ -1,16 +1,21 @@
 package com.husker.editor.app.project;
 
 import com.husker.editor.app.xml.XMLHead;
+import com.husker.editor.app.xml.XMLParameter;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public abstract class AbstractEditableObject implements Cloneable {
 
     private static LinkedHashMap<StaticVariable, Parameter> parameters = new LinkedHashMap<>();
     private static ArrayList<Class<? extends AbstractEditableObject>> used_classes = new ArrayList<>();
+    private static ImageIcon example_icon = new ImageIcon("bin/icon_example.png");
+    private static String example_text = "[ Text example_!?. 123 ]";
 
     static {
         Code.addActionListener(code -> {
@@ -32,6 +37,13 @@ public abstract class AbstractEditableObject implements Cloneable {
                 }
             }).start();
         });
+    }
+
+    public static ImageIcon getExampleIcon(){
+        return example_icon;
+    }
+    public static String getExampleText(){
+        return example_text;
     }
 
     public static void addStaticParameter(StaticVariable variable, Parameter parameter){
@@ -186,6 +198,45 @@ public abstract class AbstractEditableObject implements Cloneable {
     }
     public String getVariableValue(StaticVariable variable){
         return getVariableValue(variable.getName());
+    }
+
+    public boolean isVariableCustom(StaticVariable variable){
+        if(!isImplemented(variable))
+            return false;
+        return !getVariable(variable.getName()).isDefaultValue();
+    }
+
+    public boolean areVariablesCustom(StaticVariable... variables){
+        for(StaticVariable variable : variables)
+            if (isImplemented(variable) && isVariableCustom(variable))
+                return true;
+        return false;
+    }
+
+    public void applyParameterOnCustom(XMLHead head, String path, String parameter, StaticVariable variable){
+        applyParameterOnCustom(head, path, parameter, variable, null);
+    }
+    public void applyParameterOnCustom(XMLHead head, String path, String parameter, StaticVariable variable, Predicate<XMLHead> predicate){
+        if(!isImplemented(variable))
+            return;
+        if(isVariableCustom(variable)) {
+            if(!head.containsHeadByPath(path, predicate))
+                head.createHeadByPath(path);
+            XMLHead new_head = head.getHeadByPath(path, predicate);
+            new_head.addParameter(parameter, getVariableValue(variable));
+        }
+    }
+    public void applyParameterOnCustom(XMLHead head, String parameter, StaticVariable variable){
+        if(!isImplemented(variable))
+            return;
+        if(isVariableCustom(variable))
+            head.addParameter(parameter, getVariableValue(variable));
+    }
+    public void createHeadOnCustom(XMLHead head, String path, StaticVariable variable){
+        if(!isImplemented(variable))
+            return;
+        if(isVariableCustom(variable))
+            head.createHeadByPath(path);
     }
 
 

@@ -1,5 +1,6 @@
 package com.husker.editor.app.project;
 
+import com.husker.editor.app.Main;
 import com.husker.editor.app.project.listeners.error.ErrorsEvent;
 import com.husker.editor.app.project.listeners.error.ErrorsListener;
 
@@ -17,7 +18,8 @@ public class Errors {
         doEvent(new ErrorsEvent(event, objects));
     }
     public static void doEvent(ErrorsEvent event){
-        System.out.println("EVENT Errors: " + event.getType().toString());
+        if(Main.event_output_enabled)
+            System.out.println("EVENT Errors: " + event.getType().toString());
         for(ErrorsListener listener : listeners)
             listener.event(event);
     }

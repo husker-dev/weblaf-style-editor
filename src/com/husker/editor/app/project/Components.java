@@ -1,5 +1,6 @@
 package com.husker.editor.app.project;
 
+import com.husker.editor.app.Main;
 import com.husker.editor.app.project.listeners.component.ComponentEvent;
 import com.husker.editor.app.project.listeners.component.ComponentListener;
 
@@ -15,7 +16,8 @@ public class Components {
         doEvent(new ComponentEvent(event, objects));
     }
     public static void doEvent(ComponentEvent event){
-        System.out.println("EVENT Components: " + event.getType().toString());
+        if(Main.event_output_enabled)
+            System.out.println("EVENT Components: " + event.getType().toString());
         for(ComponentListener listener : listeners)
             listener.event(event);
     }

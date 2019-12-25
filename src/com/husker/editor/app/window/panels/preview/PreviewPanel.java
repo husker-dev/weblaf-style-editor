@@ -42,6 +42,11 @@ public class PreviewPanel extends WebPanel {
                 progressBar.setVisible(true);
             if(e.getType().oneOf(Last_Applied))
                 progressBar.setVisible(false);
+            if(e.getType().oneOf(Skin_Applied))
+                SwingUtilities.invokeLater(() -> {
+                    paints.get(Project.getCurrentProject().Components.getSelectedComponent()).updateUI();
+                });
+
         });
 
         Project.addListener(e -> {

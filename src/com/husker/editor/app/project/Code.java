@@ -1,5 +1,6 @@
 package com.husker.editor.app.project;
 
+import com.husker.editor.app.Main;
 import com.husker.editor.app.project.listeners.code.CodeListener;
 
 import java.util.ArrayList;
@@ -12,7 +13,8 @@ public class Code {
     }
 
     public static void event(String text){
-        System.out.println("EVENT Components");
+        if(Main.event_output_enabled)
+            System.out.println("EVENT Components");
         for(CodeListener listener : listeners)
             listener.event(text);
     }

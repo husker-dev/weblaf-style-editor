@@ -6,6 +6,7 @@ import com.alee.laf.grouping.GroupPane;
 import com.alee.laf.grouping.GroupPaneConstraints;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
+import com.husker.editor.app.Main;
 import com.husker.editor.app.project.listeners.parameter.ParameterActionListener;
 import com.husker.editor.app.project.listeners.parameter.ParameterApplyListener;
 import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
@@ -198,7 +199,8 @@ public abstract class Parameter{
     }
 
     public void action(){
-        System.out.println("EVENT Parameter");
+        if(Main.event_output_enabled)
+            System.out.println("EVENT Parameter");
         for(ParameterActionListener listener : action_listener)
             listener.event();
     }

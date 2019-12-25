@@ -1,5 +1,6 @@
 package com.husker.editor.app.project;
 
+import com.husker.editor.app.Main;
 import com.husker.editor.app.project.listeners.project.ProjectEvent;
 import com.husker.editor.app.project.listeners.project.ProjectListener;
 
@@ -17,7 +18,8 @@ public class Project {
         doEvent(new ProjectEvent(event, objects));
     }
     public static void doEvent(ProjectEvent event){
-        System.out.println("EVENT Project: " + event.getType().toString());
+        if(Main.event_output_enabled)
+            System.out.println("EVENT Project: " + event.getType().toString());
         for(ProjectListener listener : listeners)
             listener.event(event);
     }

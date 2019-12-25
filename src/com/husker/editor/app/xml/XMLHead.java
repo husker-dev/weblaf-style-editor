@@ -13,11 +13,13 @@ public class XMLHead {
     private String value;
     private ArrayList<String> comments = new ArrayList<>();
 
-    public XMLHead(String name){
+    public XMLHead(String name, String[]... parameters){
         this.name = name;
+        for(String[] parameter : parameters)
+            addParameter(parameter[0], parameter[1]);
     }
-    public XMLHead(){
-        this("head");
+    public XMLHead(String[]... parameters){
+        this("head", parameters);
     }
 
     public void addHead(XMLHead head){
@@ -104,10 +106,27 @@ public class XMLHead {
         return getParameterByPath(path, parameter, null) != null;
     }
     public boolean containsHead(String head_name){
+        return containsHead(head_name, null);
+    }
+    public boolean containsHead(String head_name, Predicate<XMLHead> predicate){
         for(XMLHead head : getHeads())
             if(head.getName().equals(head_name))
                 return true;
         return false;
+    }
+    public boolean containsHeadByPath(String path, Predicate<XMLHead> predicate){
+        String[] heads_names = path.split("\\.");
+        String[] child_path = Arrays.copyOfRange(heads_names, 0, heads_names.length - 1);
+        String head_name = path.split("\\.")[path.split("\\.").length - 1];
+
+        XMLHead current_head = this;
+        for(int i = 0; i < child_path.length; i++){
+            String head = child_path[i];
+            if(!current_head.containsHead(head))
+                return false;
+            current_head = current_head.getHeadsByName(head)[0];
+        }
+        return current_head.containsHead(head_name, predicate);
     }
 
     public XMLParameter getParameterByPath(String path, String parameter){
@@ -121,12 +140,13 @@ public class XMLHead {
         return getHeadsByPath(path, null);
     }
     public XMLHead[] getHeadsByPath(String path, Predicate<XMLHead> predicate){
+
         String[] heads_names = path.split("\\.");
-        String[] child_path = Arrays.copyOfRange(heads_names, 0, heads_names.length - 2);
+        String[] child_path = Arrays.copyOfRange(heads_names, 0, heads_names.length - 1);
         String head_name = path.split("\\.")[path.split("\\.").length - 1];
 
         XMLHead current_head = this;
-        for(int i = 0; i < child_path.length - 1; i++){
+        for(int i = 0; i < child_path.length; i++){
             String head = child_path[i];
             if(!current_head.containsHead(head))
                 return null;
@@ -143,6 +163,8 @@ public class XMLHead {
         XMLHead[] heads = getHeadsByPath(path, predicate);
         if(heads.length > 1)
             throw new RuntimeException("Predicate applies to more than two XMLHead");
+        else if(heads.length == 0)
+            return null;
         else
             return heads[0];
     }
@@ -156,6 +178,9 @@ public class XMLHead {
     }
     public XMLParameter getParameter(String name){
         return parameters.get(name);
+    }
+    public String getParameterValue(String name){
+        return parameters.get(name).getValue();
     }
 
     public String toString(){
@@ -297,7 +322,7 @@ public class XMLHead {
             ArrayList<String> last_comments = new ArrayList<>();
             boolean last_comment_applied = true;
 
-            System.out.println(text);
+            //System.out.println(text);
 
             for(int i = 0; i < chars.length; i++){
 

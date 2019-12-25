@@ -11,6 +11,7 @@ public class Main {
 
     public static Frame frame;
     public static String current_version = "1.2";
+    public static boolean event_output_enabled = false;
 
     public static void main(String[] args){
 

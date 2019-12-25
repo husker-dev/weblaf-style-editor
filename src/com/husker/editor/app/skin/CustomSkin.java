@@ -5,9 +5,9 @@ import com.alee.managers.style.StyleManager;
 import com.alee.managers.style.XmlSkin;
 import com.alee.managers.style.data.SkinInfo;
 import com.alee.utils.XmlUtils;
+import com.husker.editor.app.Main;
 import com.husker.editor.app.project.Error;
 import com.husker.editor.app.project.Errors;
-import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.listeners.skin.SkinEvent;
 import com.husker.editor.app.project.listeners.skin.SkinListener;
 import com.husker.editor.app.xml.XMLHead;
@@ -86,7 +86,8 @@ public class CustomSkin extends XmlSkin {
     }
 
     private static void onEvent(SkinEvent event){
-        System.out.println("EVENT CustomSkin: " + event.getType().toString());
+        if(Main.event_output_enabled)
+            System.out.println("EVENT CustomSkin: " + event.getType().toString());
         for(SkinListener listener : listeners)
             listener.event(event);
     }

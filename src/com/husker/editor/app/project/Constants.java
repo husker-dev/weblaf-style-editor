@@ -1,5 +1,6 @@
 package com.husker.editor.app.project;
 
+import com.husker.editor.app.Main;
 import com.husker.editor.app.project.listeners.contants.ConstantsEvent;
 import com.husker.editor.app.project.listeners.contants.ConstantsListener;
 
@@ -79,7 +80,8 @@ public class Constants {
     }
 
     public static void doEvent(ConstantsEvent event){
-        System.out.println("EVENT Constants: " + event.getType().toString());
+        if(Main.event_output_enabled)
+            System.out.println("EVENT Constants: " + event.getType().toString());
         for(ConstantsListener listener : listeners)
             listener.event(event);
     }

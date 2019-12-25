@@ -22,7 +22,6 @@ public class CodePanel extends WebPanel {
 
     private WebSyntaxArea sourceViewer;
     private WebSyntaxScrollPane scroll;
-    private int edited = 0;
 
     public CodePanel(){
         setPreferredHeight(200);
@@ -34,20 +33,11 @@ public class CodePanel extends WebPanel {
 
         sourceViewer.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
-                warn();
-            }
-            public void removeUpdate(DocumentEvent e) {
-                warn();
-            }
-            public void insertUpdate(DocumentEvent e) {
-                warn();
-            }
-            public void warn() {
-                if(edited == 0)
+                if(sourceViewer.isEditable())
                     Code.event(sourceViewer.getText());
-                else
-                    edited--;
             }
+            public void removeUpdate(DocumentEvent e) {}
+            public void insertUpdate(DocumentEvent e) {}
         });
 
         Components.addListener(e -> {
@@ -63,12 +53,18 @@ public class CodePanel extends WebPanel {
     }
 
     public void updateText(){
-        edited++;
+        String new_text;
         StyleComponent component = Project.getCurrentProject().Components.getSelectedComponent();
         if(component != null)
-            sourceViewer.setText("<!--test--> \n" + component.getXMLStyle().toString());
+            new_text = component.getXMLStyle().toString();
         else
-            sourceViewer.setText("");
-        scroll.setEnabled(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
+            new_text = "";
+
+        if(!new_text.equals(sourceViewer.getText())){
+            sourceViewer.setEditable(false);
+            sourceViewer.setText(new_text);
+            scroll.setEnabled(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
+            sourceViewer.setEditable(true);
+        }
     }
 }

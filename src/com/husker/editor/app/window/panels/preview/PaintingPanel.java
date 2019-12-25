@@ -8,7 +8,6 @@ import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.skin.CustomSkin;
 
-import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Method;
 

@@ -5,11 +5,11 @@ import com.husker.editor.app.components.Styled_Label;
 import com.husker.editor.app.parameters.*;
 import com.husker.editor.app.project.listeners.component.ComponentEvent;
 import com.husker.editor.app.xml.XMLHead;
-import com.husker.editor.app.xml.XMLParameter;
 
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Predicate;
 
 import static com.husker.editor.app.project.listeners.component.ComponentEvent.Type.*;
 
@@ -20,8 +20,6 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
         put("Button", Styled_Button.class);
         put("Label", Styled_Label.class);
     }};
-
-    private static ImageIcon example_icon = new ImageIcon("bin/icon_example.png");
 
     public static class Parameters {
         public static final StaticVariable ID = new StaticVariable("id");
@@ -36,10 +34,10 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
         public static final StaticVariable ROUND_RB = new StaticVariable("round_rb", "0");   // Right bottom
         public static final StaticVariable SHAPE_ENABLED = new StaticVariable("shape_enabled", "false");
         public static final StaticVariable INNER_SHADOW_WIDTH = new StaticVariable("inner_shadow_width", "0");
-        public static final StaticVariable OUTER_SHADOW_WIDTH = new StaticVariable("outer_shadow_width", "0");
-        public static final StaticVariable BORDER_COLOR = new StaticVariable("border_color", "0,0,0,0");
         public static final StaticVariable INNER_SHADOW_COLOR = new StaticVariable("inner_shadow_color", "0,0,0");
+        public static final StaticVariable OUTER_SHADOW_WIDTH = new StaticVariable("outer_shadow_width", "0");
         public static final StaticVariable OUTER_SHADOW_COLOR = new StaticVariable("outer_shadow_color", "0,0,0");
+        public static final StaticVariable BORDER_COLOR = new StaticVariable("border_color", "0,0,0,0");
         public static final StaticVariable BACKGROUND_TYPE = new StaticVariable("background_type", "Color");
         public static final StaticVariable GRADIENT_TYPE = new StaticVariable("gradient_type", "linear");
         public static final StaticVariable GRADIENT_FROM = new StaticVariable("gradient_from", "0.0,0.0");
@@ -132,12 +130,8 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
         addStaticParameter(Parameters.OUTER_SHADOW_COLOR, new ColorParameter("Color", "Outer shadow"));
 
         // Button content
-        addStaticParameter(Parameters.BUTTON_SHOW_TEXT, new BooleanParameter("Show text", "Content"));
-        addStaticParameter(Parameters.BUTTON_SHOW_ICON, new BooleanParameter("Show icon", "Content"));
-    }
-
-    public static ImageIcon getExampleIcon(){
-        return example_icon;
+        addStaticParameter(Parameters.BUTTON_SHOW_TEXT, new BooleanParameter("Show text", "Button content"));
+        addStaticParameter(Parameters.BUTTON_SHOW_ICON, new BooleanParameter("Show icon", "Button content"));
     }
 
     // Object
@@ -172,49 +166,39 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
         head.addParameter("type", type);
         applyParameterOnCustom(head, "extends", Parameters.EXTENDS);
         applyParameterOnCustom(head, "painter.decorations.decoration", "visible", Parameters.DECORATIONS);
-        if(!getVariable(Parameters.OVERWRITE_DECORATIONS).isDefaultValue())
+        if(super.isVariableCustom(Parameters.OVERWRITE_DECORATIONS))
             head.setParameterByPath("painter.decorations", "overwrite", getVariableValue(Parameters.OVERWRITE_DECORATIONS));
 
-        if(isImplemented(Parameters.SHAPE_ENABLED)) {
-            if (getVariableValue(Parameters.SHAPE_ENABLED).equals("true")) {
-                applyHeadOnCustom(head, "painter.decorations.decoration.WebShape", Parameters.SHAPE_ENABLED);
+        if(isImplemented(Parameters.SHAPE_ENABLED) && getVariableValue(Parameters.SHAPE_ENABLED).equals("true")) {
+            createHeadOnCustom(head, "painter.decorations.decoration.WebShape", Parameters.SHAPE_ENABLED);
 
-                if(getVariableValue(Parameters.ROUND_TYPE).equals("Full")){
-                    applyParameterOnCustom(head, "painter.decorations.decoration.WebShape", "round", Parameters.ROUND_FULL);
-                }else{
-                    String round = "";
-                    round += getVariableValue(Parameters.ROUND_LT) + ",";
-                    round += getVariableValue(Parameters.ROUND_RT) + ",";
-                    round += getVariableValue(Parameters.ROUND_RB) + ",";
-                    round += getVariableValue(Parameters.ROUND_LB);
-                    head.setParameterByPath("painter.decorations.decoration.WebShape", "round", round);
-                }
+            if(getVariableValue(Parameters.ROUND_TYPE).equals("Full")){
+                applyParameterOnCustom(head, "painter.decorations.decoration.WebShape", "round", Parameters.ROUND_FULL);
+            }else{
+                String round = "";
+                round += getVariableValue(Parameters.ROUND_LT) + ",";
+                round += getVariableValue(Parameters.ROUND_RT) + ",";
+                round += getVariableValue(Parameters.ROUND_RB) + ",";
+                round += getVariableValue(Parameters.ROUND_LB);
+                head.setParameterByPath("painter.decorations.decoration.WebShape", "round", round);
             }
         }
         applyParameterOnCustom(head, "painter.decorations.decoration.LineBorder", "color", Parameters.BORDER_COLOR);
 
-        if(!areVariablesDefault(Parameters.INNER_SHADOW_WIDTH, Parameters.INNER_SHADOW_COLOR)) {
-            head.createHeadByPath("painter.decorations.decoration", new XMLHead("WebShadow") {{
-                addParameter("type", "inner");
+        if(areVariablesCustom(Parameters.INNER_SHADOW_WIDTH, Parameters.INNER_SHADOW_COLOR)) {
+            Predicate<XMLHead> predicate = h -> h.getParameter("type") != null && h.getParameterValue("type").equals("inner");
 
-                if(!isVariableDefault(Parameters.INNER_SHADOW_WIDTH))
-                    addParameter("width", getVariableValue(Parameters.INNER_SHADOW_WIDTH));
-
-                if(!isVariableDefault(Parameters.INNER_SHADOW_COLOR))
-                    addParameter("color", getVariableValue(Parameters.INNER_SHADOW_COLOR));
-            }});
+            head.createHeadByPath("painter.decorations.decoration", new XMLHead("WebShadow", new String[]{"type", "inner"}));
+            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "width", Parameters.INNER_SHADOW_WIDTH, predicate);
+            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "color", Parameters.INNER_SHADOW_COLOR, predicate);
         }
 
-        if(!areVariablesDefault(Parameters.OUTER_SHADOW_WIDTH, Parameters.OUTER_SHADOW_COLOR)) {
-            head.createHeadByPath("painter.decorations.decoration", new XMLHead("WebShadow") {{
-                addParameter("type", "outer");
+        if(areVariablesCustom(Parameters.OUTER_SHADOW_WIDTH, Parameters.OUTER_SHADOW_COLOR)) {
+            Predicate<XMLHead> predicate = h -> h.getParameter("type") != null && h.getParameterValue("type").equals("outer");
 
-                if(!isVariableDefault(Parameters.OUTER_SHADOW_WIDTH))
-                    addParameter("width", getVariableValue(Parameters.OUTER_SHADOW_WIDTH));
-
-                if(!isVariableDefault(Parameters.OUTER_SHADOW_COLOR))
-                    addParameter("color", getVariableValue(Parameters.OUTER_SHADOW_COLOR));
-            }});
+            head.createHeadByPath("painter.decorations.decoration", new XMLHead("WebShadow", new String[]{"type", "outer"}));
+            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "width", Parameters.OUTER_SHADOW_WIDTH, predicate);
+            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "color", Parameters.OUTER_SHADOW_COLOR, predicate);
         }
 
         if(isImplemented(Parameters.BACKGROUND_TYPE)) {
@@ -222,15 +206,13 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
                 applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "type", Parameters.GRADIENT_TYPE);
                 applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "from", Parameters.GRADIENT_FROM);
                 applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "to", Parameters.GRADIENT_TO);
-            }else{
-                head.setParameterByPath("painter.decorations.decoration.ColorBackground", "color", getVariableValue(Parameters.BACKGROUND_COLOR));
-            }
+            }else
+                applyParameterOnCustom(head, "painter.decorations.decoration.ColorBackground", "color", Parameters.BACKGROUND_COLOR);
         }
-
-        if(!isVariableDefault(Parameters.BUTTON_SHOW_ICON) && getVariableValue(Parameters.BUTTON_SHOW_ICON).equals("true"))
-            head.setParameterByPath("painter.decorations.decoration.ButtonLayout.ButtonIcon", "constraints", "icon");
-        if(!isVariableDefault(Parameters.BUTTON_SHOW_TEXT) && getVariableValue(Parameters.BUTTON_SHOW_TEXT).equals("true"))
-            head.setParameterByPath("painter.decorations.decoration.ButtonLayout.ButtonText", "constraints", "text");
+        if(isImplemented(Parameters.BUTTON_SHOW_ICON) && isVariableCustom(Parameters.BUTTON_SHOW_ICON))
+            head.setParameterByPath("painter.decorations.decoration.ButtonLayout.ButtonIcon", "constraints", getVariableValue(Parameters.BUTTON_SHOW_ICON).equals("true") ? "icon" : "");
+        if(isImplemented(Parameters.BUTTON_SHOW_TEXT) && isVariableCustom(Parameters.BUTTON_SHOW_TEXT))
+            head.setParameterByPath("painter.decorations.decoration.ButtonLayout.ButtonText", "constraints", getVariableValue(Parameters.BUTTON_SHOW_TEXT).equals("true") ? "text" : "");
 
         return head;
     }
@@ -259,39 +241,13 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
         child_components.add(to, component);
     }
 
-    public boolean areVariablesDefault(StaticVariable... variables){
-        for(StaticVariable variable : variables)
-            if (isImplemented(variable) && !isVariableDefault(variable))
-                return false;
-        return true;
-    }
-
-    public void applyParameterOnCustom(XMLHead head, String path, String parameter, StaticVariable variable){
+    public boolean isVariableCustom(StaticVariable variable){
         if(!isImplemented(variable))
-            return;
-        if(!isVariableDefault(variable))
-            head.setParameterByPath(path, new XMLParameter(parameter, getVariableValue(variable)));
-    }
-    public void applyParameterOnCustom(XMLHead head, String parameter, StaticVariable variable){
-        if(!isImplemented(variable))
-            return;
-        if(!isVariableDefault(variable))
-            head.addParameter(parameter, getVariableValue(variable));
-    }
-    public void applyHeadOnCustom(XMLHead head, String path, StaticVariable variable){
-        if(!isImplemented(variable))
-            return;
-        if(!isVariableDefault(variable))
-            head.createHeadByPath(path);
-    }
-
-    public boolean isVariableDefault(StaticVariable variable){
-        if(!isImplemented(variable))
-            return true;
+            return false;
         if(getVariableValue(Parameters.OVERWRITE_DECORATIONS).equals("true"))
-            return variable.getDefaultValue().equals(getVariable(variable).getDefaultValue());
+            return !variable.getDefaultValue().equals(getVariable(variable).getDefaultValue());
 
-        return getVariable(variable.getName()).isDefaultValue();
+        return !getVariable(variable.getName()).isDefaultValue();
     }
 
     protected void onVariableChanged(String variable){
