@@ -3,6 +3,7 @@ package com.husker.editor.app.project;
 public class StaticVariable {
     private String default_value;
     private String name;
+    private Class<? extends Constant> constant_type;
 
     public Variable clone(){
         try{
@@ -25,7 +26,25 @@ public class StaticVariable {
     public String getDefaultValue(){
         return default_value;
     }
-    public Variable generateVariable(){
-        return new Variable(name, default_value);
+    public Variable generateVariable(Project project){
+        return new Variable(project, name, default_value, constant_type);
     }
+    public void setConstantType(Class<? extends Constant> type){
+        constant_type = type;
+    }
+    public Class<? extends Constant> getConstantType(){
+        return constant_type;
+    }
+
+    public boolean equals(StaticVariable variable){
+        if(variable == null)
+            return false;
+        return name.equals(variable.getName());
+    }
+    public boolean equals(Variable variable){
+        if(variable == null)
+            return false;
+        return name.equals(variable.getName());
+    }
+
 }

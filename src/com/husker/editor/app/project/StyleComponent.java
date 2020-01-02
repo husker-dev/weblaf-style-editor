@@ -1,25 +1,32 @@
 package com.husker.editor.app.project;
 
+import com.husker.editor.app.Main;
 import com.husker.editor.app.components.Styled_Button;
 import com.husker.editor.app.components.Styled_Label;
+import com.husker.editor.app.events.ChildComponentRemovedEvent;
+import com.husker.editor.app.events.NewChildComponentEvent;
+import com.husker.editor.app.listeners.component.ComponentListener;
 import com.husker.editor.app.parameters.*;
-import com.husker.editor.app.project.listeners.component.ComponentEvent;
 import com.husker.editor.app.xml.XMLHead;
 
 import javax.swing.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
-import static com.husker.editor.app.project.listeners.component.ComponentEvent.Type.*;
-
-public abstract class StyleComponent extends AbstractEditableObject implements Cloneable{
+public abstract class StyleComponent extends EditableObject implements Cloneable{
 
     // Static
     public static HashMap<String, Class<? extends StyleComponent>> components = new HashMap<String, Class<? extends StyleComponent>>(){{
         put("Button", Styled_Button.class);
         put("Label", Styled_Label.class);
     }};
+
+    private static ArrayList<ComponentListener> listeners = new ArrayList<>();
+    public static void addComponentListener(ComponentListener listener){
+        listeners.add(listener);
+    }
 
     public static class Parameters {
         public static final StaticVariable ID = new StaticVariable("id");
@@ -39,6 +46,7 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
         public static final StaticVariable OUTER_SHADOW_COLOR = new StaticVariable("outer_shadow_color", "0,0,0");
         public static final StaticVariable BORDER_COLOR = new StaticVariable("border_color", "0,0,0,0");
         public static final StaticVariable BACKGROUND_TYPE = new StaticVariable("background_type", "Color");
+        public static final StaticVariable BACKGROUND_ENABLED = new StaticVariable("background_enabled", "false");
         public static final StaticVariable GRADIENT_TYPE = new StaticVariable("gradient_type", "linear");
         public static final StaticVariable GRADIENT_FROM = new StaticVariable("gradient_from", "0.0,0.0");
         public static final StaticVariable GRADIENT_TO = new StaticVariable("gradient_to", "0.0,1.0");
@@ -52,9 +60,8 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
         public static final StaticVariable[] KIT_INNER_SHADOW = new StaticVariable[]{INNER_SHADOW_COLOR, INNER_SHADOW_WIDTH};
         public static final StaticVariable[] KIT_OUTER_SHADOW = new StaticVariable[]{OUTER_SHADOW_COLOR, OUTER_SHADOW_WIDTH};
         public static final StaticVariable[] KIT_BORDER = new StaticVariable[]{BORDER_COLOR};
-        public static final StaticVariable[] KIT_BACKGROUND = new StaticVariable[]{BACKGROUND_TYPE, GRADIENT_TYPE, GRADIENT_FROM, GRADIENT_TO, BACKGROUND_COLOR};
+        public static final StaticVariable[] KIT_BACKGROUND = new StaticVariable[]{BACKGROUND_ENABLED, BACKGROUND_TYPE, GRADIENT_TYPE, GRADIENT_FROM, GRADIENT_TO, BACKGROUND_COLOR};
         public static final StaticVariable[] KIT_BUTTON_CONTENT = new StaticVariable[]{BUTTON_SHOW_ICON, BUTTON_SHOW_TEXT};
-
     }
 
     protected void initParameters() {
@@ -65,28 +72,26 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
 
         // Round
         addStaticParameter(Parameters.SHAPE_ENABLED, new BooleanParameter("Enable", "Shape"){{
-            addActionListener(() -> {
-                boolean visible = getValue().equals("true");
-                getStaticParameter(Parameters.ROUND_TYPE).setVisible(visible);
-                getStaticParameter(Parameters.ROUND_TYPE).action();
-            });
+            onValueChanged(value -> getStaticParameter(Parameters.ROUND_TYPE).setVisible(value.equals("true")));
         }});
 
-        addStaticParameter(Parameters.ROUND_TYPE, new ComboParameter("Round type", "Shape", new String[]{"Full", "Custom"}){{
-            addActionListener(() -> {
-                boolean full = getValue().equals("Full");
-                boolean custom = !full;
-                if(!isVisible()){
-                    full = false;
-                    custom = false;
-                }
+        addStaticParameter(Parameters.ROUND_TYPE, new ComboParameter("Round type", "Shape", new String[]{"Full", "Custom"}){
+            {
+                onValueChanged(value -> updateVisible());
+                onVisibleChanged(visible -> updateVisible());
+                onApplying(object -> updateVisible());
+            }
+            void updateVisible(){
+                boolean full = isVisible() && getValue().equals("Full");
+                boolean custom = isVisible() && !full;
+
                 getStaticParameter(Parameters.ROUND_LT).setVisible(custom);
                 getStaticParameter(Parameters.ROUND_LB).setVisible(custom);
                 getStaticParameter(Parameters.ROUND_RB).setVisible(custom);
                 getStaticParameter(Parameters.ROUND_RT).setVisible(custom);
                 getStaticParameter(Parameters.ROUND_FULL).setVisible(full);
-            });
-        }});
+            }
+        });
         addStaticParameter(Parameters.ROUND_FULL, new IntegerParameter("Round", "Shape"));
         addStaticParameter(Parameters.ROUND_LB, new IntegerParameter(" Corner", "Shape"){{
             setIcon(new ImageIcon("bin/round_lb.png"));
@@ -102,16 +107,25 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
         }});
 
         // Background
-        addStaticParameter(Parameters.BACKGROUND_TYPE, new ComboParameter("Background", "Background", new String[]{"Gradient", "Color"}){{
-            addActionListener(() -> {
-                boolean visible = getValue().equals("Gradient");
-                getStaticParameter(Parameters.GRADIENT_TYPE).setVisible(visible);
-                getStaticParameter(Parameters.GRADIENT_TO).setVisible(visible);
-                getStaticParameter(Parameters.GRADIENT_FROM).setVisible(visible);
-
-                getStaticParameter(Parameters.BACKGROUND_COLOR).setVisible(!visible);
-            });
+        addStaticParameter(Parameters.BACKGROUND_ENABLED, new BooleanParameter("Enabled", "Background"){{
+            addValueChangedListener(value -> getStaticParameter(Parameters.BACKGROUND_TYPE).setVisible(value.equals("true")));
         }});
+        addStaticParameter(Parameters.BACKGROUND_TYPE, new ComboParameter("Background", "Background", new String[]{"Gradient", "Color"}){
+            {
+                onValueChanged(value -> updateVisible());
+                onVisibleChanged(visible -> updateVisible());
+                onApplying(object -> updateVisible());
+            }
+            void updateVisible(){
+                boolean gradient_visible = isVisible() && getValue().equals("Gradient");
+                boolean color_visible = isVisible() && !gradient_visible;
+
+                getStaticParameter(Parameters.GRADIENT_TYPE).setVisible(gradient_visible);
+                getStaticParameter(Parameters.GRADIENT_TO).setVisible(gradient_visible);
+                getStaticParameter(Parameters.GRADIENT_FROM).setVisible(gradient_visible);
+                getStaticParameter(Parameters.BACKGROUND_COLOR).setVisible(color_visible);
+            }
+        });
 
         addStaticParameter(Parameters.GRADIENT_TYPE, new ComboParameter("Gradient type", "Background", new String[]{"linear", "radial"}));
         addStaticParameter(Parameters.GRADIENT_FROM, new Point2DParameter("Gradient from", "Background"));
@@ -140,8 +154,8 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
 
     private ArrayList<StyleComponent> child_components = new ArrayList<>();
 
-    public StyleComponent(String title, String type){
-        super(StyleComponent.class, title);
+    public StyleComponent(Project project, String title, String type){
+        super(project, StyleComponent.class, title);
         this.type = type;
 
         addImplementedParameters(Parameters.KIT_BASE);
@@ -180,7 +194,8 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
                 round += getVariableValue(Parameters.ROUND_RT) + ",";
                 round += getVariableValue(Parameters.ROUND_RB) + ",";
                 round += getVariableValue(Parameters.ROUND_LB);
-                head.setParameterByPath("painter.decorations.decoration.WebShape", "round", round);
+                if(areVariablesCustom(Parameters.ROUND_LT, Parameters.ROUND_RT, Parameters.ROUND_RB, Parameters.ROUND_LB))
+                    head.setParameterByPath("painter.decorations.decoration.WebShape", "round", round);
             }
         }
         applyParameterOnCustom(head, "painter.decorations.decoration.LineBorder", "color", Parameters.BORDER_COLOR);
@@ -201,13 +216,16 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
             applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "color", Parameters.OUTER_SHADOW_COLOR, predicate);
         }
 
-        if(isImplemented(Parameters.BACKGROUND_TYPE)) {
+        if(isImplemented(Parameters.BACKGROUND_ENABLED) && getVariableValue(Parameters.BACKGROUND_ENABLED).equals("true")) {
             if (getVariableValue(Parameters.BACKGROUND_TYPE).equals("Gradient")){
+                createHeadOnCustom(head, "painter.decorations.decoration.GradientBackground", Parameters.BACKGROUND_ENABLED);
                 applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "type", Parameters.GRADIENT_TYPE);
                 applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "from", Parameters.GRADIENT_FROM);
                 applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "to", Parameters.GRADIENT_TO);
-            }else
+            }else {
+                createHeadOnCustom(head, "painter.decorations.decoration.ColorBackground", Parameters.BACKGROUND_ENABLED);
                 applyParameterOnCustom(head, "painter.decorations.decoration.ColorBackground", "color", Parameters.BACKGROUND_COLOR);
+            }
         }
         if(isImplemented(Parameters.BUTTON_SHOW_ICON) && isVariableCustom(Parameters.BUTTON_SHOW_ICON))
             head.setParameterByPath("painter.decorations.decoration.ButtonLayout.ButtonIcon", "constraints", getVariableValue(Parameters.BUTTON_SHOW_ICON).equals("true") ? "icon" : "");
@@ -217,13 +235,10 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
         return head;
     }
 
-    public void doEvent(ComponentEvent.Type event, Object... objects){
-        Components.doEvent(event, this, objects);
-    }
 
     public void addChildComponent(StyleComponent component){
         child_components.add(component);
-        doEvent(New_Child, component);
+        Main.event(StyleComponent.class, listeners, listener -> listener.newChildComponent(new NewChildComponentEvent(getProject(), this, component)));
     }
     public ArrayList<StyleComponent> getChildComponents(){
         return child_components;
@@ -232,8 +247,8 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
         removeChild(getChildComponents().indexOf(component));
     }
     public void removeChild(int index){
-        child_components.remove(index);
-        doEvent(Removed_Child);
+        StyleComponent removed = child_components.remove(index);
+        Main.event(StyleComponent.class, listeners, listener -> listener.childRemovedComponent(new ChildComponentRemovedEvent(getProject(), this, removed)));
     }
     public void moveChildComponent(int from, int to){
         StyleComponent component = child_components.get(from);
@@ -249,10 +264,5 @@ public abstract class StyleComponent extends AbstractEditableObject implements C
 
         return !getVariable(variable.getName()).isDefaultValue();
     }
-
-    protected void onVariableChanged(String variable){
-        Components.doEvent(new ComponentEvent(Style_Changed, this, variable));
-    }
-
 
 }

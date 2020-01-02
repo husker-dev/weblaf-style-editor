@@ -13,10 +13,10 @@ import java.awt.*;
 public class ErrorPanel extends WebPanel {
 
     public ErrorPanel(Error error){
+        super(StyleId.panelDecorated);
         setLayout(new BorderLayout());
         setPadding(3);
         setMargin(3, 3, 0, 3);
-        setStyleId(StyleId.panelDecorated);
         add(new WebPanel(){{
             setLayout(new BorderLayout());
             add(new WebImage(new ImageIcon("bin/error_large.png")), BorderLayout.WEST);

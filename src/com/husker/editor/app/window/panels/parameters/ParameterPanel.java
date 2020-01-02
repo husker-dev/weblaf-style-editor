@@ -6,55 +6,58 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.separator.WebSeparator;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.events.ParameterVisibleChangedEvent;
+import com.husker.editor.app.events.ParametersChangedEvent;
+import com.husker.editor.app.events.SelectedChangedEvent;
+import com.husker.editor.app.listeners.editable_object.EditableObjectAdapter;
+import com.husker.editor.app.listeners.parameter.ParameterAdapter;
 import com.husker.editor.app.project.*;
 import com.husker.editor.app.tools.MovableComponentList;
+import com.husker.editor.app.tools.VisibleUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.husker.editor.app.project.listeners.component.ComponentEvent.Type.*;
 
 
 public class ParameterPanel extends WebPanel {
 
     private WebScrollPane scroll;
     private MovableComponentList list;
-    private StyleComponent selected_component;
+    private EditableObject editable_object;
     private HashMap<String, WebCollapsiblePane> groups = new HashMap<>();
     private HashMap<Parameter, WebSeparator> separators = new HashMap<>();
 
     public ParameterPanel(){
         setPreferredWidth(230);
 
-        add(scroll = new WebScrollPane(list = new MovableComponentList(){{
+        add(scroll = new WebScrollPane(StyleId.scrollpaneUndecorated, list = new MovableComponentList(){{
             setShowReorderGrippers(false);
             setReorderingAllowed(false);
             setPadding(5, 0, 5, 0);
-
-            Parameter.addVisibleChangedListener(() -> {
-                apply(selected_component, false);
-            });
-
-            Components.addListener(e -> {
-                if(e.getType().oneOf(Selected_Changed)) {
-                    selected_component = (StyleComponent)e.getObjects()[0];
-                    apply(selected_component, true);
-                }
-            });
-
         }}){{
             getVerticalScrollBar().setUnitIncrement(16);
-            setStyleId(StyleId.scrollpaneUndecorated);
         }});
 
-        Components.addListener(e -> {
-            scroll.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
+        Parameter.addParameterListener(new ParameterAdapter() {
+            public void visibleChanged(ParameterVisibleChangedEvent event) {
+                apply(editable_object, false);
+            }
         });
-        Project.addListener(e -> {
-            scroll.setVisible(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
+        EditableObject.addEditableObjectListener(new EditableObjectAdapter() {
+            public void selectedChanged(SelectedChangedEvent event) {
+                editable_object = event.getObject();
+                apply(editable_object, true);
+                scroll.setVisible(VisibleUtils.onEditableObject());
+            }
         });
-        Parameters.addActionListener(this::prepareParameters);
+
+        Project.addListener(e -> scroll.setVisible(VisibleUtils.onEditableObject()));
+        Parameter.addParameterListener(new ParameterAdapter() {
+            public void parametersChanged(ParametersChangedEvent event) {
+                prepareParameters();
+            }
+        });
         prepareParameters();
     }
 
@@ -68,7 +71,7 @@ public class ParameterPanel extends WebPanel {
         ArrayList<String> groups = new ArrayList<>();
         ArrayList<Parameter> ungrouped = new ArrayList<>();
 
-        for (Parameter parameter : AbstractEditableObject.getStaticParameters()) {
+        for (Parameter parameter : EditableObject.getStaticParameters()) {
             if(parameter == null || !parameter.isVisible())
                 continue;
             if(parameter.getGroup() == null)
@@ -78,7 +81,7 @@ public class ParameterPanel extends WebPanel {
         }
 
         for(Parameter parameter : ungrouped){
-            list.addElement(parameter.getPanel());
+            list.addElement(parameter.getContent());
             list.addElement(WebSeparator.createHorizontal());
         }
 
@@ -94,7 +97,7 @@ public class ParameterPanel extends WebPanel {
                 setReorderingAllowed(false);
 
                 boolean first = true;
-                for(Parameter parameter : AbstractEditableObject.getStaticParameters()){
+                for(Parameter parameter : EditableObject.getStaticParameters()){
                     if(parameter.getGroup() != null && parameter.getGroup().equals(group) && parameter.isVisible()){
                         if(!first) {
                             WebSeparator separator = WebSeparator.createHorizontal();
@@ -103,7 +106,7 @@ public class ParameterPanel extends WebPanel {
                         }else
                             first = false;
 
-                        addElement(parameter.getPanel());
+                        addElement(parameter.getContent());
                     }
                 }
             }});
@@ -112,16 +115,16 @@ public class ParameterPanel extends WebPanel {
         list.updateUI();
     }
 
-    public void apply(StyleComponent component, boolean apply){
+    public void apply(EditableObject component, boolean apply){
         for(Parameter parameter : StyleComponent.getStaticParameters()){
-            if(component != null && component.isImplemented(parameter.getVariableName())) {
+            if(component != null && component.isImplemented(parameter.getBoundVariable())) {
                 if(apply)
-                    parameter.apply(component);
-                parameter.getPanel().setVisible(parameter.isVisible());
+                    parameter.applyObject(component);
+                parameter.getContent().setVisible(parameter.isVisible());
                 if(separators.containsKey(parameter))
                     separators.get(parameter).setVisible(parameter.isVisible());
             }else {
-                parameter.getPanel().setVisible(false);
+                parameter.getContent().setVisible(false);
                 if(separators.containsKey(parameter))
                     separators.get(parameter).setVisible(false);
             }
@@ -130,7 +133,7 @@ public class ParameterPanel extends WebPanel {
         for(Map.Entry<String, WebCollapsiblePane> entry : groups.entrySet()){
             boolean visible = false;
             for(Parameter parameter : StyleComponent.getStaticParameters())
-                if(parameter.getGroup() != null && parameter.getGroup().equals(entry.getKey()) && parameter.getPanel().isVisible())
+                if(parameter.getGroup() != null && parameter.getGroup().equals(entry.getKey()) && parameter.getContent().isVisible())
                     visible = true;
             entry.getValue().setVisible(visible);
         }

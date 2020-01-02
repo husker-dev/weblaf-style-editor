@@ -5,17 +5,16 @@ import com.alee.extended.syntax.WebSyntaxArea;
 import com.alee.extended.syntax.WebSyntaxScrollPane;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.style.StyleId;
-import com.husker.editor.app.project.Components;
-import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
-import com.husker.editor.app.project.Code;
-import com.husker.editor.app.project.listeners.project.ProjectEvent;
+import com.husker.editor.app.events.ConstantChangedEvent;
+import com.husker.editor.app.events.SelectedChangedEvent;
+import com.husker.editor.app.events.VariableChangedEvent;
+import com.husker.editor.app.listeners.editable_object.EditableObjectAdapter;
+import com.husker.editor.app.project.*;
+import com.husker.editor.app.tools.VisibleUtils;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-
-import static com.husker.editor.app.project.listeners.component.ComponentEvent.Type.*;
 
 
 public class CodePanel extends WebPanel {
@@ -34,27 +33,37 @@ public class CodePanel extends WebPanel {
         sourceViewer.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
                 if(sourceViewer.isEditable())
-                    Code.event(sourceViewer.getText());
+                    Project.getCurrentProject().getSelectedObject().getCode().setText(sourceViewer.getText());
             }
             public void removeUpdate(DocumentEvent e) {}
             public void insertUpdate(DocumentEvent e) {}
         });
 
-        Components.addListener(e -> {
-            if(e.getType().oneOf(Selected_Changed, Style_Changed))
+        EditableObject.addEditableObjectListener(new EditableObjectAdapter() {
+            public void variableChanged(VariableChangedEvent event) {
+                update();
+            }
+            public void constantChanged(ConstantChangedEvent event) {
+                update();
+            }
+            public void selectedChanged(SelectedChangedEvent event) {
+                update();
+            }
+            void update(){
                 updateText();
-            scroll.setVisible(Project.getCurrentProject().Components.getSelectedComponent() != null);
+                scroll.setVisible(VisibleUtils.onEditableObject());
+            }
         });
+
         Project.addListener(e -> {
-            if(e.getType().oneOf(ProjectEvent.Type.Changed))
-                updateText();
-            scroll.setVisible(Project.getCurrentProject().Components.getSelectedComponent() != null);
+            updateText();
+            scroll.setVisible(VisibleUtils.onEditableObject());
         });
     }
 
     public void updateText(){
         String new_text;
-        StyleComponent component = Project.getCurrentProject().Components.getSelectedComponent();
+        EditableObject component = Project.getCurrentProject().getSelectedObject();
         if(component != null)
             new_text = component.getXMLStyle().toString();
         else
@@ -63,7 +72,7 @@ public class CodePanel extends WebPanel {
         if(!new_text.equals(sourceViewer.getText())){
             sourceViewer.setEditable(false);
             sourceViewer.setText(new_text);
-            scroll.setEnabled(!(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null));
+            scroll.setEnabled(VisibleUtils.onEditableObject());
             sourceViewer.setEditable(true);
         }
     }

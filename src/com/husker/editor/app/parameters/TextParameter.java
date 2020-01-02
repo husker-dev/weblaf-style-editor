@@ -2,14 +2,12 @@ package com.husker.editor.app.parameters;
 
 import com.alee.extended.image.WebImage;
 import com.alee.laf.text.WebTextField;
-import com.husker.editor.app.project.Constants;
+import com.husker.editor.app.constants.TextConstant;
 import com.husker.editor.app.project.Parameter;
-import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.util.function.Consumer;
 
 public class TextParameter extends Parameter {
 
@@ -19,10 +17,10 @@ public class TextParameter extends Parameter {
         this(name, null);
     }
     public TextParameter(String name, String group) {
-        super(name, Constants.ConstType.Text, group);
+        super(name, TextConstant.class, group);
     }
 
-    public void setValue(String value) {
+    public void apply(String value) {
         textField.setText(value);
     }
     public String getValue() {
@@ -32,9 +30,6 @@ public class TextParameter extends Parameter {
     public void setEnabled(boolean enabled) {
         textField.setEnabled(enabled);
     }
-    public boolean isEnabled() {
-        return textField.isEnabled();
-    }
 
     public Component initComponent() {
         textField = new WebTextField();
@@ -43,21 +38,8 @@ public class TextParameter extends Parameter {
         return textField;
     }
 
-    public void addValueChangedListener(ParameterChangedListener listener) {
-        textField.getDocument().addDocumentListener(new DocumentListener() {
-            public void changedUpdate(DocumentEvent e) {
-                warn();
-            }
-            public void removeUpdate(DocumentEvent e) {
-                warn();
-            }
-            public void insertUpdate(DocumentEvent e) {
-                warn();
-            }
-            public void warn() {
-                listener.event(textField.getText());
-            }
-        });
+    public void addValueChangedListener(Consumer<String> consumer) {
+        textField.onChange((e, d) -> consumer.accept(textField.getText()));
     }
 }
 

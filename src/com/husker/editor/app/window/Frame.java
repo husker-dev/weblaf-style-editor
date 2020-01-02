@@ -12,7 +12,7 @@ import com.alee.laf.menu.WebMenuBar;
 import com.alee.laf.menu.WebMenuItem;
 import com.alee.managers.hotkey.Hotkey;
 import com.alee.managers.style.StyleId;
-import com.husker.editor.app.project.AbstractEditableObject;
+import com.husker.editor.app.project.EditableObject;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.window.panels.code.CodePanel;
@@ -43,7 +43,6 @@ public class Frame extends JFrame {
     private StartPanel startPanel;
 
     public Frame(){
-
         context = this;
 
         setTitle("WebLaF Editor");
@@ -55,9 +54,7 @@ public class Frame extends JFrame {
         setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
 
         startPanel = new StartPanel();
-        dockablePane = new WebDockablePane(){{
-            setStyleId(StyleId.dockableframeCompact);
-
+        dockablePane = new WebDockablePane(StyleId.dockableframeCompact){{
             preview = new PreviewPanel();
 
             parameters = new CustomDockablePanel("Parameters", new ParameterPanel());
@@ -135,7 +132,7 @@ public class Frame extends JFrame {
                         add(new WebMenuItem(entry.getKey(), new ImageIcon("bin/style.png")) {{
                             addActionListener((e) -> {
                                 try {
-                                    Project.getCurrentProject().Components.addComponent((StyleComponent) AbstractEditableObject.newInstance(entry.getValue(), Project.getCurrentProject()));
+                                    Project.getCurrentProject().Components.addComponent((StyleComponent) EditableObject.newInstance(entry.getValue(), Project.getCurrentProject()));
                                 }catch (Exception ex){
                                     ex.printStackTrace();
                                 }
@@ -164,7 +161,6 @@ public class Frame extends JFrame {
             setClosable(false);
             setFocusable(false);
             setMaximizable(false);
-
             add(component);
         }
     }

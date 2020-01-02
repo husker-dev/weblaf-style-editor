@@ -1,15 +1,15 @@
 package com.husker.editor.app.window.panels.error;
 
 import com.alee.extended.layout.VerticalFlowLayout;
-import com.alee.laf.button.WebButton;
 import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.events.ErrorAddedEvent;
+import com.husker.editor.app.events.ErrorRemovedEvent;
+import com.husker.editor.app.listeners.error.ErrorsListener;
 import com.husker.editor.app.project.Errors;
 import com.husker.editor.app.project.Error;
-import com.husker.editor.app.project.listeners.error.ErrorsEvent;
 
-import javax.swing.*;
 import java.util.HashMap;
 
 public class ErrorsPanel extends WebPanel {
@@ -17,24 +17,20 @@ public class ErrorsPanel extends WebPanel {
     private HashMap<Error, ErrorPanel> panels = new HashMap<>();
 
     public ErrorsPanel(){
-        add(new WebScrollPane(new WebPanel(){{
+        add(new WebScrollPane(StyleId.scrollpaneUndecorated, new WebPanel(){{
             setLayout(new VerticalFlowLayout());
 
-            Errors.addListener(event -> {
-                SwingUtilities.invokeLater(() -> {
-                    if(event.getType().oneOf(ErrorsEvent.Type.Added)) {
-                        ErrorPanel panel = new ErrorPanel((Error) event.getObjects()[0]);
-                        panels.put((Error) event.getObjects()[0], panel);
-                        add(panel);
-                    }
-                    if(event.getType().oneOf(ErrorsEvent.Type.Removed))
-                        if(panels.containsKey(event.getObjects()[0]))
-                            remove(panels.remove(event.getObjects()[0]));
-                    updateUI();
-                });
+            Errors.addErrorsListener(new ErrorsListener() {
+                public void added(ErrorAddedEvent event) {
+                    ErrorPanel panel = new ErrorPanel(event.getError());
+                    panels.put(event.getError(), panel);
+                    add(panel);
+                }
+                public void removed(ErrorRemovedEvent event) {
+                    if(panels.containsKey(event.getError()))
+                        remove(panels.remove(event.getError()));
+                }
             });
-        }}){{
-            setStyleId(StyleId.scrollpaneUndecorated);
-        }});
+        }}));
     }
 }

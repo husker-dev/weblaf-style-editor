@@ -2,12 +2,12 @@ package com.husker.editor.app.parameters;
 
 import com.alee.extended.colorchooser.WebColorChooserField;
 import com.alee.managers.style.StyleId;
-import com.husker.editor.app.project.Constants;
+import com.husker.editor.app.constants.ColorConstant;
 import com.husker.editor.app.project.Parameter;
-import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.function.Consumer;
 
 public class ColorParameter extends Parameter {
 
@@ -17,10 +17,10 @@ public class ColorParameter extends Parameter {
         this(name, null);
     }
     public ColorParameter(String name, String group) {
-        super(name, Constants.ConstType.Color, group);
+        super(name, ColorConstant.class, group);
     }
 
-    public void setValue(String value) {
+    public void apply(String value) {
         String[] color = value.split(",");
         if(color.length < 3){
             chooser.setColor(Color.WHITE);
@@ -43,20 +43,15 @@ public class ColorParameter extends Parameter {
         chooser.setEnabled(enabled);
     }
 
-    public boolean isEnabled() {
-        return chooser.isEnabled();
-    }
-
     public Component initComponent() {
-        chooser = new WebColorChooserField();
-        chooser.setStyleId(StyleId.of("custom-chooserfield"));
+        chooser = new WebColorChooserField(StyleId.of("custom-chooserfield"));
         chooser.setDisplayEyedropper(false);
         chooser.setPreferredWidth(50);
         chooser.setHorizontalAlignment(SwingConstants.LEFT);
         return chooser;
     }
 
-    public void addValueChangedListener(ParameterChangedListener listener) {
-        chooser.addColorChooserListener( (e, d) -> listener.event(getValue()));
+    public void addValueChangedListener(Consumer<String> consumer) {
+        chooser.addColorChooserListener( (e, d) -> consumer.accept(getValue()));
     }
 }

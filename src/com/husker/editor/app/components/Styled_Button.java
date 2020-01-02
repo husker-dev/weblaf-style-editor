@@ -1,6 +1,7 @@
 package com.husker.editor.app.components;
 
 import com.alee.laf.button.WebButton;
+import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
 
 import java.awt.*;
@@ -9,8 +10,8 @@ import static com.husker.editor.app.project.StyleComponent.Parameters.*;
 
 public class Styled_Button extends StyleComponent {
 
-    public Styled_Button() {
-        super("Button", "button");
+    public Styled_Button(Project project) {
+        super(project, "Button", "button");
 
         addImplementedParameters(
                 KIT_BACKGROUND,
@@ -27,6 +28,7 @@ public class Styled_Button extends StyleComponent {
         setDefaultValue(BACKGROUND_TYPE, "Gradient");
         setDefaultValue(BUTTON_SHOW_ICON, "true");
         setDefaultValue(BUTTON_SHOW_TEXT, "true");
+        setDefaultValue(BACKGROUND_ENABLED, "true");
 
         setDefaultValue(ROUND_LB, "3");
         setDefaultValue(ROUND_LT, "3");

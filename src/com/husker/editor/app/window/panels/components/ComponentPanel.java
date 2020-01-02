@@ -10,6 +10,7 @@ import com.alee.laf.menu.WebMenuItem;
 import com.alee.laf.menu.WebPopupMenu;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.project.EditableObject;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
 
@@ -27,7 +28,7 @@ class ComponentPanel extends WebPanel {
 
     private WebLabel type, id, separator;
 
-    private StyleComponent component;
+    private EditableObject component;
 
     private static ImageIcon  more, arrow_down, arrow_up, style_icon;
     static {
@@ -37,15 +38,14 @@ class ComponentPanel extends WebPanel {
         style_icon = new ImageIcon("bin/style.png");
     }
 
-    public ComponentPanel(StyleComponent component){
+    public ComponentPanel(EditableObject component){
         this.component = component;
         setPreferredSize(170, 27);
 
         title = new WebButton(){{
             setHorizontalAlignment(LEFT);
             setVerticalAlignment(CENTER);
-            add(new WebPanel(){{
-                setStyleId(StyleId.panelTransparent);
+            add(new WebPanel(StyleId.panelTransparent){{
                 setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
                 add(type = new WebLabel(component.getTitle(), style_icon){{
                     setPreferredHeight(18);
@@ -54,8 +54,7 @@ class ComponentPanel extends WebPanel {
                     setPreferredHeight(18);
                     setVisible(false);
                 }});
-                add(id = new WebLabel(){{
-                    setStyleId(StyleId.labelTag);
+                add(id = new WebLabel(StyleId.labelTag){{
                     setPreferredHeight(18);
                     setVisible(false);
                 }});
@@ -71,17 +70,13 @@ class ComponentPanel extends WebPanel {
                         dragged = false;
                         setEnabled(true);
                         return;
-                    }else{
-
                     }
                 }
             });
             addMouseMotionListener(new MouseMotionAdapter() {
                 public void mouseDragged(MouseEvent e) {
-                    if(!dragged){
+                    if(!dragged)
                         setEnabled(false);
-
-                    }
                     dragged = true;
 
                     ComponentPanel.this.getParent().dispatchEvent(e);
@@ -91,7 +86,7 @@ class ComponentPanel extends WebPanel {
                 }
             });
             addActionListener(e -> {
-                component.getProject().Components.setSelectedComponent(component);
+                component.getProject().setSelectedObject(component);
             });
         }};
         WebPopupMenu popup = new WebPopupMenu();
@@ -102,7 +97,7 @@ class ComponentPanel extends WebPanel {
         }});
         popup.add(new WebMenuItem("Remove"){{
             addActionListener(e -> {
-                Project.getCurrentProject().Components.removeComponent(component);
+                Project.getCurrentProject().Components.removeComponent((StyleComponent) component);
             });
         }});
 
@@ -134,9 +129,5 @@ class ComponentPanel extends WebPanel {
             id.setText(component.getVariableValue("id"));
         id.setVisible(!component.getVariable("id").isDefaultValue());
         separator.setVisible(!component.getVariable("id").isDefaultValue());
-    }
-
-    public void setSelected(boolean selected){
-        //title.setSelected(selected);
     }
 }

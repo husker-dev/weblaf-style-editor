@@ -6,10 +6,13 @@ import com.alee.managers.style.XmlSkin;
 import com.alee.managers.style.data.SkinInfo;
 import com.alee.utils.XmlUtils;
 import com.husker.editor.app.Main;
+import com.husker.editor.app.events.LastSkinAppliedEvent;
+import com.husker.editor.app.events.SkinAppliedEvent;
+import com.husker.editor.app.events.SkinApplyingEvent;
 import com.husker.editor.app.project.Error;
-import com.husker.editor.app.project.Errors;
-import com.husker.editor.app.project.listeners.skin.SkinEvent;
-import com.husker.editor.app.project.listeners.skin.SkinListener;
+import com.husker.editor.app.listeners.skin.SkinListener;
+import com.husker.editor.app.project.Project;
+import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.xml.XMLHead;
 
 import javax.swing.*;
@@ -40,6 +43,7 @@ public class CustomSkin extends XmlSkin {
     }
 
     public static void applySkin(Component component, String code){
+        Project project = Project.getCurrentProject();
         new Thread(() -> {
             thread_id = (int)Thread.currentThread().getId();
 
@@ -51,8 +55,9 @@ public class CustomSkin extends XmlSkin {
                     return;
                 applying = true;
 
-                Errors.Current.removeError("style_applying");
-                onEvent(new SkinEvent(SkinEvent.Type.Skin_Applying));
+
+                project.Errors.removeError("style_applying");
+                Main.event(CustomSkin.class, listeners, listener -> listener.applying(new SkinApplyingEvent(project)));
 
                 String text = pattern.replace("<!-- CODE -->", code);
 
@@ -66,30 +71,23 @@ public class CustomSkin extends XmlSkin {
                     String style_name = e.getMessage().split("'")[1].split("'")[0];
                     String extends_name = e.getMessage().split("'")[3].split("'")[0];
                     if(style_name.equals("::preview::"))
-                        Errors.Current.addError(new Error("style_applying", "Incorrect Style",  "Style extends missing style '" + extends_name + "'"));
+                        project.Errors.addError(new Error("style_applying", "Incorrect Style",  "Style extends missing style '" + extends_name + "'"));
                     else
-                        Errors.Current.addError(new Error("style_applying", "Incorrect Style",  "Style '" + style_name + "' extends missing style '" + extends_name + "'"));
+                        project.Errors.addError(new Error("style_applying", "Incorrect Style",  "Style '" + style_name + "' extends missing style '" + extends_name + "'"));
                 }else{
-                    Errors.Current.addError(new Error("style_applying", "Incorrect Style",  e.getMessage()));
+                    project.Errors.addError(new Error("style_applying", "Incorrect Style",  e.getMessage()));
                 }
             }finally {
                 applying = false;
                 if(thread_id == (int)Thread.currentThread().getId())
-                    onEvent(new SkinEvent(SkinEvent.Type.Last_Applied));
-                onEvent(new SkinEvent(SkinEvent.Type.Skin_Applied));
+                    Main.event(CustomSkin.class, listeners, listener -> listener.lastApplied(new LastSkinAppliedEvent(project)));
+                Main.event(CustomSkin.class, listeners, listener -> listener.applied(new SkinAppliedEvent(project)));
             }
 
         }).start();
     }
     public static void applySkin(Component component, XMLHead skin){
         applySkin(component, skin.toString(1));
-    }
-
-    private static void onEvent(SkinEvent event){
-        if(Main.event_output_enabled)
-            System.out.println("EVENT CustomSkin: " + event.getType().toString());
-        for(SkinListener listener : listeners)
-            listener.event(event);
     }
 
     public static void addSkinListener(SkinListener listener){

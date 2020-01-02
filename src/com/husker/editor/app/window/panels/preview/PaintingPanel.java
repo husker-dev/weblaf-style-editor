@@ -4,6 +4,7 @@ package com.husker.editor.app.window.panels.preview;
 import com.alee.extended.layout.AlignLayout;
 import com.alee.laf.panel.WebPanel;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.project.EditableObject;
 import com.husker.editor.app.project.Project;
 import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.skin.CustomSkin;
@@ -14,10 +15,10 @@ import java.lang.reflect.Method;
 public class PaintingPanel extends WebPanel {
 
     private Component content;
-    private StyleComponent component;
+    private EditableObject component;
     private boolean drawBorder = false;
 
-    public PaintingPanel(StyleComponent component){
+    public PaintingPanel(EditableObject component){
         setLayout(new AlignLayout());
         this.component = component;
         content = component.createPreviewComponent();
@@ -52,11 +53,11 @@ public class PaintingPanel extends WebPanel {
 
     public void updateSkin(){
         try {
-            CustomSkin.applySkin(content, Project.getCurrentProject().Components.getSelectedComponent().getXMLStyle(true));
+            CustomSkin.applySkin(content, Project.getCurrentProject().getSelectedObject().getXMLStyle(true));
         }catch (Exception ex){}
     }
 
-    public StyleComponent getComponent(){
+    public EditableObject getComponent(){
         return component;
     }
 

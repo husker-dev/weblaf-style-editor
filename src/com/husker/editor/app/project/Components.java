@@ -1,54 +1,41 @@
 package com.husker.editor.app.project;
 
 import com.husker.editor.app.Main;
-import com.husker.editor.app.project.listeners.component.ComponentEvent;
-import com.husker.editor.app.project.listeners.component.ComponentListener;
+import com.husker.editor.app.events.ComponentRemovedEvent;
+import com.husker.editor.app.events.NewComponentEvent;
+import com.husker.editor.app.listeners.component.ComponentListener;
 
 import java.util.ArrayList;
-
-import static com.husker.editor.app.project.listeners.component.ComponentEvent.Type.*;
 
 public class Components {
 
     private static ArrayList<ComponentListener> listeners = new ArrayList<>();
 
-    public static void doEvent(ComponentEvent.Type event, Object... objects){
-        doEvent(new ComponentEvent(event, objects));
-    }
-    public static void doEvent(ComponentEvent event){
-        if(Main.event_output_enabled)
-            System.out.println("EVENT Components: " + event.getType().toString());
-        for(ComponentListener listener : listeners)
-            listener.event(event);
-    }
-    public static void addListener(ComponentListener listener){
+    public static void addComponentListener(ComponentListener listener){
         listeners.add(listener);
     }
 
     private ArrayList<StyleComponent> components = new ArrayList<>();
-    private StyleComponent selected = null;
+    private final Project project;
+
+    public Components(Project project){
+        this.project = project;
+    }
 
     public void addComponent(StyleComponent component){
         components.add(component);
-        doEvent(New, component);
+        Main.event(Components.class, listeners, listener -> listener.newComponent(new NewComponentEvent(project, component)));
     }
     public void removeComponent(StyleComponent component){
         components.remove(component);
-        if(component == selected)
-            setSelectedComponent(null);
-        doEvent(Removed, component);
+        component.remove();
+        if(component == project.getSelectedObject())
+            project.setSelectedObject(null);
+        Main.event(Components.class,listeners, listener -> listener.removed(new ComponentRemovedEvent(project, component)));
     }
 
     public ArrayList<StyleComponent> getComponents(){
         return components;
-    }
-
-    public void setSelectedComponent(StyleComponent component){
-        selected = component;
-        doEvent(Selected_Changed, component);
-    }
-    public StyleComponent getSelectedComponent(){
-        return selected;
     }
 
     public void moveComponent(int from, int to){

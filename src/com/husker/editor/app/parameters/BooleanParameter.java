@@ -2,9 +2,9 @@ package com.husker.editor.app.parameters;
 
 import com.alee.laf.checkbox.WebCheckBox;
 import com.husker.editor.app.project.Parameter;
-import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
 
 import java.awt.*;
+import java.util.function.Consumer;
 
 public class BooleanParameter extends Parameter {
 
@@ -14,10 +14,10 @@ public class BooleanParameter extends Parameter {
         this(name, null);
     }
     public BooleanParameter(String name, String group) {
-        super(name, null, group);
+        super(name, group);
     }
 
-    public void setValue(String value) {
+    public void apply(String value) {
         checkBox.setSelected(value.equals("true"));
     }
 
@@ -29,16 +29,12 @@ public class BooleanParameter extends Parameter {
         checkBox.setEnabled(enabled);
     }
 
-    public boolean isEnabled() {
-        return checkBox.isEnabled();
-    }
-
     public Component initComponent() {
         checkBox = new WebCheckBox();
         return checkBox;
     }
 
-    public void addValueChangedListener(ParameterChangedListener listener) {
-        checkBox.addChangeListener(e -> listener.event(getValue()));
+    public void addValueChangedListener(Consumer<String> consumer) {
+        checkBox.addChangeListener(e -> consumer.accept(getValue()));
     }
 }

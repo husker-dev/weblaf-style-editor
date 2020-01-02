@@ -3,38 +3,38 @@ package com.husker.editor.app.parameters;
 import com.alee.laf.grouping.GroupPane;
 import com.alee.laf.grouping.GroupPaneConstraints;
 import com.husker.editor.app.project.Parameter;
-import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
-import com.husker.editor.app.tools.FloatSpinner;
+import com.husker.editor.app.tools.DoubleSpinner;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.function.Consumer;
 
 public class Point2DParameter extends Parameter {
 
-    private FloatSpinner x;
-    private FloatSpinner y;
-    private float step;
+    private DoubleSpinner x;
+    private DoubleSpinner y;
+    private double step;
 
     public Point2DParameter(String name) {
-        this(name, null, 0.1f);
+        this(name, null, 0.1);
     }
     public Point2DParameter(String name, String group) {
-        this(name, group, 0.1f);
+        this(name, group, 0.1);
     }
-    public Point2DParameter(String name, float step) {
+    public Point2DParameter(String name, double step) {
         this(name, null, step);
     }
-    public Point2DParameter(String name, String group, float step) {
-        super(name, null, group, new Object[]{step});
+    public Point2DParameter(String name, String group, double step) {
+        super(name, group, step);
     }
 
-    public void setValue(String value) {
-        x.setValue(Float.parseFloat(value.split(",")[0]));
-        y.setValue(Float.parseFloat(value.split(",")[1]));
+    public void apply(String value) {
+        x.setValue(Double.parseDouble(value.split(",")[0]));
+        y.setValue(Double.parseDouble(value.split(",")[1]));
     }
 
     public String getValue() {
-        return x.getFloat() + "," + y.getFloat();
+        return x.getDouble() + "," + y.getDouble();
     }
 
     public void setEnabled(boolean enabled) {
@@ -42,13 +42,9 @@ public class Point2DParameter extends Parameter {
         y.setEnabled(enabled);
     }
 
-    public boolean isEnabled() {
-        return x.isEnabled();
-    }
-
     public Component initComponent() {
-        x = new FloatSpinner(step);
-        y = new FloatSpinner(step);
+        x = new DoubleSpinner(step);
+        y = new DoubleSpinner(step);
 
         JSpinner.DefaultEditor spinnerEditorX = (JSpinner.DefaultEditor)x.getEditor();
         spinnerEditorX.getTextField().setHorizontalAlignment(JTextField.LEFT);
@@ -61,12 +57,12 @@ public class Point2DParameter extends Parameter {
         }};
     }
 
-    public void addValueChangedListener(ParameterChangedListener listener) {
-        x.addChangeListener(e -> listener.event(getValue()));
-        y.addChangeListener(e -> listener.event(getValue()));
+    public void addValueChangedListener(Consumer<String> consumer) {
+        x.addChangeListener(e -> consumer.accept(getValue()));
+        y.addChangeListener(e -> consumer.accept(getValue()));
     }
 
-    public void initObjects(Object[][] objects){
-        step = (float)objects[0][0];
+    public void initObjects(Object[] objects){
+        step = (double)objects[0];
     }
 }

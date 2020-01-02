@@ -7,168 +7,189 @@ import com.alee.laf.grouping.GroupPaneConstraints;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.panel.WebPanel;
 import com.husker.editor.app.Main;
-import com.husker.editor.app.project.listeners.parameter.ParameterActionListener;
-import com.husker.editor.app.project.listeners.parameter.ParameterApplyListener;
-import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
-import com.husker.editor.app.project.listeners.parameter.ParameterVisibleListener;
+import com.husker.editor.app.events.*;
+import com.husker.editor.app.listeners.contants.ConstantsAdapter;
+import com.husker.editor.app.listeners.editable_object.EditableObjectAdapter;
+import com.husker.editor.app.listeners.parameter.*;
+import com.husker.editor.app.tools.VisibleUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public abstract class Parameter{
 
-    private ArrayList<ParameterApplyListener> apply_listener = new ArrayList<>();
-    private ArrayList<ParameterActionListener> action_listener = new ArrayList<>();
-
-    private WebPanel panel;
-
-    private WebLabel name;
-    private Component component;
-    private WebComboBox constants;
-    private WebButton reset;
-
-    private String current_const = "";
-    private String last_value = "";
-    private boolean last_value_saved = false;
-
-    private String variable_name = "";
-    private AbstractEditableObject current_parameter_receiver;
-    private String group;
-    private Constants.ConstType const_type;
-
-    private boolean visible = true;
-    private static ArrayList<ParameterVisibleListener> visible_listener = new ArrayList<>();
-
+    // Static
+    private static ArrayList<ParameterListener> listeners = new ArrayList<>();
     private static ImageIcon reset_img, reset_disabled_img;
 
+    public static void addParameterListener(ParameterListener listener){
+        listeners.add(listener);
+    }
     static {
         reset_img = new ImageIcon("bin/reset.png");
         reset_disabled_img = new ImageIcon("bin/reset_disabled.png");
-    }
 
-    public Parameter(String name, Constants.ConstType constType, String group, Object[]... objects){
-        initObjects(objects);
-
-        panel = new WebPanel();
-        panel.setPreferredHeight(25);
-        panel.setPadding(0, 0, 0, 5);
-
-        this.group = group;
-        this.const_type = constType;
-        this.name = new WebLabel(name + ":");
-
-        if(constType != null) {
-            this.constants = new WebComboBox() {{
-                setPreferredWidth(20);
-                addItem("Custom");
-                setWidePopup(true);
-
-                addItemListener(e -> {
-                    if (getSelectedItem() == null)
-                        return;
-
-                    if (current_const.equals("") || !current_const.equals(getSelectedItem()))
-                        current_const = getSelectedItem().toString();
-                    else if (current_const.equals(getSelectedItem()))
-                        return;
-
-                    if (getSelectedItem() != null) {
-                        if (getSelectedItem().equals("Custom")) {
-                            Parameter.this.setEnabled(true);
-                            Parameter.this.setValue(last_value);
-                            last_value_saved = false;
-                        } else {
-                            if (!last_value_saved) {
-                                last_value_saved = true;
-                                last_value = getValue();
-                            }
-                            Parameter.this.setEnabled(false);
-                            Parameter.this.setValue(Project.getCurrentProject().Constants.getConstant(constType, getSelectedItem().toString()));
+        EditableObject.addEditableObjectListener(new EditableObjectAdapter() {
+            public void variableChanged(VariableChangedEvent event) {
+                // Is editable object
+                if(VisibleUtils.isEditableObject(event.getObject()))
+                    // For every EditableObject's parameter
+                    for(Parameter parameter : event.getObject().getParameters())
+                        // If variable are equals
+                        if(parameter.getBoundVariable().equals(event.getVariable()))
+                            parameter.updateValue();
+            }
+            public void constantChanged(ConstantChangedEvent event) {
+                // Is editable object
+                if(VisibleUtils.isEditableObject(event.getObject())) {
+                    // For every EditableObject's parameter
+                    for (Parameter parameter : event.getObject().getParameters()) {
+                        // If variable are equals
+                        if (parameter.getBoundVariable().equals(event.getVariable())) {
+                            parameter.updateConstants();
+                            parameter.updateValue();
                         }
                     }
-                });
-            }};
-        }
-
-        reset = new WebButton(){{
-            setPreferredSize(26, 20);
-            setIcon(reset_img);
-            setDisabledIcon(reset_disabled_img);
-            addActionListener(e -> {
-                if(constType != null)
-                    constants.setSelectedIndex(0);
-                setValue(current_parameter_receiver.getVariable(variable_name).getDefaultValue());
-            });
-        }};
-
-        panel.setLayout(new GridLayout(1, 3));
-
-        this.component = initComponent();
-
-        panel.add(this.name);
-        panel.add(this.component);
-        if(constType != null) {
-            panel.add(new GroupPane() {{
-                add(reset);
-                add(constants, GroupPaneConstraints.FILL);
-            }});
-        }else{
-            panel.add(reset);
-        }
-
-        addValueChangedListener(text -> {
-            if(Project.getCurrentProject() == null || Project.getCurrentProject().Components.getSelectedComponent() == null)
-                return;
-            if(!variable_name.isEmpty())
-                current_parameter_receiver.setCustomValue(variable_name, text);
-
-            if(current_parameter_receiver != null && current_parameter_receiver.isImplemented(variable_name))
-                reset.setEnabled(!current_parameter_receiver.getVariable(variable_name).getDefaultValue().equals(getValue()));
+                }
+            }
+            public void selectedChanged(SelectedChangedEvent event) {
+                // Is editable object
+                if(VisibleUtils.isEditableObject(event.getObject()))
+                    // For every EditableObject's parameter
+                    for(Parameter parameter : event.getObject().getParameters())
+                        parameter.applyObject(event.getObject());
+            }
         });
+        Constants.addConstantListener(new ConstantsAdapter() {
+            public void newConstant(NewConstantEvent event) {
+                update(event.getConstantType());
+            }
+            public void removed(ConstantRemovedEvent event) {
+                update(event.getConstantType());
+            }
+            void update(Class<? extends Constant> type){
+                EditableObject object = Project.getCurrentProject().getSelectedObject();
 
-        if(constType != null) {
-            Constants.addListener(event -> updateConstants());
-            Project.addListener(event -> updateConstants());
+                if(VisibleUtils.isEditableObject(object)) {
+                    // For every EditableObject's parameter
+                    for (Parameter parameter : object.getParameters()) {
+                        // If variable are equals
+                        if (parameter.getBoundVariable().getConstantType() == type) {
+                            parameter.updateConstants();
+                            parameter.updateValue();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // UI
+    private WebPanel ui_content;
+
+    private WebLabel ui_name;
+    private WebComboBox ui_constants;
+    private WebButton ui_reset;
+
+    // Variables
+    private String name;
+
+    private StaticVariable variable;
+    private EditableObject editable_object;
+    private String group;
+    private Class<? extends Constant> constant_type;
+    private boolean visible = true;
+
+    private boolean constants_event_enabled = true;
+
+    public Parameter(String name, String group, Object... objects){
+        this(name, null, group, objects);
+    }
+    public Parameter(String name, Class<? extends Constant> constant_type, String group, Object... objects){
+        initObjects(objects);
+
+        this.name = name;
+        this.group = group;
+        this.constant_type = constant_type;
+
+        createUI();
+
+        addValueChangedListener(value -> {
+            if(!VisibleUtils.onEditableObject())
+                return;
+            if(variable != null && editable_object.getVariable(variable).getConstant().isEmpty()) {
+                editable_object.setCustomValue(variable, value);
+                if (editable_object != null && editable_object.isImplemented(variable))
+                    ui_reset.setEnabled(!editable_object.getVariable(variable).getDefaultValue().equals(getValue()));
+            }
+        });
+        Main.event(Parameter.class, listeners, listener -> listener.parametersChanged(new ParametersChangedEvent()));
+    }
+
+    public void applyObject(EditableObject object){
+        editable_object = object;
+
+        if(editable_object.getVariable(variable) != null)
+            apply(editable_object.getVariableValue(variable));
+        ui_reset.setEnabled(!editable_object.getVariable(variable).getDefaultValue().equals(getValue()));
+
+        if(variable != null)
+            Main.event(Parameter.class, listeners, listener -> listener.objectApplying(new ParameterApplyingEvent(editable_object.getProject(), this, editable_object)));
+
+        if(constant_type != null)
             updateConstants();
+        updateValue();
+    }
+    public void updateConstants(){
+        constants_event_enabled = false;
+
+        ui_constants.removeAllItems();
+        ui_constants.addItem("Custom");
+        for (String tag : editable_object.getProject().Constants.getConstants(constant_type))
+            ui_constants.addItem(tag);
+        ui_constants.setSelectedItem(editable_object.getVariable(variable).getConstant());
+
+        constants_event_enabled = true;
+    }
+    public void updateValue(){
+        try {
+            Variable variable = editable_object.getVariable(this.variable);
+            if (variable.getConstant().isEmpty()) {
+                setEnabled(true);
+                String old = getValue();
+                setValue(variable.getValue());
+                Main.event(Parameter.class, listeners, listener -> listener.valueChanged(new ParameterValueChangedEvent(this, old, getValue())));
+            } else {
+                setEnabled(false);
+                String old = getValue();
+                setValue(variable.getConstantValue());
+                Main.event(Parameter.class, listeners, listener -> listener.valueChanged(new ParameterValueChangedEvent(this, old, getValue())));
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 
-    public void apply(StyleComponent component){
-        current_parameter_receiver = component;
 
-        if(component.getVariable(variable_name) != null)
-            setValue(component.getVariableValue(variable_name));
-        reset.setEnabled(!current_parameter_receiver.getVariable(variable_name).getDefaultValue().equals(getValue()));
-
-        if(!variable_name.isEmpty()){
-            for(ParameterApplyListener listener : apply_listener)
-                listener.event(component);
-        }
+    public void bindVariable(StaticVariable variable){
+        this.variable = variable;
     }
-
-    public void addOnApplyListener(ParameterApplyListener applyParameter){
-        apply_listener.add(applyParameter);
-    }
-
-    public void setVariableName(String value){
-        variable_name = value;
-    }
-    public String getVariableName(){
-        return variable_name;
+    public StaticVariable getBoundVariable(){
+        return variable;
     }
 
     public void setVisible(boolean visible){
         this.visible = visible;
-        for(ParameterVisibleListener listener : visible_listener)
-            listener.event();
+        Main.event(Parameter.class, listeners, listener -> listener.visibleChanged(new ParameterVisibleChangedEvent(this, visible)));
     }
     public boolean isVisible(){
         return visible;
     }
 
-    public WebPanel getPanel(){
-        return panel;
+    public WebPanel getContent(){
+        return ui_content;
     }
 
     public void setGroup(String group){
@@ -178,43 +199,101 @@ public abstract class Parameter{
         return group;
     }
 
-    public void initObjects(Object[][] objects){}
-
-    public abstract void setValue(String value);
-    public abstract String getValue();
-
-    public abstract void setEnabled(boolean enabled);
-    public abstract boolean isEnabled();
-
-    public void setIcon(ImageIcon icon){
-        name.setIcon(icon);
-    }
-
     public abstract Component initComponent();
+    protected abstract void addValueChangedListener(Consumer<String> consumer);
+    protected void initObjects(Object[] objects){}
+    protected abstract void apply(String value);
+    public abstract String getValue();
+    public abstract void setEnabled(boolean enabled);
 
-    public abstract void addValueChangedListener(ParameterChangedListener listener);
-
-    public static void addVisibleChangedListener(ParameterVisibleListener listener){
-        visible_listener.add(listener);
+    public void setValue(String value){
+        if(!getValue().equals(value))
+            apply(value);
     }
 
-    public void action(){
-        if(Main.event_output_enabled)
-            System.out.println("EVENT Parameter");
-        for(ParameterActionListener listener : action_listener)
-            listener.event();
+    public void setIcon(Icon icon){
+        ui_name.setIcon(icon);
+    }
+    public Icon getIcon(){
+        return ui_name.getIcon();
     }
 
-    public void addActionListener(ParameterActionListener listener){
-        action_listener.add(listener);
-        addValueChangedListener(e -> listener.event());
-        addOnApplyListener(e -> listener.event());
+    public Class<? extends Constant> getConstantType(){
+        return constant_type;
     }
 
-    private void updateConstants(){
-        constants.removeAllItems();
-        constants.addItem("Custom");
-        for (String tag : Project.getCurrentProject().Constants.getConstants(const_type))
-            constants.addItem(tag);
+    public void onVisibleChanged(final Consumer<Boolean> visibleChanged){
+        addParameterListener(new ParameterAdapter() {
+            public void visibleChanged(ParameterVisibleChangedEvent event) {
+                if(event.getParameter() == Parameter.this)
+                    visibleChanged.accept(event.isVisible());
+            }
+        });
+    }
+    public void onValueChanged(final Consumer<String> valueChanged){
+        addParameterListener(new ParameterAdapter() {
+            public void valueChanged(ParameterValueChangedEvent event) {
+                if(event.getParameter() == Parameter.this && event.getParameter().isVisible())
+                    valueChanged.accept(event.getNewValue());
+            }
+        });
+    }
+    public void onApplying(final Consumer<EditableObject> applying){
+        addParameterListener(new ParameterAdapter() {
+            public void objectApplying(ParameterApplyingEvent event) {
+                if(event.getParameter() == Parameter.this)
+                    applying.accept(event.getObject());
+            }
+        });
+    }
+
+    private void createUI(){
+        ui_content = new WebPanel();
+        ui_content.setPreferredHeight(25);
+        ui_content.setPadding(0, 0, 0, 5);
+
+        this.ui_name = new WebLabel(name + ":");
+
+        if(constant_type != null) {
+            this.ui_constants = new WebComboBox() {{
+                setPreferredWidth(20);
+                setWidePopup(true);
+
+                addItemListener(e -> {
+                    if(!constants_event_enabled || getSelectedItem() == null)
+                        return;
+
+                    if (getSelectedItem() != null) {
+                        if(getSelectedItem().toString().equals("Custom"))
+                            editable_object.setConstant(variable, "");
+                        else
+                            editable_object.setConstant(variable, getSelectedItem().toString());
+                    }
+                });
+            }};
+        }
+
+        ui_reset = new WebButton(){{
+            setPreferredSize(26, 20);
+            setIcon(reset_img);
+            setDisabledIcon(reset_disabled_img);
+            addActionListener(e -> {
+                if(constant_type != null)
+                    ui_constants.setSelectedIndex(0);
+                apply(editable_object.getVariable(variable).getDefaultValue());
+            });
+        }};
+
+        ui_content.setLayout(new GridLayout(1, 3));
+
+        ui_content.add(this.ui_name);
+        ui_content.add(this.initComponent());
+        if(constant_type != null) {
+            ui_content.add(new GroupPane() {{
+                add(ui_reset);
+                add(ui_constants, GroupPaneConstraints.FILL);
+            }});
+        }else
+            ui_content.add(ui_reset);
     }
 }

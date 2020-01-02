@@ -2,26 +2,25 @@ package com.husker.editor.app.parameters;
 
 import com.alee.laf.combobox.WebComboBox;
 import com.husker.editor.app.project.Parameter;
-import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
 
 import java.awt.*;
+import java.util.function.Consumer;
 
 public class ComboParameter extends Parameter {
 
-    private String[] items;
     private WebComboBox combo;
 
     public ComboParameter(String name, String[] items) {
         this(name, null, items);
     }
     public ComboParameter(String name, String group, String[] items) {
-        super(name, null, group);
+        super(name, group);
 
         for(String item : items)
             combo.addItem(item);
     }
 
-    public void setValue(String value) {
+    public void apply(String value) {
         combo.setSelectedItem(value);
     }
 
@@ -33,17 +32,13 @@ public class ComboParameter extends Parameter {
         combo.setEnabled(enabled);
     }
 
-    public boolean isEnabled() {
-        return combo.isEnabled();
-    }
-
     public Component initComponent() {
         combo = new WebComboBox();
         combo.setWidePopup(true);
         return combo;
     }
 
-    public void addValueChangedListener(ParameterChangedListener listener) {
-        combo.addItemListener(e -> listener.event(getValue()));
+    public void addValueChangedListener(Consumer<String> consumer) {
+        combo.addItemListener(e -> consumer.accept(getValue()));
     }
 }

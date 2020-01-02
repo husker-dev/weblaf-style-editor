@@ -1,12 +1,12 @@
 package com.husker.editor.app.parameters;
 
 import com.alee.laf.spinner.WebSpinner;
-import com.husker.editor.app.project.Constants;
+import com.husker.editor.app.constants.NumberConstant;
 import com.husker.editor.app.project.Parameter;
-import com.husker.editor.app.project.listeners.parameter.ParameterChangedListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.function.Consumer;
 
 public class IntegerParameter extends Parameter {
     private WebSpinner spinner;
@@ -15,18 +15,15 @@ public class IntegerParameter extends Parameter {
         this(name, null);
     }
     public IntegerParameter(String name, String group) {
-        super(name, Constants.ConstType.Number, group);
+        super(name, NumberConstant.class, group);
     }
 
-    public void addValueChangedListener(ParameterChangedListener listener) {
-        spinner.addChangeListener(e -> listener.event(spinner.getValue().toString()));
+    public void addValueChangedListener(Consumer<String> consumer) {
+        spinner.addChangeListener(e -> consumer.accept(spinner.getValue().toString()));
     }
 
     public void setEnabled(boolean enabled) {
         spinner.setEnabled(enabled);
-    }
-    public boolean isEnabled() {
-        return spinner.isEnabled();
     }
 
     public Component initComponent() {
@@ -37,7 +34,7 @@ public class IntegerParameter extends Parameter {
         return spinner;
     }
 
-    public void setValue(String value){
+    public void apply(String value){
         if(value.equals(""))
             spinner.setValue(0);
         else
