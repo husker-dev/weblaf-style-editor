@@ -6,7 +6,6 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.EditableObject;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.skin.CustomSkin;
 
 import java.awt.*;

@@ -12,7 +12,6 @@ import com.husker.editor.app.events.SkinApplyingEvent;
 import com.husker.editor.app.project.Error;
 import com.husker.editor.app.listeners.skin.SkinListener;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
 import com.husker.editor.app.xml.XMLHead;
 
 import javax.swing.*;

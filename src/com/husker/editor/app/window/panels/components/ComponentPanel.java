@@ -2,7 +2,6 @@ package com.husker.editor.app.window.panels.components;
 
 
 import com.alee.laf.button.WebButton;
-import com.alee.laf.button.WebToggleButton;
 import com.alee.laf.grouping.GroupPane;
 import com.alee.laf.grouping.GroupPaneConstraints;
 import com.alee.laf.label.WebLabel;
@@ -12,7 +11,7 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.EditableObject;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.component.StyleComponent;
 
 import javax.swing.*;
 import java.awt.*;

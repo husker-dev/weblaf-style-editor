@@ -6,6 +6,7 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.separator.WebSeparator;
 import com.alee.managers.style.StyleId;
+import com.husker.editor.app.component.StyleComponent;
 import com.husker.editor.app.events.ParameterVisibleChangedEvent;
 import com.husker.editor.app.events.ParametersChangedEvent;
 import com.husker.editor.app.events.SelectedChangedEvent;

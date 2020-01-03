@@ -6,10 +6,8 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.managers.style.StyleId;
 import com.husker.editor.app.events.SelectedChangedEvent;
 import com.husker.editor.app.listeners.editable_object.EditableObjectAdapter;
-import com.husker.editor.app.project.Components;
 import com.husker.editor.app.project.EditableObject;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,7 +1,7 @@
-package com.husker.editor.app.components;
+package com.husker.editor.app.component.components;
 
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.component.StyleComponent;
 import com.alee.laf.label.WebLabel;
 
 import java.awt.*;

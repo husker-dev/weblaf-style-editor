@@ -73,6 +73,9 @@ public abstract class Parameter{
             public void removed(ConstantRemovedEvent event) {
                 update(event.getConstantType(), event.getConstant());
             }
+            public void renamed(ConstantRenamedEvent event) {
+                update(event.getConstantType(), event.getOldName());
+            }
             void update(Class<? extends Constant> type, String constant){
                 EditableObject object = Project.getCurrentProject().getSelectedObject();
 

@@ -14,7 +14,7 @@ import com.alee.managers.hotkey.Hotkey;
 import com.alee.managers.style.StyleId;
 import com.husker.editor.app.project.EditableObject;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.component.StyleComponent;
 import com.husker.editor.app.window.panels.code.CodePanel;
 import com.husker.editor.app.window.panels.components.ComponentsPanel;
 import com.husker.editor.app.window.panels.constants.ConstantsPanel;

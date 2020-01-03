@@ -13,6 +13,10 @@ public class XMLHead {
     private String value;
     private ArrayList<String> comments = new ArrayList<>();
 
+    public XMLHead(String name, String content){
+        this.name = name;
+        this.value = content;
+    }
     public XMLHead(String name, String[]... parameters){
         this.name = name;
         for(String[] parameter : parameters)

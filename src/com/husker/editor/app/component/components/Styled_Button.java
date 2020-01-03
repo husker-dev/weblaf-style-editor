@@ -1,12 +1,12 @@
-package com.husker.editor.app.components;
+package com.husker.editor.app.component.components;
 
 import com.alee.laf.button.WebButton;
 import com.husker.editor.app.project.Project;
-import com.husker.editor.app.project.StyleComponent;
+import com.husker.editor.app.component.StyleComponent;
 
 import java.awt.*;
 
-import static com.husker.editor.app.project.StyleComponent.Variables.*;
+import static com.husker.editor.app.component.StyleComponent.Variables.*;
 
 public class Styled_Button extends StyleComponent {
 

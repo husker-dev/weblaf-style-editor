@@ -1,12 +1,15 @@
-package com.husker.editor.app.project;
+package com.husker.editor.app.component;
 
 import com.husker.editor.app.Main;
-import com.husker.editor.app.components.Styled_Button;
-import com.husker.editor.app.components.Styled_Label;
+import com.husker.editor.app.component.components.Styled_Button;
+import com.husker.editor.app.component.components.Styled_Label;
 import com.husker.editor.app.events.ChildComponentRemovedEvent;
 import com.husker.editor.app.events.NewChildComponentEvent;
 import com.husker.editor.app.listeners.component.ComponentListener;
 import com.husker.editor.app.parameters.*;
+import com.husker.editor.app.project.EditableObject;
+import com.husker.editor.app.project.Project;
+import com.husker.editor.app.project.StaticVariable;
 import com.husker.editor.app.xml.XMLHead;
 
 import javax.swing.*;
@@ -33,24 +36,38 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         public static final StaticVariable EXTENDS = new StaticVariable("extends");
         public static final StaticVariable DECORATIONS = new StaticVariable("decorations", "true");
         public static final StaticVariable OVERWRITE_DECORATIONS = new StaticVariable("overwrite_decorations", "false");
+
+        // Round
         public static final StaticVariable ROUND_TYPE = new StaticVariable("round_type", "Full");
         public static final StaticVariable ROUND_FULL = new StaticVariable("round_full", "0");
         public static final StaticVariable ROUND_LT = new StaticVariable("round_lt", "0");   // Left top
         public static final StaticVariable ROUND_RT = new StaticVariable("round_rt", "0");   // Right top
         public static final StaticVariable ROUND_LB = new StaticVariable("round_lb", "0");   // Left bottom
         public static final StaticVariable ROUND_RB = new StaticVariable("round_rb", "0");   // Right bottom
+
+        // Shape
         public static final StaticVariable SHAPE_ENABLED = new StaticVariable("shape_enabled", "false");
+
+        // Inner shadow
         public static final StaticVariable INNER_SHADOW_WIDTH = new StaticVariable("inner_shadow_width", "0");
         public static final StaticVariable INNER_SHADOW_COLOR = new StaticVariable("inner_shadow_color", "0,0,0");
+
+        // Outer shadow
         public static final StaticVariable OUTER_SHADOW_WIDTH = new StaticVariable("outer_shadow_width", "0");
         public static final StaticVariable OUTER_SHADOW_COLOR = new StaticVariable("outer_shadow_color", "0,0,0");
+
+        // Border
         public static final StaticVariable BORDER_COLOR = new StaticVariable("border_color", "0,0,0,0");
+
+        // Background
         public static final StaticVariable BACKGROUND_TYPE = new StaticVariable("background_type", "Color");
         public static final StaticVariable BACKGROUND_ENABLED = new StaticVariable("background_enabled", "false");
         public static final StaticVariable GRADIENT_TYPE = new StaticVariable("gradient_type", "linear");
         public static final StaticVariable GRADIENT_FROM = new StaticVariable("gradient_from", "0.0,0.0");
         public static final StaticVariable GRADIENT_TO = new StaticVariable("gradient_to", "0.0,1.0");
-        public static final StaticVariable BACKGROUND_COLOR = new StaticVariable("background_color", "255,255,255");
+        public static final StaticVariable GRADIENT_COLOR_1 = new StaticVariable("gradient_color_1", "255,255,255");
+        public static final StaticVariable GRADIENT_COLOR_2 = new StaticVariable("gradient_color_2", "223,223,223");
+        public static final StaticVariable BACKGROUND_COLOR = new StaticVariable("background_color", "0,0,0,0");
 
         public static final StaticVariable BUTTON_SHOW_ICON = new StaticVariable("button_show_icon", "false");
         public static final StaticVariable BUTTON_SHOW_TEXT = new StaticVariable("button_show_text", "false");
@@ -60,7 +77,7 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         public static final StaticVariable[] KIT_INNER_SHADOW = new StaticVariable[]{INNER_SHADOW_COLOR, INNER_SHADOW_WIDTH};
         public static final StaticVariable[] KIT_OUTER_SHADOW = new StaticVariable[]{OUTER_SHADOW_COLOR, OUTER_SHADOW_WIDTH};
         public static final StaticVariable[] KIT_BORDER = new StaticVariable[]{BORDER_COLOR};
-        public static final StaticVariable[] KIT_BACKGROUND = new StaticVariable[]{BACKGROUND_ENABLED, BACKGROUND_TYPE, GRADIENT_TYPE, GRADIENT_FROM, GRADIENT_TO, BACKGROUND_COLOR};
+        public static final StaticVariable[] KIT_BACKGROUND = new StaticVariable[]{BACKGROUND_ENABLED, BACKGROUND_TYPE, GRADIENT_TYPE, GRADIENT_FROM, GRADIENT_TO, GRADIENT_COLOR_1, GRADIENT_COLOR_2, BACKGROUND_COLOR};
         public static final StaticVariable[] KIT_BUTTON_CONTENT = new StaticVariable[]{BUTTON_SHOW_ICON, BUTTON_SHOW_TEXT};
     }
 
@@ -123,6 +140,8 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
                 getStaticParameter(Variables.GRADIENT_TYPE).setVisible(gradient_visible);
                 getStaticParameter(Variables.GRADIENT_TO).setVisible(gradient_visible);
                 getStaticParameter(Variables.GRADIENT_FROM).setVisible(gradient_visible);
+                getStaticParameter(Variables.GRADIENT_COLOR_1).setVisible(gradient_visible);
+                getStaticParameter(Variables.GRADIENT_COLOR_2).setVisible(gradient_visible);
                 getStaticParameter(Variables.BACKGROUND_COLOR).setVisible(color_visible);
             }
         });
@@ -130,6 +149,8 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         addStaticParameter(Variables.GRADIENT_TYPE, new ComboParameter("Gradient type", "Background", new String[]{"linear", "radial"}));
         addStaticParameter(Variables.GRADIENT_FROM, new Point2DParameter("Gradient from", "Background"));
         addStaticParameter(Variables.GRADIENT_TO, new Point2DParameter("Gradient to", "Background"));
+        addStaticParameter(Variables.GRADIENT_COLOR_1, new ColorParameter("Color 1", "Background"));
+        addStaticParameter(Variables.GRADIENT_COLOR_2, new ColorParameter("Color 2", "Background"));
         addStaticParameter(Variables.BACKGROUND_COLOR, new ColorParameter("Color", "Background"));
 
         // Border
@@ -218,12 +239,16 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
 
         if(isImplemented(Variables.BACKGROUND_ENABLED) && getVariableValue(Variables.BACKGROUND_ENABLED).equals("true")) {
             if (getVariableValue(Variables.BACKGROUND_TYPE).equals("Gradient")){
-                createHeadOnCustom(head, "painter.decorations.decoration.GradientBackground", Variables.BACKGROUND_ENABLED);
+                createHeadOnCustom(head, "painter.decorations.decoration.GradientBackground", Variables.BACKGROUND_TYPE);
                 applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "type", Variables.GRADIENT_TYPE);
                 applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "from", Variables.GRADIENT_FROM);
                 applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "to", Variables.GRADIENT_TO);
+                if(areVariablesCustom(Variables.GRADIENT_COLOR_1, Variables.GRADIENT_COLOR_2)) {
+                    head.createHeadByPath("painter.decorations.decoration.GradientBackground", new XMLHead("color", getVariableValue(Variables.GRADIENT_COLOR_1)));
+                    head.createHeadByPath("painter.decorations.decoration.GradientBackground", new XMLHead("color", getVariableValue(Variables.GRADIENT_COLOR_2)));
+                }
             }else {
-                createHeadOnCustom(head, "painter.decorations.decoration.ColorBackground", Variables.BACKGROUND_ENABLED);
+                createHeadOnCustom(head, "painter.decorations.decoration.ColorBackground", Variables.BACKGROUND_TYPE);
                 applyParameterOnCustom(head, "painter.decorations.decoration.ColorBackground", "color", Variables.BACKGROUND_COLOR);
             }
         }
@@ -260,7 +285,7 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         if(!isImplemented(variable))
             return false;
         if(getVariableValue(Variables.OVERWRITE_DECORATIONS).equals("true"))
-            return !variable.getDefaultValue().equals(getVariable(variable).getDefaultValue());
+            return !variable.getDefaultValue().equals(getVariable(variable).getConstantValue());
 
         return !getVariable(variable.getName()).isDefaultValue();
     }

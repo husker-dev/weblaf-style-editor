@@ -1,6 +1,7 @@
 package com.husker.editor.app.project;
 
 import com.husker.editor.app.Main;
+import com.husker.editor.app.component.StyleComponent;
 import com.husker.editor.app.events.ComponentRemovedEvent;
 import com.husker.editor.app.events.NewComponentEvent;
 import com.husker.editor.app.listeners.component.ComponentListener;
