@@ -28,7 +28,7 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         listeners.add(listener);
     }
 
-    public static class Parameters {
+    public static class Variables {
         public static final StaticVariable ID = new StaticVariable("id");
         public static final StaticVariable EXTENDS = new StaticVariable("extends");
         public static final StaticVariable DECORATIONS = new StaticVariable("decorations", "true");
@@ -65,17 +65,17 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
     }
 
     protected void initParameters() {
-        addStaticParameter(Parameters.ID, new TextParameter("Id"));
-        addStaticParameter(Parameters.EXTENDS, new TextParameter("Extends"));
-        addStaticParameter(Parameters.DECORATIONS, new BooleanParameter("Decorations"));
-        addStaticParameter(Parameters.OVERWRITE_DECORATIONS, new BooleanParameter("Overwrite base"));
+        addStaticParameter(Variables.ID, new TextParameter("Id"));
+        addStaticParameter(Variables.EXTENDS, new TextParameter("Extends"));
+        addStaticParameter(Variables.DECORATIONS, new BooleanParameter("Decorations"));
+        addStaticParameter(Variables.OVERWRITE_DECORATIONS, new BooleanParameter("Overwrite base"));
 
         // Round
-        addStaticParameter(Parameters.SHAPE_ENABLED, new BooleanParameter("Enable", "Shape"){{
-            onValueChanged(value -> getStaticParameter(Parameters.ROUND_TYPE).setVisible(value.equals("true")));
+        addStaticParameter(Variables.SHAPE_ENABLED, new BooleanParameter("Enable", "Shape"){{
+            onValueChanged(value -> getStaticParameter(Variables.ROUND_TYPE).setVisible(value.equals("true")));
         }});
 
-        addStaticParameter(Parameters.ROUND_TYPE, new ComboParameter("Round type", "Shape", new String[]{"Full", "Custom"}){
+        addStaticParameter(Variables.ROUND_TYPE, new ComboParameter("Round type", "Shape", new String[]{"Full", "Custom"}){
             {
                 onValueChanged(value -> updateVisible());
                 onVisibleChanged(visible -> updateVisible());
@@ -85,32 +85,32 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
                 boolean full = isVisible() && getValue().equals("Full");
                 boolean custom = isVisible() && !full;
 
-                getStaticParameter(Parameters.ROUND_LT).setVisible(custom);
-                getStaticParameter(Parameters.ROUND_LB).setVisible(custom);
-                getStaticParameter(Parameters.ROUND_RB).setVisible(custom);
-                getStaticParameter(Parameters.ROUND_RT).setVisible(custom);
-                getStaticParameter(Parameters.ROUND_FULL).setVisible(full);
+                getStaticParameter(Variables.ROUND_LT).setVisible(custom);
+                getStaticParameter(Variables.ROUND_LB).setVisible(custom);
+                getStaticParameter(Variables.ROUND_RB).setVisible(custom);
+                getStaticParameter(Variables.ROUND_RT).setVisible(custom);
+                getStaticParameter(Variables.ROUND_FULL).setVisible(full);
             }
         });
-        addStaticParameter(Parameters.ROUND_FULL, new IntegerParameter("Round", "Shape"));
-        addStaticParameter(Parameters.ROUND_LB, new IntegerParameter(" Corner", "Shape"){{
+        addStaticParameter(Variables.ROUND_FULL, new IntegerParameter("Round", "Shape"));
+        addStaticParameter(Variables.ROUND_LB, new IntegerParameter(" Corner", "Shape"){{
             setIcon(new ImageIcon("bin/round_lb.png"));
         }});
-        addStaticParameter(Parameters.ROUND_LT, new IntegerParameter(" Corner", "Shape"){{
+        addStaticParameter(Variables.ROUND_LT, new IntegerParameter(" Corner", "Shape"){{
             setIcon(new ImageIcon("bin/round_lt.png"));
         }});
-        addStaticParameter(Parameters.ROUND_RB, new IntegerParameter(" Corner", "Shape"){{
+        addStaticParameter(Variables.ROUND_RB, new IntegerParameter(" Corner", "Shape"){{
             setIcon(new ImageIcon("bin/round_rb.png"));
         }});
-        addStaticParameter(Parameters.ROUND_RT, new IntegerParameter(" Corner", "Shape"){{
+        addStaticParameter(Variables.ROUND_RT, new IntegerParameter(" Corner", "Shape"){{
             setIcon(new ImageIcon("bin/round_rt.png"));
         }});
 
         // Background
-        addStaticParameter(Parameters.BACKGROUND_ENABLED, new BooleanParameter("Enabled", "Background"){{
-            addValueChangedListener(value -> getStaticParameter(Parameters.BACKGROUND_TYPE).setVisible(value.equals("true")));
+        addStaticParameter(Variables.BACKGROUND_ENABLED, new BooleanParameter("Enabled", "Background"){{
+            addValueChangedListener(value -> getStaticParameter(Variables.BACKGROUND_TYPE).setVisible(value.equals("true")));
         }});
-        addStaticParameter(Parameters.BACKGROUND_TYPE, new ComboParameter("Background", "Background", new String[]{"Gradient", "Color"}){
+        addStaticParameter(Variables.BACKGROUND_TYPE, new ComboParameter("Background", "Background", new String[]{"Gradient", "Color"}){
             {
                 onValueChanged(value -> updateVisible());
                 onVisibleChanged(visible -> updateVisible());
@@ -120,32 +120,32 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
                 boolean gradient_visible = isVisible() && getValue().equals("Gradient");
                 boolean color_visible = isVisible() && !gradient_visible;
 
-                getStaticParameter(Parameters.GRADIENT_TYPE).setVisible(gradient_visible);
-                getStaticParameter(Parameters.GRADIENT_TO).setVisible(gradient_visible);
-                getStaticParameter(Parameters.GRADIENT_FROM).setVisible(gradient_visible);
-                getStaticParameter(Parameters.BACKGROUND_COLOR).setVisible(color_visible);
+                getStaticParameter(Variables.GRADIENT_TYPE).setVisible(gradient_visible);
+                getStaticParameter(Variables.GRADIENT_TO).setVisible(gradient_visible);
+                getStaticParameter(Variables.GRADIENT_FROM).setVisible(gradient_visible);
+                getStaticParameter(Variables.BACKGROUND_COLOR).setVisible(color_visible);
             }
         });
 
-        addStaticParameter(Parameters.GRADIENT_TYPE, new ComboParameter("Gradient type", "Background", new String[]{"linear", "radial"}));
-        addStaticParameter(Parameters.GRADIENT_FROM, new Point2DParameter("Gradient from", "Background"));
-        addStaticParameter(Parameters.GRADIENT_TO, new Point2DParameter("Gradient to", "Background"));
-        addStaticParameter(Parameters.BACKGROUND_COLOR, new ColorParameter("Color", "Background"));
+        addStaticParameter(Variables.GRADIENT_TYPE, new ComboParameter("Gradient type", "Background", new String[]{"linear", "radial"}));
+        addStaticParameter(Variables.GRADIENT_FROM, new Point2DParameter("Gradient from", "Background"));
+        addStaticParameter(Variables.GRADIENT_TO, new Point2DParameter("Gradient to", "Background"));
+        addStaticParameter(Variables.BACKGROUND_COLOR, new ColorParameter("Color", "Background"));
 
         // Border
-        addStaticParameter(Parameters.BORDER_COLOR, new ColorParameter("Color", "Border"));
+        addStaticParameter(Variables.BORDER_COLOR, new ColorParameter("Color", "Border"));
 
         // Shadow inner
-        addStaticParameter(Parameters.INNER_SHADOW_WIDTH, new IntegerParameter("Width", "Inner shadow"));
-        addStaticParameter(Parameters.INNER_SHADOW_COLOR, new ColorParameter("Color", "Inner shadow"));
+        addStaticParameter(Variables.INNER_SHADOW_WIDTH, new IntegerParameter("Width", "Inner shadow"));
+        addStaticParameter(Variables.INNER_SHADOW_COLOR, new ColorParameter("Color", "Inner shadow"));
 
         // Shadow outer
-        addStaticParameter(Parameters.OUTER_SHADOW_WIDTH, new IntegerParameter("Width", "Outer shadow"));
-        addStaticParameter(Parameters.OUTER_SHADOW_COLOR, new ColorParameter("Color", "Outer shadow"));
+        addStaticParameter(Variables.OUTER_SHADOW_WIDTH, new IntegerParameter("Width", "Outer shadow"));
+        addStaticParameter(Variables.OUTER_SHADOW_COLOR, new ColorParameter("Color", "Outer shadow"));
 
         // Button content
-        addStaticParameter(Parameters.BUTTON_SHOW_TEXT, new BooleanParameter("Show text", "Button content"));
-        addStaticParameter(Parameters.BUTTON_SHOW_ICON, new BooleanParameter("Show icon", "Button content"));
+        addStaticParameter(Variables.BUTTON_SHOW_TEXT, new BooleanParameter("Show text", "Button content"));
+        addStaticParameter(Variables.BUTTON_SHOW_ICON, new BooleanParameter("Show icon", "Button content"));
     }
 
     // Object
@@ -158,7 +158,7 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         super(project, StyleComponent.class, title);
         this.type = type;
 
-        addImplementedParameters(Parameters.KIT_BASE);
+        addImplementedParameters(Variables.KIT_BASE);
     }
 
     public void applyXML(XMLHead head){
@@ -176,61 +176,61 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         if(preview)
             head.addParameter("id", "::preview::");
         else
-            applyParameterOnCustom(head, "id", Parameters.ID);
+            applyParameterOnCustom(head, "id", Variables.ID);
         head.addParameter("type", type);
-        applyParameterOnCustom(head, "extends", Parameters.EXTENDS);
-        applyParameterOnCustom(head, "painter.decorations.decoration", "visible", Parameters.DECORATIONS);
-        if(super.isVariableCustom(Parameters.OVERWRITE_DECORATIONS))
-            head.setParameterByPath("painter.decorations", "overwrite", getVariableValue(Parameters.OVERWRITE_DECORATIONS));
+        applyParameterOnCustom(head, "extends", Variables.EXTENDS);
+        applyParameterOnCustom(head, "painter.decorations.decoration", "visible", Variables.DECORATIONS);
+        if(super.isVariableCustom(Variables.OVERWRITE_DECORATIONS))
+            head.setParameterByPath("painter.decorations", "overwrite", getVariableValue(Variables.OVERWRITE_DECORATIONS));
 
-        if(isImplemented(Parameters.SHAPE_ENABLED) && getVariableValue(Parameters.SHAPE_ENABLED).equals("true")) {
-            createHeadOnCustom(head, "painter.decorations.decoration.WebShape", Parameters.SHAPE_ENABLED);
+        if(isImplemented(Variables.SHAPE_ENABLED) && getVariableValue(Variables.SHAPE_ENABLED).equals("true")) {
+            createHeadOnCustom(head, "painter.decorations.decoration.WebShape", Variables.SHAPE_ENABLED);
 
-            if(getVariableValue(Parameters.ROUND_TYPE).equals("Full")){
-                applyParameterOnCustom(head, "painter.decorations.decoration.WebShape", "round", Parameters.ROUND_FULL);
+            if(getVariableValue(Variables.ROUND_TYPE).equals("Full")){
+                applyParameterOnCustom(head, "painter.decorations.decoration.WebShape", "round", Variables.ROUND_FULL);
             }else{
                 String round = "";
-                round += getVariableValue(Parameters.ROUND_LT) + ",";
-                round += getVariableValue(Parameters.ROUND_RT) + ",";
-                round += getVariableValue(Parameters.ROUND_RB) + ",";
-                round += getVariableValue(Parameters.ROUND_LB);
-                if(areVariablesCustom(Parameters.ROUND_LT, Parameters.ROUND_RT, Parameters.ROUND_RB, Parameters.ROUND_LB))
+                round += getVariableValue(Variables.ROUND_LT) + ",";
+                round += getVariableValue(Variables.ROUND_RT) + ",";
+                round += getVariableValue(Variables.ROUND_RB) + ",";
+                round += getVariableValue(Variables.ROUND_LB);
+                if(areVariablesCustom(Variables.ROUND_LT, Variables.ROUND_RT, Variables.ROUND_RB, Variables.ROUND_LB))
                     head.setParameterByPath("painter.decorations.decoration.WebShape", "round", round);
             }
         }
-        applyParameterOnCustom(head, "painter.decorations.decoration.LineBorder", "color", Parameters.BORDER_COLOR);
+        applyParameterOnCustom(head, "painter.decorations.decoration.LineBorder", "color", Variables.BORDER_COLOR);
 
-        if(areVariablesCustom(Parameters.INNER_SHADOW_WIDTH, Parameters.INNER_SHADOW_COLOR)) {
+        if(areVariablesCustom(Variables.INNER_SHADOW_WIDTH, Variables.INNER_SHADOW_COLOR)) {
             Predicate<XMLHead> predicate = h -> h.getParameter("type") != null && h.getParameterValue("type").equals("inner");
 
             head.createHeadByPath("painter.decorations.decoration", new XMLHead("WebShadow", new String[]{"type", "inner"}));
-            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "width", Parameters.INNER_SHADOW_WIDTH, predicate);
-            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "color", Parameters.INNER_SHADOW_COLOR, predicate);
+            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "width", Variables.INNER_SHADOW_WIDTH, predicate);
+            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "color", Variables.INNER_SHADOW_COLOR, predicate);
         }
 
-        if(areVariablesCustom(Parameters.OUTER_SHADOW_WIDTH, Parameters.OUTER_SHADOW_COLOR)) {
+        if(areVariablesCustom(Variables.OUTER_SHADOW_WIDTH, Variables.OUTER_SHADOW_COLOR)) {
             Predicate<XMLHead> predicate = h -> h.getParameter("type") != null && h.getParameterValue("type").equals("outer");
 
             head.createHeadByPath("painter.decorations.decoration", new XMLHead("WebShadow", new String[]{"type", "outer"}));
-            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "width", Parameters.OUTER_SHADOW_WIDTH, predicate);
-            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "color", Parameters.OUTER_SHADOW_COLOR, predicate);
+            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "width", Variables.OUTER_SHADOW_WIDTH, predicate);
+            applyParameterOnCustom(head, "painter.decorations.decoration.WebShadow", "color", Variables.OUTER_SHADOW_COLOR, predicate);
         }
 
-        if(isImplemented(Parameters.BACKGROUND_ENABLED) && getVariableValue(Parameters.BACKGROUND_ENABLED).equals("true")) {
-            if (getVariableValue(Parameters.BACKGROUND_TYPE).equals("Gradient")){
-                createHeadOnCustom(head, "painter.decorations.decoration.GradientBackground", Parameters.BACKGROUND_ENABLED);
-                applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "type", Parameters.GRADIENT_TYPE);
-                applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "from", Parameters.GRADIENT_FROM);
-                applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "to", Parameters.GRADIENT_TO);
+        if(isImplemented(Variables.BACKGROUND_ENABLED) && getVariableValue(Variables.BACKGROUND_ENABLED).equals("true")) {
+            if (getVariableValue(Variables.BACKGROUND_TYPE).equals("Gradient")){
+                createHeadOnCustom(head, "painter.decorations.decoration.GradientBackground", Variables.BACKGROUND_ENABLED);
+                applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "type", Variables.GRADIENT_TYPE);
+                applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "from", Variables.GRADIENT_FROM);
+                applyParameterOnCustom(head, "painter.decorations.decoration.GradientBackground", "to", Variables.GRADIENT_TO);
             }else {
-                createHeadOnCustom(head, "painter.decorations.decoration.ColorBackground", Parameters.BACKGROUND_ENABLED);
-                applyParameterOnCustom(head, "painter.decorations.decoration.ColorBackground", "color", Parameters.BACKGROUND_COLOR);
+                createHeadOnCustom(head, "painter.decorations.decoration.ColorBackground", Variables.BACKGROUND_ENABLED);
+                applyParameterOnCustom(head, "painter.decorations.decoration.ColorBackground", "color", Variables.BACKGROUND_COLOR);
             }
         }
-        if(isImplemented(Parameters.BUTTON_SHOW_ICON) && isVariableCustom(Parameters.BUTTON_SHOW_ICON))
-            head.setParameterByPath("painter.decorations.decoration.ButtonLayout.ButtonIcon", "constraints", getVariableValue(Parameters.BUTTON_SHOW_ICON).equals("true") ? "icon" : "");
-        if(isImplemented(Parameters.BUTTON_SHOW_TEXT) && isVariableCustom(Parameters.BUTTON_SHOW_TEXT))
-            head.setParameterByPath("painter.decorations.decoration.ButtonLayout.ButtonText", "constraints", getVariableValue(Parameters.BUTTON_SHOW_TEXT).equals("true") ? "text" : "");
+        if(isImplemented(Variables.BUTTON_SHOW_ICON) && isVariableCustom(Variables.BUTTON_SHOW_ICON))
+            head.setParameterByPath("painter.decorations.decoration.ButtonLayout.ButtonIcon", "constraints", getVariableValue(Variables.BUTTON_SHOW_ICON).equals("true") ? "icon" : "");
+        if(isImplemented(Variables.BUTTON_SHOW_TEXT) && isVariableCustom(Variables.BUTTON_SHOW_TEXT))
+            head.setParameterByPath("painter.decorations.decoration.ButtonLayout.ButtonText", "constraints", getVariableValue(Variables.BUTTON_SHOW_TEXT).equals("true") ? "text" : "");
 
         return head;
     }
@@ -259,7 +259,7 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
     public boolean isVariableCustom(StaticVariable variable){
         if(!isImplemented(variable))
             return false;
-        if(getVariableValue(Parameters.OVERWRITE_DECORATIONS).equals("true"))
+        if(getVariableValue(Variables.OVERWRITE_DECORATIONS).equals("true"))
             return !variable.getDefaultValue().equals(getVariable(variable).getDefaultValue());
 
         return !getVariable(variable.getName()).isDefaultValue();

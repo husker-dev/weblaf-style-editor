@@ -6,7 +6,7 @@ import com.husker.editor.app.project.StyleComponent;
 
 import java.awt.*;
 
-import static com.husker.editor.app.project.StyleComponent.Parameters.*;
+import static com.husker.editor.app.project.StyleComponent.Variables.*;
 
 public class Styled_Button extends StyleComponent {
 

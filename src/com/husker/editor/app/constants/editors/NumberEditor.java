@@ -29,6 +29,8 @@ public class NumberEditor extends ConstantEditor {
     }
 
     protected String getValue() {
+        if(field.getDouble() == field.getDouble().intValue())
+            return field.getDouble().intValue() + "";
         return field.getDouble().toString();
     }
 

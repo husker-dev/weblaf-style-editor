@@ -32,6 +32,10 @@ public abstract class Parameter{
         reset_disabled_img = new ImageIcon("bin/reset_disabled.png");
 
         EditableObject.addEditableObjectListener(new EditableObjectAdapter() {
+            public void newObject(NewEditableObjectEvent event) {
+                Main.event(Parameter.class, listeners, listener -> listener.parametersChanged(new ParametersChangedEvent()));
+            }
+
             public void variableChanged(VariableChangedEvent event) {
                 // Is editable object
                 if(VisibleUtils.isEditableObject(event.getObject()))
@@ -64,12 +68,12 @@ public abstract class Parameter{
         });
         Constants.addConstantListener(new ConstantsAdapter() {
             public void newConstant(NewConstantEvent event) {
-                update(event.getConstantType());
+                update(event.getConstantType(), event.getConstant());
             }
             public void removed(ConstantRemovedEvent event) {
-                update(event.getConstantType());
+                update(event.getConstantType(), event.getConstant());
             }
-            void update(Class<? extends Constant> type){
+            void update(Class<? extends Constant> type, String constant){
                 EditableObject object = Project.getCurrentProject().getSelectedObject();
 
                 if(VisibleUtils.isEditableObject(object)) {
@@ -77,8 +81,10 @@ public abstract class Parameter{
                     for (Parameter parameter : object.getParameters()) {
                         // If variable are equals
                         if (parameter.getBoundVariable().getConstantType() == type) {
-                            parameter.updateConstants();
-                            parameter.updateValue();
+                            if(!parameter.getObjectVariable().getConstant().equals(constant)) {
+                                parameter.updateConstants();
+                                parameter.updateValue();
+                            }
                         }
                     }
                 }
@@ -125,15 +131,23 @@ public abstract class Parameter{
                     ui_reset.setEnabled(!editable_object.getVariable(variable).getDefaultValue().equals(getValue()));
             }
         });
-        Main.event(Parameter.class, listeners, listener -> listener.parametersChanged(new ParametersChangedEvent()));
+    }
+
+    public EditableObject getAppliedObject(){
+        return editable_object;
+    }
+
+    public Variable getObjectVariable(){
+        return getAppliedObject().getVariable(getBoundVariable());
     }
 
     public void applyObject(EditableObject object){
         editable_object = object;
 
-        if(editable_object.getVariable(variable) != null)
+        if(getObjectVariable() != null) {
             apply(editable_object.getVariableValue(variable));
-        ui_reset.setEnabled(!editable_object.getVariable(variable).getDefaultValue().equals(getValue()));
+            ui_reset.setEnabled(!getObjectVariable().getDefaultValue().equals(getValue()));
+        }
 
         if(variable != null)
             Main.event(Parameter.class, listeners, listener -> listener.objectApplying(new ParameterApplyingEvent(editable_object.getProject(), this, editable_object)));
@@ -280,7 +294,7 @@ public abstract class Parameter{
             addActionListener(e -> {
                 if(constant_type != null)
                     ui_constants.setSelectedIndex(0);
-                apply(editable_object.getVariable(variable).getDefaultValue());
+                editable_object.setCustomValue(getBoundVariable(), getObjectVariable().getDefaultValue());
             });
         }};
 
@@ -295,5 +309,9 @@ public abstract class Parameter{
             }});
         }else
             ui_content.add(ui_reset);
+    }
+
+    public String getName(){
+        return name;
     }
 }

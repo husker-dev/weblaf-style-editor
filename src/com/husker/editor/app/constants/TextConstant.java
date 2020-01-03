@@ -5,6 +5,6 @@ import com.husker.editor.app.tools.Resources;
 
 public class TextConstant extends Constant {
     public TextConstant() {
-        super("", "Text", Resources.getImageIcon("constants/text.png"));
+        super("Text", "Text", Resources.getImageIcon("constants/text.png"));
     }
 }

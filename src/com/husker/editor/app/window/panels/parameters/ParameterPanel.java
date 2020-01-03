@@ -98,7 +98,7 @@ public class ParameterPanel extends WebPanel {
 
                 boolean first = true;
                 for(Parameter parameter : EditableObject.getStaticParameters()){
-                    if(parameter.getGroup() != null && parameter.getGroup().equals(group) && parameter.isVisible()){
+                    if(parameter.getGroup() != null && parameter.getGroup().equals(group)){
                         if(!first) {
                             WebSeparator separator = WebSeparator.createHorizontal();
                             addElement(separator);
@@ -115,11 +115,11 @@ public class ParameterPanel extends WebPanel {
         list.updateUI();
     }
 
-    public void apply(EditableObject component, boolean apply){
+    public void apply(EditableObject object, boolean apply){
         for(Parameter parameter : StyleComponent.getStaticParameters()){
-            if(component != null && component.isImplemented(parameter.getBoundVariable())) {
+            if(object != null && object.isImplemented(parameter.getBoundVariable())) {
                 if(apply)
-                    parameter.applyObject(component);
+                    parameter.applyObject(object);
                 parameter.getContent().setVisible(parameter.isVisible());
                 if(separators.containsKey(parameter))
                     separators.get(parameter).setVisible(parameter.isVisible());
