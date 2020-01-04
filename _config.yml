@@ -37,3 +37,6 @@ author:
     - label: "Instagram"
       icon: "fab fa-fw fa-instagram"
       url: "https://www.instagram.com/shtengauer_nikita/"
+      
+include:
+  - _pages
