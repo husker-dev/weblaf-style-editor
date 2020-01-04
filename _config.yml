@@ -18,7 +18,7 @@ url: "https://husker-dev.github.io"
 baseurl: "/weblaf-style-editor"
 
 repository: "husker-dev/weblaf-style-editor"
-teaser: "/assets/images/bakground.png"
+teaser: /assets/images/background.png
 logo: "/assets/images/wlogo.png"
 masthead_title: "WebLaF Style Editor"
 author:
