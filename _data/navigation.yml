@@ -1,5 +1,5 @@
 main:
-  - title: "Home"
+  - title: "Quick-Start Guide"
     url: /docs/quick-start-guide/
   - title: "Posts"
     url: /year-archive/
