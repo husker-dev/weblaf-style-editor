@@ -6,32 +6,23 @@ header:
   overlay_image: /assets/images/background.png
   actions:
     - label: "<i class='fas fa-download'></i> Download"
-      url: "/docs/quick-start-guide/"
+      url: "https://github.com/husker-dev/weblaf-style-editor/releases/download/1.1/WebLaF.Style.Editor.rar"
 excerpt: >
   The best tool for creating WebLaF styles.<br />
-  <small><a href="https://github.com/mmistakes/minimal-mistakes/releases/tag/4.17.2">Latest release v1.1</a></small>
+  <small><a href="https://github.com/husker-dev/weblaf-style-editor/releases/tag/1.1">Latest release v1.1</a></small>
 feature_row:
-  - image_path: /assets/images/mm-customizable-feature.png
+  - image_path: /assets/images/prev-customizable.png
     alt: "customizable"
     title: "Super customizable"
-    excerpt: "Everything from the menus, sidebars, comments, and more can be configured or set with YAML Front Matter."
-    url: "/docs/configuration/"
-    btn_class: "btn--primary"
-    btn_label: "Learn more"
-  - image_path: /assets/images/mm-responsive-feature.png
-    alt: "fully responsive"
-    title: "Responsive layouts"
-    excerpt: "Built with HTML5 + CSS3. All layouts are fully responsive with helpers to augment your content."
-    url: "/docs/layouts/"
-    btn_class: "btn--primary"
-    btn_label: "Learn more"
-  - image_path: /assets/images/mm-free-feature.png
+    excerpt: "Everything is fully customizable as you want."
+  - image_path: /assets/images/prev-weblaf.png
+    alt: "based on weblaf"
+    title: "Based on WebLaF"
+    excerpt: "Application fully based on WebLaF."
+  - image_path: /assets/images/prev-free.png
     alt: "100% free"
     title: "100% free"
-    excerpt: "Free to use however you want under the MIT License. Clone it, fork it, customize it... whatever!"
-    url: "/docs/license/"
-    btn_class: "btn--primary"
-    btn_label: "Learn more"      
+    excerpt: "It's free!"
 ---
 
 {% include feature_row %}
