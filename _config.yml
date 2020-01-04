@@ -7,7 +7,10 @@ plugins:
   
 minimal_mistakes_skin: "default"
 remote_theme: "mmistakes/minimal-mistakes@4.17.2"
+
+locale: "en-US"
 title: "WebLaF Style Editor"
+title_separator: "-"
 name: "WebLaF Style Editor"
 description: "Tool for creating amazing styles."
 url: "https://husker-dev.github.io"
