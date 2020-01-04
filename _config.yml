@@ -1,3 +1,29 @@
 plugins:
   - jekyll-include-cache
+  
 remote_theme: "mmistakes/minimal-mistakes@4.17.2"
+title: WebLaF Style Editor
+name: WebLaF Style Editor
+description: Tool for creating amazing styles.
+url: https://husker-dev.github.io
+baseurl: about
+repository: husker-dev/weblaf-style-editor
+teaser: https://i.ibb.co/x5Mgs2s/bakground.png
+logo: https://i.ibb.co/y81zDRz/wlogo.png
+masthead_title: WebLaF Style Editor
+author:
+  name : "Nikita Shtengauer"
+  avatar : https://i.ibb.co/y81zDRz/wlogo.png
+  bio : "I am just Java developer"
+  location : "Russia, Karelia, Kostomuksha"
+  email : redfancoestar@gmail.com
+  links:
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope-square"
+      url: mailto:redfancoestar@gmail.com
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/husker-dev"
+    - label: "Instagram"
+      icon: "fab fa-fw fa-instagram"
+      url: "https://www.instagram.com/shtengauer_nikita/"
