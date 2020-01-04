@@ -1,6 +1,7 @@
 plugins:
   - jekyll-include-cache
   
+minimal_mistakes_skin: "default"
 remote_theme: "mmistakes/minimal-mistakes@4.17.2"
 title: WebLaF Style Editor
 name: WebLaF Style Editor
@@ -12,11 +13,11 @@ teaser: https://i.ibb.co/x5Mgs2s/bakground.png
 logo: https://i.ibb.co/y81zDRz/wlogo.png
 masthead_title: WebLaF Style Editor
 author:
-  name : "Nikita Shtengauer"
-  avatar : https://i.ibb.co/y81zDRz/wlogo.png
-  bio : "I am just Java developer"
-  location : "Russia, Karelia, Kostomuksha"
-  email : redfancoestar@gmail.com
+  name: "Nikita Shtengauer"
+  avatar: https://i.ibb.co/y81zDRz/wlogo.png
+  bio: "I am just Java developer"
+  location: "Russia, Karelia, Kostomuksha"
+  email: redfancoestar@gmail.com
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
