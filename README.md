@@ -5,7 +5,7 @@ Download: [WebLaF Style Editor 1.1](https://github.com/Husker-hub/WebLaF-Style-E
 
 **WebLaf Style Editor** - The most powerful tool for creating and editing styles for WebLaF. The application is constantly updated and maintained.
 
-![full_example](https://github.com/husker-dev/weblaf-style-editor/blob/master/demo/ui_full.png)
+![full_example](/assets/images/ui_full.png)
 
 ## Features
 
@@ -14,7 +14,7 @@ Download: [WebLaF Style Editor 1.1](https://github.com/Husker-hub/WebLaF-Style-E
 Panel where you can change any style parameter and select a constant for it.
 
 #### Example
-![parameters_example](https://github.com/husker-dev/weblaf-style-editor/blob/master/demo/ui_parameters.png)
+![parameters_example](/assets/images/ui_parameters.png)
 
 ### Constanst
 
@@ -26,11 +26,11 @@ Constants can be different types of values:
 * Number
 
 #### Example
-![constants_example](https://github.com/husker-dev/weblaf-style-editor/blob/master/demo/ui_constants.png)
+![constants_example](/assets/images/ui_constants.png)
 
 ### Code
 
 The style code will be automatically generated in the code panel. The code also supports editing, all changes are applied automatically ещ parameters.
 
 #### Example
-![code_example](https://github.com/husker-dev/weblaf-style-editor/blob/master/demo/ui_code.png)
+![code_example](/assets/images/ui_code.png)
