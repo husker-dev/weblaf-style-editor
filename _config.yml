@@ -3,21 +3,20 @@ plugins:
   
 minimal_mistakes_skin: "default"
 remote_theme: "mmistakes/minimal-mistakes@4.17.2"
-title: WebLaF Style Editor
-name: WebLaF Style Editor
-description: Tool for creating amazing styles.
-url: https://husker-dev.github.io
-baseurl: about
-repository: husker-dev/weblaf-style-editor
-teaser: https://i.ibb.co/x5Mgs2s/bakground.png
-logo: https://i.ibb.co/y81zDRz/wlogo.png
-masthead_title: WebLaF Style Editor
+title: "WebLaF Style Editor"
+name: "WebLaF Style Editor"
+description: "Tool for creating amazing styles."
+url: "https://husker-dev.github.io"
+repository: "husker-dev/weblaf-style-editor"
+teaser: "https://i.ibb.co/x5Mgs2s/bakground.png"
+logo: "https://i.ibb.co/y81zDRz/wlogo.png"
+masthead_title: "WebLaF Style Editor"
 author:
   name: "Nikita Shtengauer"
-  avatar: https://i.ibb.co/y81zDRz/wlogo.png
+  avatar: "https://i.ibb.co/y81zDRz/wlogo.png"
   bio: "I am just Java developer"
   location: "Russia, Karelia, Kostomuksha"
-  email: redfancoestar@gmail.com
+  email: "redfancoestar@gmail.com"
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
