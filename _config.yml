@@ -40,3 +40,15 @@ author:
       
 include:
   - _pages
+
+footer:
+  links:
+    - label: "VK"
+      icon: "fab fa-fw fa-vk"
+      url: "https://vk.com/shtengauer_nikita"
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/husker-dev"
+    - label: "Instagram"
+      icon: "fab fa-fw fa-instagram"
+      url: "https://www.instagram.com/shtengauer_nikita/"
