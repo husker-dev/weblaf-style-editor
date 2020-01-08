@@ -1,0 +1,113 @@
+<skin xmlns="http://weblookandfeel.com/XmlSkin\">
+        <id>husker.editor.skin</id>
+        <class>com.husker.editor.core.skin.CustomSkin</class>
+        <supportedSystems>all</supportedSystems>
+        <title>Custom skin</title>
+        <description>WebLaF Editor Skin</description>
+        <author>Husker</author>
+        <include nearClass="com.alee.skin.light.WebLightSkin">resources/web-light-skin.xml</include>
+
+        <style type="breadcrumb" id="custom-breadcrumb">
+                <painter>
+                        <decorations>
+                                <decoration>
+                                        <WebShape round="0" sides="0,0,1,0"/>
+                                        <WebShadow type="outer" width="0" />
+                                        <LineBorder color="170,170,170" />
+                                        <ColorBackground color="0,0,0,0" />
+                                </decoration>
+                                <decoration states="focused">
+                                        <LineBorder color="0,0,0,0" />
+                                </decoration>
+                        </decorations>
+                </painter>
+        </style>
+
+        <style type="panel" id="custom-documentpane" extends="documentpane">
+                <!-- Tabbed pane -->
+                <style type="tabbedpane" id="tabbedpane">
+                        <!-- Tab panel -->
+                        <style type="panel" id="tab" padding="1,0,0,0"/>
+                </style>
+        </style>
+
+        <style type="textfield" id="custom-chooserfield" extends="colorchooserfield" padding="0,2,0,0"/>
+
+        <style type="panel" id="background">
+                <painter>
+                        <decorations>
+                                <decoration>
+                                        <WebShape round="0" />
+                                        <WebShadow type="inner" width="10" />
+                                        <PresetTextureBackground preset="lightWashedWall" />
+                                </decoration>
+                        </decorations>
+                </painter>
+        </style>
+        <style type="panel" id="background-round">
+                <component>
+                        <opaque>false</opaque>
+                </component>
+                <painter>
+                        <decorations>
+                                <decoration>
+                                        <WebShape round="15" />
+                                        <LineBorder color="200,200,200"/>
+                                </decoration>
+                        </decorations>
+                </painter>
+        </style>
+
+        <style type="panel" id="background1">
+                <component>
+                        <opaque>false</opaque>
+                </component>
+                <painter>
+                        <decorations>
+                                <decoration>
+                                        <WebShape round="15" />
+                                        <ExpandingShadow type="outer" width="25" opacity="1"/>
+                                        <ColorBackground color="white"/>
+                                </decoration>
+                        </decorations>
+                </painter>
+        </style>
+
+        <style type="panel" id="focused-tree-element">
+                <component>
+                        <opaque>false</opaque>
+                </component>
+                <painter>
+                        <decorations>
+                                <decoration>
+                                        <WebShape round="0" />
+                                        <ColorBackground color="220,220,220"/>
+                                </decoration>
+                                <decoration states="focused">
+                                        <WebShape round="0" />
+                                        <ColorBackground color="200,200,200"/>
+                                </decoration>
+                        </decorations>
+                </painter>
+        </style>
+
+        <style type="separator" id="custom-separator">
+                <painter>
+                        <decorations>
+                                <decoration>
+                                        <SeparatorStripes>
+                                                <Stripe>
+                                                        <color>255,255,255</color>
+                                                </Stripe>
+                                                <Stripe>
+                                                        <color>176,182,188</color>
+                                                </Stripe>
+                                                <Stripe>
+                                                        <color>white</color>
+                                                </Stripe>
+                                        </SeparatorStripes>
+                                </decoration>
+                        </decorations>
+                </painter>
+        </style>
+</skin>
