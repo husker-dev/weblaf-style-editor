@@ -5,7 +5,6 @@ import com.husker.editor.core.FolderElement;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 
 public class FolderTransfer implements Transferable {
 
@@ -25,7 +24,7 @@ public class FolderTransfer implements Transferable {
         return FOLDER_FLAVOR.equals(flavor);
     }
 
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
         if (flavor.equals(FOLDER_FLAVOR))
             return folder;
         else

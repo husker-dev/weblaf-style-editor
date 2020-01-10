@@ -26,6 +26,8 @@ public abstract class FolderElement implements Comparable<FolderElement>{
     private boolean opened = true;
     private boolean removed = false;
 
+    private EditableObject object;
+
     public FolderElement(Project project){
         this(project, "", Resources.getImageIcon("folder.png"));
     }
@@ -207,5 +209,12 @@ public abstract class FolderElement implements Comparable<FolderElement>{
         if(result == 0)
             result = getTag().compareTo(element.getTag());
         return result;
+    }
+
+    public void setObject(EditableObject object){
+        this.object = object;
+    }
+    public EditableObject getObject(){
+        return object;
     }
 }

@@ -1,7 +1,6 @@
 package com.husker.editor.core;
 
 import com.husker.editor.core.events.*;
-import com.husker.editor.core.listeners.code.CodeAdapter;
 import com.husker.editor.core.listeners.contants.ConstantsAdapter;
 import com.husker.editor.core.listeners.editable_object.*;
 import com.husker.editor.core.xml.XMLHead;
@@ -80,7 +79,7 @@ public abstract class EditableObject implements Cloneable {
         try {
             return clazz.getDeclaredConstructor(Project.class, FolderElement.class).newInstance(project, folder);
         }catch (Exception ex){
-            throw new UnsupportedOperationException(clazz.getName() + " hasn't constructor with parameter: \"" + Project.class.getName() + "\"");
+            throw new UnsupportedOperationException(clazz.getName() + " hasn't constructor with parameter: \"" + Project.class.getSimpleName() + ", " +  FolderElement.class.getSimpleName() + "\"");
         }
     }
 
@@ -91,23 +90,21 @@ public abstract class EditableObject implements Cloneable {
 
     private boolean selected = false;
 
-    private final Code code;
-
     private final FolderElement folder;
+    private Preview preview = null;
 
     private ArrayList<Consumer<Variable>> variable_changed_listeners = new ArrayList<>();
 
-    protected EditableObject(Project project, FolderElement folder, Class<? extends EditableObject> clazz, String title){
+    protected EditableObject(Class<? extends EditableObject> clazz, Project project, String title, FolderElement folder){
         this.project = project;
         this.title = title;
 
         this.folder = createFolder();
+        this.folder.setObject(this);
         folder.addFolder(this.folder);
 
-        this.code = new Code(project, this);
-
         if(!used_classes.contains(clazz)){
-            initParameters();
+            initStaticParameters();
             used_classes.add(clazz);
         }
 
@@ -117,7 +114,6 @@ public abstract class EditableObject implements Cloneable {
                     if (variable.getConstantType() == event.getConstantType() && variable.getConstant().equals(event.getOldName()))
                         setConstant(variable, event.getNewName());
             }
-
             public void removed(ConstantRemovedEvent event) {
                 for(Variable variable : implemented_variables)
                     if (variable.getConstantType() == event.getConstantType() && variable.getConstant().equals(event.getConstant()))
@@ -129,44 +125,44 @@ public abstract class EditableObject implements Cloneable {
                         setCustomValue(variable, event.getValue());
             }
         });
-        Code.addCodeListener(new CodeAdapter() {
-            public void changed(CodeChangedEvent event) {
-                if(!event.getProject().equals(project) && !event.getCode().equals(code))
-                    return;
-
-                if(event.getCode().getText().isEmpty()){
-                    event.getProject().Errors.removeError("xml_reading");
-                    return;
-                }
-                try {
-                    XMLHead head = XMLHead.fromString(event.getCode().getText());
-                    if (head == null)
-                        throw new NullPointerException();
-                    Project.getCurrentProject().getSelectedObject().applyXML(head);
-
-                    event.getProject().Errors.removeError("xml_reading");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    event.getProject().Errors.addError(new Error("xml_reading", "XML Reading error", "If you are sure that everything is correct, please contact the developer."));
-                }
-            }
-        });
 
         Main.event(EditableObject.class, listeners, listener -> listener.newObject(new NewEditableObjectEvent(project, this)));
+
+        addVariableChangedListener(variable -> updateCode());
     }
 
     // Abstract
-    protected abstract void initParameters();
+    protected abstract void initStaticParameters();
 
-    public XMLHead getXMLStyle(){
-        return getXMLStyle(false);
+    public void updateCode(){
+        Main.event(EditableObject.class, listeners, listener -> listener.codeChanged(new CodeChangedEvent(project, this, getCode())));
     }
-    public abstract XMLHead getXMLStyle(boolean preview);
-    public abstract void applyXML(XMLHead code);
+
+    public String getCode(){
+        return getCode(false);
+    }
+    public abstract String getCode(boolean preview);
+
+    public void setCode(String code){
+        if(code != null && code.isEmpty()) {
+            getProject().Errors.removeError("code_reading");
+        }else{
+            try {
+                applyCode(code);
+                getProject().Errors.removeError("code_reading");
+            }catch (ErrorException ex){
+                ex.printStackTrace();
+                getProject().Errors.addError(new Error("code_reading", ex.getTitle(), ex.getText()));
+            }catch (Exception ex){
+                ex.printStackTrace();
+                getProject().Errors.addError(new Error("code_reading", "Code Error", "Code applying error"));
+            }
+        }
+        Main.event(EditableObject.class, listeners, listener -> listener.codeChanged(new CodeChangedEvent(project, this, code)));
+    }
+    public abstract void applyCode(String text) throws ErrorException;
 
     public abstract FolderElement createFolder();
-
-    public abstract Component createPreviewComponent();
 
     // Functions
     public Project getProject(){
@@ -343,16 +339,19 @@ public abstract class EditableObject implements Cloneable {
         }
     }
 
-    public Code getCode(){
-        return code;
-    }
-
     public void remove(){
         Main.event(EditableObject.class, listeners, listener -> listener.objectRemoved(new EditableObjectRemovedEvent(project, this)));
     }
 
     public FolderElement getFolder(){
         return folder;
+    }
+
+    public void setPreview(Preview preview){
+        this.preview = preview;
+    }
+    public Preview getPreview(){
+        return preview;
     }
 
     public void addVariableChangedListener(Consumer<Variable> listener){

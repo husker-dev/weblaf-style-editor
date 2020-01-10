@@ -3,11 +3,12 @@ package com.husker.editor.content.components;
 import com.alee.laf.button.WebButton;
 import com.husker.editor.core.FolderElement;
 import com.husker.editor.core.Project;
-import com.husker.editor.core.StyleComponent;
+import com.husker.editor.content.StyleComponent;
 
+import javax.swing.*;
 import java.awt.*;
 
-import static com.husker.editor.core.StyleComponent.Variables.*;
+import static com.husker.editor.content.StyleComponent.Variables.*;
 
 public class Styled_Button extends StyleComponent {
 
@@ -37,7 +38,7 @@ public class Styled_Button extends StyleComponent {
         setDefaultValue(ROUND_RT, "3");
     }
 
-    public Component createPreviewComponent() {
+    public JComponent createPreviewComponent() {
         return new WebButton(getExampleText(), getExampleIcon());
     }
 }

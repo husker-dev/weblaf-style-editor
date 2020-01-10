@@ -8,8 +8,5 @@ public interface EditableObjectListener {
     void selectedChanged(SelectedChangedEvent event);
     void newObject(NewEditableObjectEvent event);
     void objectRemoved(EditableObjectRemovedEvent event);
-
-    // Child
-    void newChildComponent(NewChildObjectEvent event);
-    void childRemovedComponent(ChildObjectRemovedEvent event);
+    void codeChanged(CodeChangedEvent event);
 }

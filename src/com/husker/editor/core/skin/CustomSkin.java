@@ -35,22 +35,22 @@ public class CustomSkin extends XmlSkin {
             "</skin>";
 
     private static boolean applying = false;
-    private static int thread_id = 0;
+    private static int last_thread_id = 0;
 
     public CustomSkin() {
         super(new ClassResource(CustomSkin.class, "editor_skin.xml"));
     }
 
-    public static void applySkin(Component component, String code){
+    public static void applySkin(JComponent component, String code){
         Project project = Project.getCurrentProject();
         new Thread(() -> {
-            thread_id = (int)Thread.currentThread().getId();
+            last_thread_id = (int)Thread.currentThread().getId();
 
             try {
                 while(applying)
                     Thread.sleep(50);
 
-                if(thread_id != (int)Thread.currentThread().getId())
+                if(last_thread_id != (int)Thread.currentThread().getId())
                     return;
                 applying = true;
 
@@ -62,8 +62,8 @@ public class CustomSkin extends XmlSkin {
 
                 SkinInfo skinInfo = XmlUtils.fromXML(text);
                 skinInfo.install();
-                StyleManager.setSkin((JComponent)component, new XmlSkin(skinInfo));
-
+                StyleManager.setSkin(component, new XmlSkin(skinInfo));
+                //component.
 
             } catch (Exception e) {
                 if(e.getMessage().contains("extends missing style")){
@@ -78,14 +78,14 @@ public class CustomSkin extends XmlSkin {
                 }
             }finally {
                 applying = false;
-                if(thread_id == (int)Thread.currentThread().getId())
+                if(last_thread_id == (int)Thread.currentThread().getId())
                     Main.event(CustomSkin.class, listeners, listener -> listener.lastApplied(new LastSkinAppliedEvent(project)));
                 Main.event(CustomSkin.class, listeners, listener -> listener.applied(new SkinAppliedEvent(project)));
             }
 
         }).start();
     }
-    public static void applySkin(Component component, XMLHead skin){
+    public static void applySkin(JComponent component, XMLHead skin){
         applySkin(component, skin.toString(1));
     }
 

@@ -8,6 +8,5 @@ public abstract class EditableObjectAdapter implements EditableObjectListener {
     public void selectedChanged(SelectedChangedEvent event) {}
     public void newObject(NewEditableObjectEvent event) {}
     public void objectRemoved(EditableObjectRemovedEvent event) {}
-    public void newChildComponent(NewChildObjectEvent event) {}
-    public void childRemovedComponent(ChildObjectRemovedEvent event) {}
+    public void codeChanged(CodeChangedEvent event) {}
 }

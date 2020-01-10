@@ -3,6 +3,7 @@ package com.husker.editor.core;
 import com.alee.laf.menu.WebMenu;
 import com.alee.laf.menu.WebMenuItem;
 import com.alee.laf.menu.WebPopupMenu;
+import com.husker.editor.content.StyleComponent;
 import com.husker.editor.content.folders.Folder;
 import com.husker.editor.core.tools.Resources;
 

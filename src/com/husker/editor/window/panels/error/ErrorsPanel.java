@@ -14,6 +14,7 @@ import com.husker.editor.core.Errors;
 import com.husker.editor.core.Error;
 import com.husker.editor.core.tools.VisibleUtils;
 
+import javax.swing.*;
 import java.util.HashMap;
 
 public class ErrorsPanel extends WebPanel {
@@ -28,13 +29,19 @@ public class ErrorsPanel extends WebPanel {
 
             Errors.addErrorsListener(new ErrorsListener() {
                 public void added(ErrorAddedEvent event) {
-                    ErrorPanel panel = new ErrorPanel(event.getError());
-                    panels.put(event.getError(), panel);
-                    add(panel);
+                    SwingUtilities.invokeLater(() -> {
+                        ErrorPanel panel = new ErrorPanel(event.getError());
+                        panels.put(event.getError(), panel);
+                        add(panel);
+                        updateUI();
+                    });
                 }
                 public void removed(ErrorRemovedEvent event) {
-                    if(panels.containsKey(event.getError()))
-                        remove(panels.remove(event.getError()));
+                    SwingUtilities.invokeLater(() -> {
+                        if(panels.containsKey(event.getError()))
+                            remove(panels.remove(event.getError()));
+                        updateUI();
+                    });
                 }
             });
 

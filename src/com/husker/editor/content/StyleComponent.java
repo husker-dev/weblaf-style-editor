@@ -1,12 +1,16 @@
-package com.husker.editor.core;
+package com.husker.editor.content;
 
+import com.alee.managers.style.Styleable;
 import com.husker.editor.content.components.Styled_Button;
 import com.husker.editor.content.components.Styled_Label;
 import com.husker.editor.content.folders.StyleComponentFolder;
 import com.husker.editor.content.parameters.*;
+import com.husker.editor.core.*;
 import com.husker.editor.core.tools.Resources;
 import com.husker.editor.core.xml.XMLHead;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
@@ -68,7 +72,19 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         public static final StaticVariable[] KIT_BUTTON_CONTENT = new StaticVariable[]{BUTTON_SHOW_ICON, BUTTON_SHOW_TEXT};
     }
 
-    protected void initParameters() {
+    // Object
+
+    private String type;
+
+    protected StyleComponent(Project project, FolderElement folderElement, String title, String type){
+        super(StyleComponent.class, project, title, folderElement);
+        setPreview(new StylePreview(this));
+        this.type = type;
+
+        addImplementedParameters(Variables.KIT_BASE);
+    }
+
+    protected void initStaticParameters() {
         addStaticParameter(Variables.ID, new TextParameter("Id"));
         addStaticParameter(Variables.EXTENDS, new TextParameter("Extends"));
         addStaticParameter(Variables.DECORATIONS, new BooleanParameter("Decorations"));
@@ -156,27 +172,17 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         addStaticParameter(Variables.BUTTON_SHOW_ICON, new BooleanParameter("Show icon", "Button content"));
     }
 
-    // Object
+    public void applyCode(String text) throws ErrorException {
+        XMLHead head = null;
+        try {
+            head = XMLHead.fromString(text);
+        }catch (Exception ex){}
 
-    private String type;
-
-    protected StyleComponent(Project project, FolderElement folderElement, String title, String type){
-        super(project, folderElement, StyleComponent.class, title);
-        this.type = type;
-
-        addImplementedParameters(Variables.KIT_BASE);
+        if (head == null)
+            throw new ErrorException("XML reading error", "If you are sure that everything is correct, please contact the developer.");
     }
 
-    public void applyXML(XMLHead head){
-        //System.out.println(head.toString());
-        //if(head != null)
-        //    System.out.println(head.toString());
-    }
-
-    public XMLHead getXMLStyle(){
-        return getXMLStyle(false);
-    }
-    public XMLHead getXMLStyle(boolean preview){
+    public String getCode(boolean preview){
         XMLHead head = new XMLHead("style");
 
         if(preview)
@@ -242,8 +248,10 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         if(isImplemented(Variables.BUTTON_SHOW_TEXT) && isVariableCustom(Variables.BUTTON_SHOW_TEXT))
             head.setParameterByPath("painter.decorations.decoration.ButtonLayout.ButtonText", "constraints", getVariableValue(Variables.BUTTON_SHOW_TEXT).equals("true") ? "text" : "");
 
-        return head;
+        return head.toString();
     }
+
+    public abstract JComponent createPreviewComponent();
 
     public boolean isVariableCustom(StaticVariable variable){
         if(!isImplemented(variable))

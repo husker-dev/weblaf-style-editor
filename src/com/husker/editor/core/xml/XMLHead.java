@@ -247,7 +247,7 @@ public class XMLHead {
 
         ArrayList<String> comments_list = new ArrayList<>();
         Collections.addAll(comments_list, comments);
-        if(text.isEmpty())
+        if(text == null || text.isEmpty())
             return null;
         text = text.trim();
 

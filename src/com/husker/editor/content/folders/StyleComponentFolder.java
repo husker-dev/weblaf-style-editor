@@ -2,7 +2,7 @@ package com.husker.editor.content.folders;
 
 import com.husker.editor.core.Project;
 import com.husker.editor.core.FolderElement;
-import com.husker.editor.core.StyleComponent;
+import com.husker.editor.content.StyleComponent;
 import com.husker.editor.core.tools.Resources;
 
 public class StyleComponentFolder extends FolderElement {
