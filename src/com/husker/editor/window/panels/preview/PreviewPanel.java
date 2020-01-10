@@ -160,11 +160,14 @@ public class PreviewPanel extends WebPanel {
         }
 
         protected JPanel createTitle(T document, MouseAdapter mouseAdapter) {
-            StyleId titleStyleId = StyleId.documentpaneTabTitle.at(this);
+            //StyleId titleStyleId = StyleId.documentpaneTabTitle.at(this);
 
-            titleLabel = new WebStyledLabel(titleStyleId, document.getIcon());
+            titleLabel = new WebStyledLabel(document.getIcon());
+            titleLabel.setMargin(4, 0, 0, 0);
+
             tagLabel = new WebLabel(StyleId.labelTag);
-            tagLabel.setMargin(0, 6, 0, 0);
+            tagLabel.setPreferredHeight(20);
+            tagLabel.setMargin(4, 5, 0, 0);
 
             if(document.getTitle().contains("(") && document.getTitle().contains(")")){
                 String text = document.getTitle();
@@ -182,8 +185,9 @@ public class PreviewPanel extends WebPanel {
             //tagLabel.addMouseListener(mouseAdapter);
             //tagLabel.addMouseMotionListener(mouseAdapter);
 
-            WebPanel panel = new WebPanel();
+            WebPanel panel = new WebPanel(StyleId.panelTransparent);
             panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+
             panel.add(titleLabel);
             panel.add(tagLabel);
 
@@ -194,6 +198,7 @@ public class PreviewPanel extends WebPanel {
             final WeakReference<T> weakDocument = new WeakReference(document);
             StyleId closeButtonStyleId = StyleId.documentpaneTabCloseButton.at(this);
             WebButton closeButton = new WebButton(closeButtonStyleId, Icons.crossSmall, Icons.crossSmallHover);
+            closeButton.setPadding(0, 4, 0, 0);
             closeButton.addActionListener(e -> paneData.close(weakDocument.get()));
             return closeButton;
         }

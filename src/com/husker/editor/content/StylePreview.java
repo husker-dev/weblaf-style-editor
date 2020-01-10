@@ -79,6 +79,7 @@ public class StylePreview extends Preview {
         ui_shape = new WebToggleButton("Shape"){{
             addActionListener(e -> {
                 show_shape = isSelected();
+                content.repaint();
             });
         }};
         ui_style_applying = new WebProgressBar(0, 100){{

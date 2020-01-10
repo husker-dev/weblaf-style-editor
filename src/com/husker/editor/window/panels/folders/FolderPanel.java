@@ -22,7 +22,7 @@ import java.util.Collections;
 
 class FolderPanel extends WebPanel{
 
-    private WebLabel name, tag, separator, resize;
+    private WebLabel name, tag, resize;
     private WebPanel title, children;
 
     private FolderElement element;
@@ -86,10 +86,7 @@ class FolderPanel extends WebPanel{
 
                 add(name = new WebLabel(element.getTitle(), element.getIcon()){{
                     setPreferredHeight(18);
-                }});
-                add(separator = new WebLabel("  "){{
-                    setPreferredHeight(18);
-                    setVisible(false);
+                    setMargin(0, 0, 0, 5);
                 }});
                 add(tag = new WebLabel(StyleId.labelTag, element.getTag()){{
                     setPreferredHeight(18);
@@ -201,7 +198,6 @@ class FolderPanel extends WebPanel{
         }
         if(parameter == FolderParameterChangedEvent.FolderParameter.TAG) {
             tag.setVisible(!element.getTag().isEmpty());
-            separator.setVisible(!element.getTag().isEmpty());
             tag.setText(element.getTag());
 
             if(element.getParent() != null)

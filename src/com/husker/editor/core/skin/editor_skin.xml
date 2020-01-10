@@ -23,11 +23,16 @@
                 </painter>
         </style>
 
+
         <style type="panel" id="custom-documentpane" extends="documentpane">
-                <!-- Tabbed pane -->
                 <style type="tabbedpane" id="tabbedpane">
-                        <!-- Tab panel -->
-                        <style type="panel" id="tab" padding="1,0,0,0"/>
+                        <style type="panel" id="tab-area">
+                                <style type="viewport" id="viewport">
+                                        <style type="panel" id="container">
+                                                <style type="styledlabel" id="tab" padding="0,4,0,8" />
+                                        </style>
+                                </style>
+                        </style>
                 </style>
         </style>
 
