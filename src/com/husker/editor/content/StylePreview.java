@@ -1,6 +1,6 @@
 package com.husker.editor.content;
 
-import com.alee.extended.WebComponent;
+import com.alee.api.resource.ClassResource;
 import com.alee.extended.layout.AlignLayout;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.button.WebToggleButton;
@@ -9,20 +9,24 @@ import com.alee.laf.progressbar.WebProgressBar;
 import com.alee.managers.style.StyleId;
 import com.alee.managers.style.StyleManager;
 import com.alee.managers.style.Styleable;
-import com.alee.painter.Paintable;
+import com.alee.managers.style.XmlSkin;
+import com.alee.managers.style.data.SkinInfo;
+import com.alee.utils.XmlUtils;
 import com.husker.editor.core.EditableObject;
 import com.husker.editor.core.Preview;
 import com.husker.editor.core.PreviewUI;
-import com.husker.editor.core.Project;
 import com.husker.editor.core.events.*;
 import com.husker.editor.core.listeners.editable_object.EditableObjectAdapter;
 import com.husker.editor.core.listeners.skin.SkinAdapter;
 import com.husker.editor.core.skin.CustomSkin;
-import com.husker.editor.core.tools.Resources;
 import com.husker.editor.core.tools.VisibleUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class StylePreview extends Preview {
 
@@ -73,7 +77,26 @@ public class StylePreview extends Preview {
             ((Styleable) preview).setStyleId(StyleId.of("::preview::"));
 
         ui_update = new WebButton("Update"){{
-            addActionListener(e -> updateSkin());
+            addActionListener(e -> {
+                if ((e.getModifiers() & InputEvent.SHIFT_MASK) != 0) {
+
+                    InputStream in = new ClassResource(CustomSkin.class, "editor_skin.xml").getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
+                    try {
+                        String code = "";
+                        String line;
+                        while ((line = reader.readLine()) != null)
+                            code += line;
+
+                        SkinInfo skinInfo = XmlUtils.fromXML(code.replace("<!-- TEST STYLE HERE -->", component.getCode()));
+                        StyleManager.setSkin(new XmlSkin(skinInfo));
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+                }
+                updateSkin();
+            });
         }};
 
         ui_shape = new WebToggleButton("Shape"){{

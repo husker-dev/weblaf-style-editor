@@ -15,14 +15,13 @@ import com.husker.editor.core.Project;
 import com.husker.editor.core.xml.XMLHead;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 
 public class CustomSkin extends XmlSkin {
 
     private static ArrayList<SkinListener> listeners = new ArrayList<>();
 
-    private static String pattern = "<skin xmlns=\"http://weblookandfeel.com/XmlSkin\">\n" +
+    public static final String SkinPattern = "<skin xmlns=\"http://weblookandfeel.com/XmlSkin\">\n" +
             "    <id>husker.editor.skin</id>\n" +
             "    <class>com.husker.editor.core.skin.CustomSkin</class>\n" +
             "    <supportedSystems>all</supportedSystems>\n" +
@@ -58,12 +57,11 @@ public class CustomSkin extends XmlSkin {
                 project.Errors.removeError("style_applying");
                 Main.event(CustomSkin.class, listeners, listener -> listener.applying(new SkinApplyingEvent(project)));
 
-                String text = pattern.replace("<!-- CODE -->", code);
+                String text = SkinPattern.replace("<!-- CODE -->", code);
 
                 SkinInfo skinInfo = XmlUtils.fromXML(text);
                 skinInfo.install();
                 StyleManager.setSkin(component, new XmlSkin(skinInfo));
-                //component.
 
             } catch (Exception e) {
                 if(e.getMessage().contains("extends missing style")){

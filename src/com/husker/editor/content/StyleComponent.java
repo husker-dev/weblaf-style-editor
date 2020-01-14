@@ -28,6 +28,22 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         public static final StaticVariable DECORATIONS = new StaticVariable("decorations", "true");
         public static final StaticVariable OVERWRITE_DECORATIONS = new StaticVariable("overwrite_decorations", "false");
 
+        // Margin
+        public static final StaticVariable MARGIN_TYPE = new StaticVariable("margin_type", "Full");
+        public static final StaticVariable MARGIN_FULL = new StaticVariable("margin_full", "0");
+        public static final StaticVariable MARGIN_LEFT = new StaticVariable("margin_left", "0");
+        public static final StaticVariable MARGIN_RIGHT = new StaticVariable("margin_right", "0");
+        public static final StaticVariable MARGIN_TOP = new StaticVariable("margin_top", "0");
+        public static final StaticVariable MARGIN_BOTTOM = new StaticVariable("margin_bottom", "0");
+
+        // Padding
+        public static final StaticVariable PADDING_TYPE = new StaticVariable("padding_type", "Full");
+        public static final StaticVariable PADDING_FULL = new StaticVariable("padding_full", "0");
+        public static final StaticVariable PADDING_LEFT = new StaticVariable("padding_left", "0");
+        public static final StaticVariable PADDING_RIGHT = new StaticVariable("padding_right", "0");
+        public static final StaticVariable PADDING_TOP = new StaticVariable("padding_top", "0");
+        public static final StaticVariable PADDING_BOTTOM = new StaticVariable("padding_bottom", "0");
+
         // Round
         public static final StaticVariable ROUND_TYPE = new StaticVariable("round_type", "Full");
         public static final StaticVariable ROUND_FULL = new StaticVariable("round_full", "0");
@@ -56,8 +72,8 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         public static final StaticVariable GRADIENT_TYPE = new StaticVariable("gradient_type", "linear");
         public static final StaticVariable GRADIENT_FROM = new StaticVariable("gradient_from", "0.0,0.0");
         public static final StaticVariable GRADIENT_TO = new StaticVariable("gradient_to", "0.0,1.0");
-        public static final StaticVariable GRADIENT_COLOR_1 = new StaticVariable("gradient_color_1", "255,255,255");
-        public static final StaticVariable GRADIENT_COLOR_2 = new StaticVariable("gradient_color_2", "223,223,223");
+        public static final StaticVariable GRADIENT_COLOR_1 = new StaticVariable("gradient_color_1", "0,0,0,0");
+        public static final StaticVariable GRADIENT_COLOR_2 = new StaticVariable("gradient_color_2", "0,0,0,0");
         public static final StaticVariable BACKGROUND_COLOR = new StaticVariable("background_color", "0,0,0,0");
 
         public static final StaticVariable BUTTON_SHOW_ICON = new StaticVariable("button_show_icon", "false");
@@ -65,6 +81,8 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
 
         private static final StaticVariable[] KIT_BASE = new StaticVariable[]{ID, EXTENDS, DECORATIONS, OVERWRITE_DECORATIONS};
         public static final StaticVariable[] KIT_SHAPE = new StaticVariable[]{ROUND_FULL, ROUND_TYPE, ROUND_LB, ROUND_LT, ROUND_RB, ROUND_RT, SHAPE_ENABLED};
+        public static final StaticVariable[] KIT_MARGIN = new StaticVariable[]{MARGIN_TYPE, MARGIN_FULL, MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, MARGIN_BOTTOM};
+        public static final StaticVariable[] KIT_PADDING = new StaticVariable[]{PADDING_TYPE, PADDING_FULL, PADDING_LEFT, PADDING_TOP, PADDING_RIGHT, PADDING_BOTTOM};
         public static final StaticVariable[] KIT_INNER_SHADOW = new StaticVariable[]{INNER_SHADOW_COLOR, INNER_SHADOW_WIDTH};
         public static final StaticVariable[] KIT_OUTER_SHADOW = new StaticVariable[]{OUTER_SHADOW_COLOR, OUTER_SHADOW_WIDTH};
         public static final StaticVariable[] KIT_BORDER = new StaticVariable[]{BORDER_COLOR};
@@ -89,6 +107,54 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         addStaticParameter(Variables.EXTENDS, new TextParameter("Extends"));
         addStaticParameter(Variables.DECORATIONS, new BooleanParameter("Decorations"));
         addStaticParameter(Variables.OVERWRITE_DECORATIONS, new BooleanParameter("Overwrite base"));
+
+        // Margin
+        addStaticParameter(Variables.MARGIN_TYPE, new ComboParameter("Type", "Margin", new String[]{"Full", "Custom"}){
+            {
+                onValueChanged(value -> updateVisible());
+                onVisibleChanged(visible -> updateVisible());
+                onApplying(object -> updateVisible());
+            }
+            void updateVisible(){
+                boolean full = isVisible() && getValue().equals("Full");
+                boolean custom = isVisible() && !full;
+
+                getStaticParameter(Variables.MARGIN_LEFT).setVisible(custom);
+                getStaticParameter(Variables.MARGIN_TOP).setVisible(custom);
+                getStaticParameter(Variables.MARGIN_RIGHT).setVisible(custom);
+                getStaticParameter(Variables.MARGIN_BOTTOM).setVisible(custom);
+                getStaticParameter(Variables.MARGIN_FULL).setVisible(full);
+            }
+        });
+        addStaticParameter(Variables.MARGIN_FULL, new IntegerParameter("Pixels", "Margin"));
+        addStaticParameter(Variables.MARGIN_LEFT, new IntegerParameter("Left", "Margin"));
+        addStaticParameter(Variables.MARGIN_TOP, new IntegerParameter("Top", "Margin"));
+        addStaticParameter(Variables.MARGIN_RIGHT, new IntegerParameter("Right", "Margin"));
+        addStaticParameter(Variables.MARGIN_BOTTOM, new IntegerParameter("Bottom", "Margin"));
+
+        // Padding
+        addStaticParameter(Variables.PADDING_TYPE, new ComboParameter("Type", "Padding", new String[]{"Full", "Custom"}){
+            {
+                onValueChanged(value -> updateVisible());
+                onVisibleChanged(visible -> updateVisible());
+                onApplying(object -> updateVisible());
+            }
+            void updateVisible(){
+                boolean full = isVisible() && getValue().equals("Full");
+                boolean custom = isVisible() && !full;
+
+                getStaticParameter(Variables.PADDING_LEFT).setVisible(custom);
+                getStaticParameter(Variables.PADDING_TOP).setVisible(custom);
+                getStaticParameter(Variables.PADDING_RIGHT).setVisible(custom);
+                getStaticParameter(Variables.PADDING_BOTTOM).setVisible(custom);
+                getStaticParameter(Variables.PADDING_FULL).setVisible(full);
+            }
+        });
+        addStaticParameter(Variables.PADDING_FULL, new IntegerParameter("Pixels", "Padding"));
+        addStaticParameter(Variables.PADDING_LEFT, new IntegerParameter("Left", "Padding"));
+        addStaticParameter(Variables.PADDING_TOP, new IntegerParameter("Top", "Padding"));
+        addStaticParameter(Variables.PADDING_RIGHT, new IntegerParameter("Right", "Padding"));
+        addStaticParameter(Variables.PADDING_BOTTOM, new IntegerParameter("Bottom", "Padding"));
 
         // Round
         addStaticParameter(Variables.SHAPE_ENABLED, new BooleanParameter("Enable", "Shape"){{
@@ -194,6 +260,34 @@ public abstract class StyleComponent extends EditableObject implements Cloneable
         applyParameterOnCustom(head, "painter.decorations.decoration", "visible", Variables.DECORATIONS);
         if(super.isVariableCustom(Variables.OVERWRITE_DECORATIONS))
             head.setParameterByPath("painter.decorations", "overwrite", getVariableValue(Variables.OVERWRITE_DECORATIONS));
+
+        // Margin
+        if(getVariableValue(Variables.MARGIN_TYPE).equals("Full")){
+            if(isVariableCustom(Variables.MARGIN_FULL))
+                head.addParameter("margin", getVariableValue(Variables.MARGIN_FULL));
+        }else{
+            String value = "";
+            value += getVariableValue(Variables.MARGIN_LEFT) + ",";
+            value += getVariableValue(Variables.MARGIN_TOP) + ",";
+            value += getVariableValue(Variables.MARGIN_RIGHT) + ",";
+            value += getVariableValue(Variables.MARGIN_BOTTOM);
+            if(areVariablesCustom(Variables.MARGIN_LEFT, Variables.MARGIN_TOP, Variables.MARGIN_RIGHT, Variables.MARGIN_BOTTOM))
+                head.addParameter("margin", value);
+        }
+
+        // Padding
+        if(getVariableValue(Variables.PADDING_TYPE).equals("Full")){
+            if(isVariableCustom(Variables.PADDING_FULL))
+                head.addParameter("padding", getVariableValue(Variables.PADDING_FULL));
+        }else{
+            String value = "";
+            value += getVariableValue(Variables.PADDING_LEFT) + ",";
+            value += getVariableValue(Variables.PADDING_TOP) + ",";
+            value += getVariableValue(Variables.PADDING_RIGHT) + ",";
+            value += getVariableValue(Variables.PADDING_BOTTOM);
+            if(areVariablesCustom(Variables.PADDING_LEFT, Variables.PADDING_TOP, Variables.PADDING_RIGHT, Variables.PADDING_BOTTOM))
+                head.addParameter("padding", value);
+        }
 
         if(isImplemented(Variables.SHAPE_ENABLED) && getVariableValue(Variables.SHAPE_ENABLED).equals("true")) {
             createHeadOnCustom(head, "painter.decorations.decoration.WebShape", Variables.SHAPE_ENABLED);
