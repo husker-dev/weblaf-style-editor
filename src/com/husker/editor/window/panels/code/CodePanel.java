@@ -61,7 +61,7 @@ public class CodePanel extends WebPanel {
             else
                 new_text = "";
 
-            if(!new_text.equals(sourceViewer.getText())){
+            if(new_text != null && sourceViewer != null && sourceViewer.getText() != null && !new_text.equals(sourceViewer.getText())){
                 sourceViewer.setEditable(false);
                 sourceViewer.setText(new_text);
                 scroll.setEnabled(VisibleUtils.onEditableObject());

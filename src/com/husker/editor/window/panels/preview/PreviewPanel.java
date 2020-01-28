@@ -72,6 +72,10 @@ public class PreviewPanel extends WebPanel {
                 opened_objects.get(current_id).getPreview().showed();
 
                 toolBar.removeAll();
+                if(opened_objects.get(current_id).getPreview().getUI().getTools().length == 0 && opened_objects.get(current_id).getPreview().getUI().getToolsToRight().length == 0)
+                    toolBar.setVisible(false);
+                else
+                    toolBar.setVisible(true);
                 for(Component component : opened_objects.get(current_id).getPreview().getUI().getTools())
                     toolBar.add(component);
                 for(Component component : opened_objects.get(current_id).getPreview().getUI().getToolsToRight())
@@ -83,7 +87,9 @@ public class PreviewPanel extends WebPanel {
             }
         });
         add(components_tab, BorderLayout.CENTER);
-        add(toolBar = new WebToolBar(), BorderLayout.SOUTH);
+        add(toolBar = new WebToolBar(){{
+            setVisible(false);
+        }}, BorderLayout.SOUTH);
     }
 
     private void addComponent(EditableObject component){
@@ -160,8 +166,6 @@ public class PreviewPanel extends WebPanel {
         }
 
         protected JPanel createTitle(T document, MouseAdapter mouseAdapter) {
-            //StyleId titleStyleId = StyleId.documentpaneTabTitle.at(this);
-
             titleLabel = new WebStyledLabel(document.getIcon());
             titleLabel.setMargin(4, 0, 0, 0);
 
@@ -181,9 +185,6 @@ public class PreviewPanel extends WebPanel {
 
             titleLabel.addMouseListener(mouseAdapter);
             titleLabel.addMouseMotionListener(mouseAdapter);
-
-            //tagLabel.addMouseListener(mouseAdapter);
-            //tagLabel.addMouseMotionListener(mouseAdapter);
 
             WebPanel panel = new WebPanel(StyleId.panelTransparent);
             panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));

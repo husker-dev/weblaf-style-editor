@@ -111,6 +111,7 @@ public abstract class Parameter{
     private boolean visible = true;
 
     private boolean constants_event_enabled = true;
+    private boolean changed_event_enabled = true;
 
     public Parameter(String name, String group, Object... objects){
         this(name, null, group, objects);
@@ -125,7 +126,7 @@ public abstract class Parameter{
         createUI();
 
         addValueChangedListener(value -> {
-            if(!VisibleUtils.onEditableObject())
+            if(!changed_event_enabled && !VisibleUtils.onEditableObject())
                 return;
             if(variable != null && editable_object.getVariable(variable).getConstant().isEmpty()) {
                 editable_object.setCustomValue(variable, value);
@@ -144,6 +145,7 @@ public abstract class Parameter{
     }
 
     public void applyObject(EditableObject object){
+        changed_event_enabled = false;
         editable_object = object;
 
         if(getObjectVariable() != null) {
@@ -157,6 +159,7 @@ public abstract class Parameter{
         if(constant_type != null)
             updateConstants();
         updateValue();
+        changed_event_enabled = true;
     }
     public void updateConstants(){
         constants_event_enabled = false;
@@ -176,12 +179,14 @@ public abstract class Parameter{
                 setEnabled(true);
                 String old = getValue();
                 setValue(variable.getValue());
-                Main.event(Parameter.class, listeners, listener -> listener.valueChanged(new ParameterValueChangedEvent(this, old, getValue())));
+                if(changed_event_enabled)
+                    Main.event(Parameter.class, listeners, listener -> listener.valueChanged(new ParameterValueChangedEvent(this, old, getValue())));
             } else {
                 setEnabled(false);
                 String old = getValue();
                 setValue(variable.getConstantValue());
-                Main.event(Parameter.class, listeners, listener -> listener.valueChanged(new ParameterValueChangedEvent(this, old, getValue())));
+                if(changed_event_enabled)
+                    Main.event(Parameter.class, listeners, listener -> listener.valueChanged(new ParameterValueChangedEvent(this, old, getValue())));
             }
         }catch (Exception ex){
             ex.printStackTrace();
@@ -223,7 +228,7 @@ public abstract class Parameter{
     public abstract void setEnabled(boolean enabled);
 
     public void setValue(String value){
-        if(!getValue().equals(value))
+        if(getValue() != null && !getValue().equals(value))
             apply(value);
     }
 
@@ -238,6 +243,11 @@ public abstract class Parameter{
         return constant_type;
     }
 
+    public void addActionListener(Runnable runnable){
+        onApplying(e -> runnable.run());
+        onVisibleChanged(e -> runnable.run());
+        onValueChanged(e -> runnable.run());
+    }
     public void onVisibleChanged(final Consumer<Boolean> visibleChanged){
         addParameterListener(new ParameterAdapter() {
             public void visibleChanged(ParameterVisibleChangedEvent event) {

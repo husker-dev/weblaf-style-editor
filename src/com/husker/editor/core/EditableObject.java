@@ -6,7 +6,6 @@ import com.husker.editor.core.listeners.editable_object.*;
 import com.husker.editor.core.xml.XMLHead;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -95,6 +94,8 @@ public abstract class EditableObject implements Cloneable {
 
     private ArrayList<Consumer<Variable>> variable_changed_listeners = new ArrayList<>();
 
+    private String code;
+
     protected EditableObject(Class<? extends EditableObject> clazz, Project project, String title, FolderElement folder){
         this.project = project;
         this.title = title;
@@ -127,40 +128,10 @@ public abstract class EditableObject implements Cloneable {
         });
 
         Main.event(EditableObject.class, listeners, listener -> listener.newObject(new NewEditableObjectEvent(project, this)));
-
-        addVariableChangedListener(variable -> updateCode());
     }
 
     // Abstract
     protected abstract void initStaticParameters();
-
-    public void updateCode(){
-        Main.event(EditableObject.class, listeners, listener -> listener.codeChanged(new CodeChangedEvent(project, this, getCode())));
-    }
-
-    public String getCode(){
-        return getCode(false);
-    }
-    public abstract String getCode(boolean preview);
-
-    public void setCode(String code){
-        if(code != null && code.isEmpty()) {
-            getProject().Errors.removeError("code_reading");
-        }else{
-            try {
-                applyCode(code);
-                getProject().Errors.removeError("code_reading");
-            }catch (ErrorException ex){
-                ex.printStackTrace();
-                getProject().Errors.addError(new Error("code_reading", ex.getTitle(), ex.getText()));
-            }catch (Exception ex){
-                ex.printStackTrace();
-                getProject().Errors.addError(new Error("code_reading", "Code Error", "Code applying error"));
-            }
-        }
-        Main.event(EditableObject.class, listeners, listener -> listener.codeChanged(new CodeChangedEvent(project, this, code)));
-    }
-    public abstract void applyCode(String text) throws ErrorException;
 
     public abstract FolderElement createFolder();
 
@@ -299,14 +270,14 @@ public abstract class EditableObject implements Cloneable {
             if(!head.containsHeadByPath(path, predicate))
                 head.createHeadByPath(path);
             XMLHead new_head = head.getHeadByPath(path, predicate);
-            new_head.addParameter(parameter, getVariableValue(variable));
+            new_head.setParameter(parameter, getVariableValue(variable));
         }
     }
     public void applyParameterOnCustom(XMLHead head, String parameter, StaticVariable variable){
         if(!isImplemented(variable))
             return;
         if(isVariableCustom(variable))
-            head.addParameter(parameter, getVariableValue(variable));
+            head.setParameter(parameter, getVariableValue(variable));
     }
     public void createHeadOnCustom(XMLHead head, String path, StaticVariable variable){
         if(!isImplemented(variable))
@@ -356,5 +327,13 @@ public abstract class EditableObject implements Cloneable {
 
     public void addVariableChangedListener(Consumer<Variable> listener){
         variable_changed_listeners.add(listener);
+    }
+
+    public void setCode(String code){
+        this.code = code;
+        Main.event(EditableObject.class, listeners, listener -> listener.codeChanged(new CodeChangedEvent(project, this, getCode())));
+    }
+    public String getCode(){
+        return code;
     }
 }

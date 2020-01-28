@@ -1,8 +1,8 @@
 package com.husker.editor.core;
 
-import com.husker.editor.content.constants.color.ColorConstant;
-import com.husker.editor.content.constants.number.NumberConstant;
-import com.husker.editor.content.constants.text.TextConstant;
+import com.husker.editor.core.constants.color.ColorConstant;
+import com.husker.editor.core.constants.number.NumberConstant;
+import com.husker.editor.core.constants.text.TextConstant;
 import com.husker.editor.core.events.ConstantRemovedEvent;
 import com.husker.editor.core.events.ConstantRenamedEvent;
 import com.husker.editor.core.events.NewConstantEvent;

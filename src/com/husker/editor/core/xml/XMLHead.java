@@ -12,6 +12,8 @@ public class XMLHead {
     private String name;
     private String value;
     private ArrayList<String> comments = new ArrayList<>();
+    private XMLHead parent;
+    private boolean auto_remove = true;
 
     public XMLHead(String name, String content){
         this.name = name;
@@ -20,16 +22,24 @@ public class XMLHead {
     public XMLHead(String name, String[]... parameters){
         this.name = name;
         for(String[] parameter : parameters)
-            addParameter(parameter[0], parameter[1]);
+            setParameter(parameter[0], parameter[1]);
     }
     public XMLHead(String[]... parameters){
         this("head", parameters);
+    }
+
+    public void setParent(XMLHead head){
+        parent = head;
+    }
+    public XMLHead getParent(){
+        return parent;
     }
 
     public void addHead(XMLHead head){
         if(head == null)
             return;
         heads.add(head);
+        head.setParent(this);
     }
 
     public String getName(){
@@ -75,11 +85,17 @@ public class XMLHead {
             return heads[0];
     }
 
+    public void setParameterByPath(String path, String parameter, String value, Predicate<XMLHead> predicate){
+        this.setParameterByPath(path, new XMLParameter(parameter, value), predicate);
+    }
     public void setParameterByPath(String path, String parameter, String value){
         this.setParameterByPath(path, new XMLParameter(parameter, value));
     }
     public void setParameterByPath(String path, XMLParameter parameter){
-        createHeadByPath(path).addParameter(parameter);
+        this.setParameterByPath(path, parameter, null);
+    }
+    public void setParameterByPath(String path, XMLParameter parameter, Predicate<XMLHead> predicate){
+        getHeadByPath(path, predicate).setParameter(parameter);
     }
 
     public XMLHead createHeadByPath(String path, XMLHead new_head){
@@ -114,9 +130,13 @@ public class XMLHead {
     }
     public boolean containsHead(String head_name, Predicate<XMLHead> predicate){
         for(XMLHead head : getHeads())
-            if(head.getName().equals(head_name))
+            if(head.getName().equals(head_name) && predicate != null && predicate.test(head))
                 return true;
         return false;
+    }
+
+    public boolean containsHeadByPath(String path){
+        return containsHeadByPath(path, null);
     }
     public boolean containsHeadByPath(String path, Predicate<XMLHead> predicate){
         String[] heads_names = path.split("\\.");
@@ -165,6 +185,8 @@ public class XMLHead {
     }
     public XMLHead getHeadByPath(String path, Predicate<XMLHead> predicate){
         XMLHead[] heads = getHeadsByPath(path, predicate);
+        if(heads == null)
+            return null;
         if(heads.length > 1)
             throw new RuntimeException("Predicate applies to more than two XMLHead");
         else if(heads.length == 0)
@@ -173,17 +195,64 @@ public class XMLHead {
             return heads[0];
     }
 
-    public void addParameter(XMLParameter parameter){
+    public void removeHeadsByPath(String path){
+        removeHeadsByPath(path, null);
+    }
+    public void removeHeadsByPath(String path, Predicate<XMLHead> predicate){
+        XMLHead[] heads = getHeadsByPath(path, predicate);
+        if(heads == null)
+            return;
+        for(XMLHead head : heads)
+            head.remove();
+    }
+    public void removeHeadByPath(String path){
+        removeHeadByPath(path, null);
+    }
+    public void removeHeadByPath(String path, Predicate<XMLHead> predicate){
+        XMLHead head = getHeadByPath(path, predicate);
+        if(head != null)
+            head.remove();
+    }
+
+    public void removeParameterByPath(String path, String parameter){
+        removeParameterByPath(path, parameter, null);
+    }
+    public void removeParameterByPath(String path, String parameter, Predicate<XMLHead> predicate){
+        XMLHead head = getHeadByPath(path, predicate);
+        if(head != null)
+            head.removeParameter(parameter);
+    }
+
+    public void remove(){
+        getParent().heads.remove(this);
+        checkForRelevant();
+    }
+
+    public void checkForRelevant(){
+        if(getParent() != null && getParent().isAutoRemovable() && getParent().getHeads().length == 0 && getParameters().length == 0)
+            getParent().remove();
+    }
+
+    public void removeParameter(String name){
+        parameters.remove(name);
+        checkForRelevant();
+    }
+
+    public void setParameter(XMLParameter parameter){
+        parameter.setParent(this);
         parameters.put(parameter.getName(), parameter);
     }
-    public void addParameter(String name, String value){
+    public void setParameter(String name, String value){
         XMLParameter parameter = new XMLParameter(name, value);
+        parameter.setParent(this);
         parameters.put(parameter.getName(), parameter);
     }
     public XMLParameter getParameter(String name){
         return parameters.get(name);
     }
     public String getParameterValue(String name){
+        if(!parameters.containsKey(name))
+            return null;
         return parameters.get(name).getValue();
     }
 
@@ -237,6 +306,13 @@ public class XMLHead {
     }
     public String[] getComments(){
         return comments.toArray(new String[0]);
+    }
+
+    public void setAutoRemovable(boolean auto){
+        auto_remove = auto;
+    }
+    public boolean isAutoRemovable(){
+        return auto_remove;
     }
 
     public static XMLHead fromString(String text){
@@ -297,7 +373,7 @@ public class XMLHead {
                 break;
             String parameter_name = params.split("\"")[i].trim().substring(0, params.split("\"")[i].trim().length() - 1).trim();
             String parameter_value = params.split("\"")[i + 1].trim();
-            out.addParameter(parameter_name, parameter_value);
+            out.setParameter(parameter_name, parameter_value);
         }
 
         if(full){

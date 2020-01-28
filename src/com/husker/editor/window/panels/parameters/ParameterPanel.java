@@ -6,7 +6,7 @@ import com.alee.laf.panel.WebPanel;
 import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.separator.WebSeparator;
 import com.alee.managers.style.StyleId;
-import com.husker.editor.content.StyleComponent;
+import com.husker.editor.content.style.StyleComponent;
 import com.husker.editor.core.EditableObject;
 import com.husker.editor.core.Parameter;
 import com.husker.editor.core.Project;

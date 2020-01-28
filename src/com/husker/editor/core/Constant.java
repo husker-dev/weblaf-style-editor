@@ -1,6 +1,6 @@
 package com.husker.editor.core;
 
-import com.husker.editor.content.constants.text.TextEditor;
+import com.husker.editor.core.constants.text.TextEditor;
 import com.husker.editor.core.tools.Resources;
 
 import javax.swing.*;

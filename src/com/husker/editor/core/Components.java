@@ -1,6 +1,6 @@
 package com.husker.editor.core;
 
-import com.husker.editor.content.StyleComponent;
+import com.husker.editor.content.style.StyleComponent;
 
 import java.util.ArrayList;
 

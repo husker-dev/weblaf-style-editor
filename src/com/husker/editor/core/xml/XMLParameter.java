@@ -4,6 +4,7 @@ public class XMLParameter {
 
     private String name;
     private String value;
+    private XMLHead parent;
 
     public XMLParameter(String name, String value){
         this.name = name;
@@ -14,6 +15,13 @@ public class XMLParameter {
     }
     public XMLParameter(){
         this("parameter");
+    }
+
+    public void setParent(XMLHead head){
+        parent = head;
+    }
+    public XMLHead getParent(){
+        return parent;
     }
 
     public void setName(String name){

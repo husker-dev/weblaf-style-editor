@@ -1,7 +1,6 @@
 package com.husker.editor.core;
 
-import com.husker.editor.content.folders.Folder;
-import com.husker.editor.content.folders.ProjectFolder;
+import com.husker.editor.core.folders.ProjectFolder;
 import com.husker.editor.core.events.ProjectChangedEvent;
 import com.husker.editor.core.events.SelectedChangedEvent;
 import com.husker.editor.core.listeners.project.ProjectListener;
