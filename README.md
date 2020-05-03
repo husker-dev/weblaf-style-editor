@@ -1,3 +1,5 @@
+#### (Project development has been suspended. Check new WebLaF editor [here](https://github.com/husker-dev/weblaf-intellij-plugin))
+
 Download: [WebLaF Style Editor 1.1](https://github.com/Husker-hub/WebLaF-Style-Editor/releases/download/1.1/WebLaF.Style.Editor.rar)
 
 
